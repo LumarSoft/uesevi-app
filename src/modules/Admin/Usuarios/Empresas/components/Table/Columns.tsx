@@ -1,25 +1,17 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { ToggleStatus } from "../Dialogs/ToggleStatus";
-import { Delete } from "../Dialogs/Delete";
+import { ArrowUpDown } from "lucide-react";
+import { ToggleStatus } from "../AlertDialogs/ToggleStatus";
+import { Delete } from "../AlertDialogs/Delete";
 import { Button } from "@/components/ui/button";
+import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
+import { DrawerComponent } from "../Drawer/Drawer";
+import { DialogComponent } from "../Dialog/Dialog";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type EmpresasColumns = {
-  name: string;
-  cuit: string;
-  address: string;
-  tel: string;
-  discharge_date: string;
-  status: boolean;
-};
-
-export const columns: ColumnDef<EmpresasColumns>[] = [
+export const columns: ColumnDef<IEmpresa>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "nombre",
     header: ({ column }) => {
       return (
         <Button
@@ -47,7 +39,7 @@ export const columns: ColumnDef<EmpresasColumns>[] = [
     },
   },
   {
-    accessorKey: "address",
+    accessorKey: "domicilio",
     header: ({ column }) => {
       return (
         <Button
@@ -61,7 +53,7 @@ export const columns: ColumnDef<EmpresasColumns>[] = [
     },
   },
   {
-    accessorKey: "tel",
+    accessorKey: "telefono",
     header: ({ column }) => {
       return (
         <Button
@@ -75,7 +67,7 @@ export const columns: ColumnDef<EmpresasColumns>[] = [
     },
   },
   {
-    accessorKey: "discharge_date",
+    accessorKey: "created",
     header: ({ column }) => {
       return (
         <Button
@@ -89,7 +81,7 @@ export const columns: ColumnDef<EmpresasColumns>[] = [
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: "estado",
     header: ({ column }) => {
       return (
         <Button
@@ -107,7 +99,8 @@ export const columns: ColumnDef<EmpresasColumns>[] = [
     id: "actions",
     cell: ({ row }) => {
       return (
-        <div className="flex gap-4">
+        <div className="flex gap-2">
+          <DialogComponent data={row.original} />
           <ToggleStatus />
           <Delete />
         </div>

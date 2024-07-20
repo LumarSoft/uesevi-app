@@ -9,11 +9,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
-export const ToggleStatus = () => {
+export const Delete = () => {
   return (
     <AlertDialog>
-      <AlertDialogTrigger>Cambiar estado</AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
+        <Button className="bg-red-600 hover:bg-red-700 text-white flex gap-2">
+          Eliminar <Trash2 />
+        </Button>
+      </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>

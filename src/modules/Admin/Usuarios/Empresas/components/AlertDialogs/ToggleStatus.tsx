@@ -9,11 +9,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { RefreshCcw } from "lucide-react";
 
-export const Delete = () => {
+export const ToggleStatus = () => {
   return (
     <AlertDialog>
-      <AlertDialogTrigger>Eliminar</AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
+        <Button className="flex gap-2">
+          Estado <RefreshCcw />
+        </Button>
+      </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
