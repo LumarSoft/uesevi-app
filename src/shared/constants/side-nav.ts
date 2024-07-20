@@ -29,25 +29,25 @@ export const NavItems: NavItem[] = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    href: "/",
+    href: "/admin/dashboard",
     color: "text-sky-500",
   },
   {
     title: "Usuarios",
     icon: Users,
-    href: "/usarios",
+    href: "/admin/usarios",
     color: "text-rose-500",
     isChidren: true,
     children: [
       {
         title: "Administradores",
-        href: "/usuarios/admins",
+        href: "/admin/usuarios/administradores",
         icon: UserRoundCog,
         color: "text-rose-500",
       },
       {
         title: "Empresas",
-        href: "/usuarios/empresas",
+        href: "/admin/usuarios/empresas",
         icon: Building2,
         color: "text-rose-500",
       },

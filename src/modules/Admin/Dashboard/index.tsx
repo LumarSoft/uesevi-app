@@ -1,13 +1,6 @@
-import React from "react";
-import {
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-  Card,
-} from "@/components/ui/card";
+import { CardHeader, CardTitle, CardContent, Card } from "@/components/ui/card";
 
-const MenuAdmin = () => {
+const AdminDashboardModule = () => {
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -100,4 +93,4 @@ const MenuAdmin = () => {
   );
 };
 
-export default MenuAdmin;
+export default AdminDashboardModule;
