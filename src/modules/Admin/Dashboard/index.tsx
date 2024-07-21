@@ -1,6 +1,8 @@
 import { CardHeader, CardTitle, CardContent, Card } from "@/components/ui/card";
+import { IDashboard } from "@/shared/types/Querys/IDashboard";
 
-const AdminDashboardModule = () => {
+const AdminDashboardModule = ({ data }: { data: IDashboard[] }) => {
+  const dashboardData = data[0];
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -31,7 +33,7 @@ const AdminDashboardModule = () => {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">5668</div>
+                <div className="text-2xl font-bold">{dashboardData.total_empleados}</div>
                 <p className="text-xs text-muted-foreground">
                   Registrados al dia de la fecha
                 </p>
@@ -54,7 +56,7 @@ const AdminDashboardModule = () => {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">111</div>
+                <div className="text-2xl font-bold">{dashboardData.total_empresas}</div>
                 <p className="text-xs text-muted-foreground">
                   Empresas en la base de datos
                 </p>
@@ -80,7 +82,7 @@ const AdminDashboardModule = () => {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">686</div>
+                <div className="text-2xl font-bold">{dashboardData.empleados_con_sindicato_activo}</div>
                 <p className="text-xs text-muted-foreground">
                   Afiliados al dia de la fecha
                 </p>
