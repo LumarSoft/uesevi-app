@@ -2,11 +2,8 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-import { ToggleStatus } from "../AlertDialogs/ToggleStatus";
-import { Delete } from "../AlertDialogs/Delete";
 import { Button } from "@/components/ui/button";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
-import { DialogComponent } from "../Dialog/Dialog";
 
 export const columns: ColumnDef<IEmpresa>[] = [
   {
@@ -99,9 +96,6 @@ export const columns: ColumnDef<IEmpresa>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
-          <DialogComponent data={row.original} />
-          <ToggleStatus data={row.original} />
-          <Delete data={row.original} />
         </div>
       );
     },
