@@ -14,11 +14,26 @@ import { updateData } from "@/services/mysql/functions";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { RefreshCcw } from "lucide-react";
 
-export const ToggleStatus = ({ data }: { data: IEmpresa }) => {
+export const ToggleStatus = ({
+  data,
+  onDataUpdate,
+}: {
+  data: IEmpresa;
+  onDataUpdate: (updateItem: IEmpresa) => void;
+}) => {
   const handleChange = async () => {
     const result = await updateData("empresas/change-state", data.id, {
       estado: data.estado === "Activo" ? "Inactivo" : "Activo",
     });
+
+    if (result !== undefined && result !== null) {
+      onDataUpdate({
+        ...data,
+        estado: data.estado === "Activo" ? "Inactivo" : "Activo",
+      });
+    } else {
+      console.error("Failed to update status");
+    }
   };
 
   return (
@@ -35,7 +50,7 @@ export const ToggleStatus = ({ data }: { data: IEmpresa }) => {
           </AlertDialogTitle>
           <AlertDialogDescription>
             Esto cambiara el estado de la empresa {data.nombre} a{" "}
-            {data.estado === "activo" ? "inactivo" : "activo"} dentro del
+            {data.estado === "Activo" ? "Inactivo" : "Activo"} dentro del
             sistema.
           </AlertDialogDescription>
         </AlertDialogHeader>
