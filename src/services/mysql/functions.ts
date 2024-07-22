@@ -37,7 +37,7 @@ export const updateData = async (
       url: `/${endpoint}/${id}`,
       data: updateData,
     });
-    console.log(response);
+    return response;
   } catch (error) {
     console.error("Error al actualizar datos:", error);
   }
