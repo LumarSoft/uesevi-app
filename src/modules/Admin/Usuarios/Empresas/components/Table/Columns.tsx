@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { DialogComponent } from "../Dialog/Dialog";
 
-export const columns: ColumnDef<IEmpresa>[] = [
+export const createColumns = (
+  onDataUpdate: (updatedItem: IEmpresa) => void,
+  onDataDelete: (deleteItem: IEmpresa) => void
+): ColumnDef<IEmpresa>[] => [
   {
     accessorKey: "nombre",
     header: ({ column }) => {
@@ -100,7 +103,7 @@ export const columns: ColumnDef<IEmpresa>[] = [
       return (
         <div className="flex gap-2">
           <DialogComponent data={row.original} />
-          <ToggleStatus data={row.original} />
+          <ToggleStatus data={row.original} onDataUpdate={onDataUpdate}/>
           <Delete data={row.original} />
         </div>
       );
