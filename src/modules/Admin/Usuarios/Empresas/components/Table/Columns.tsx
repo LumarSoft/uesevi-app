@@ -101,8 +101,8 @@ export const columns: ColumnDef<IEmpresa>[] = [
       return (
         <div className="flex gap-2">
           <DialogComponent data={row.original} />
-          <ToggleStatus />
-          <Delete />
+          <ToggleStatus data={row.original} />
+          <Delete data={row.original} />
         </div>
       );
     },

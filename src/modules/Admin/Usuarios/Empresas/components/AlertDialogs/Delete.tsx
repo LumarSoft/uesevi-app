@@ -10,9 +10,15 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { deleteData } from "@/services/mysql/functions";
+import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { Trash2 } from "lucide-react";
 
-export const Delete = () => {
+export const Delete = ({ data }: { data: IEmpresa }) => {
+  const handleDelete = async () => {
+    const result = await deleteData("empresas/delete", data.id);
+  };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -22,15 +28,17 @@ export const Delete = () => {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>Estas seguro que desea eliminar?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            Estas a punto de eliminar {data.nombre} de forma permanente. Esta
+            accion no se puede deshacer.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete}>
+            Continuar
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

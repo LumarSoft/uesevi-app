@@ -11,6 +11,9 @@ export interface IEmpresa {
   estado: string;
   email_contacto: string;
   categoria: number;
-  created: Date;
-  modified: Date;
+  created: string;
+  modified: string;
+  nombre_usuario: string;
+  apellido: string;
+  telefono_usuario: string;
 }

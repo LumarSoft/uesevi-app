@@ -10,9 +10,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { updateData } from "@/services/mysql/functions";
+import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { RefreshCcw } from "lucide-react";
 
-export const ToggleStatus = () => {
+export const ToggleStatus = ({ data }: { data: IEmpresa }) => {
+  const handleChange = async () => {
+    const result = await updateData("empresas/change-state", data.id, {
+      estado: data.estado === "Activo" ? "Inactivo" : "Activo",
+    });
+  };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -22,15 +30,20 @@ export const ToggleStatus = () => {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>
+            Estas seguro de cambiar el estado?
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            Esto cambiara el estado de la empresa {data.nombre} a{" "}
+            {data.estado === "activo" ? "inactivo" : "activo"} dentro del
+            sistema.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={handleChange}>
+            Continuar
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
