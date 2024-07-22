@@ -3,60 +3,32 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
+import { INoticias } from "@/shared/types/Querys/INoticias";
 
-export const columns: ColumnDef<IEmpresa>[] = [
+export const columns: ColumnDef<INoticias>[] = [
   {
-    accessorKey: "nombre",
+    accessorKey: "id",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Nombre
+          ID
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
   },
   {
-    accessorKey: "cuit",
+    accessorKey: "titulo",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Cuit
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: "domicilio",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Direccion
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: "telefono",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Telefono
+          Titulo
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -70,21 +42,7 @@ export const columns: ColumnDef<IEmpresa>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Fecha de alta
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: "estado",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Estado
+          Fecha
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -94,10 +52,7 @@ export const columns: ColumnDef<IEmpresa>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      return (
-        <div className="flex gap-2">
-        </div>
-      );
+      return <div className="flex gap-2"></div>;
     },
   },
 ];
