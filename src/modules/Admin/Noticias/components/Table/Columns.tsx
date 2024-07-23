@@ -1,9 +1,10 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { INoticias } from "@/shared/types/Querys/INoticias";
+import { Delete } from "../AlertDialogs/Delete";
 
 export const columns: ColumnDef<INoticias>[] = [
   {
@@ -52,7 +53,14 @@ export const columns: ColumnDef<INoticias>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      return <div className="flex gap-2"></div>;
+      return (
+        <div className="flex gap-2">
+          <Button className="flex gap-2">
+            Ver <Eye />
+          </Button>
+          <Delete data={row.original} />
+        </div>
+      );
     },
   },
 ];

@@ -10,6 +10,19 @@ export const fetchData = async (endpoint: string) => {
   }
 };
 
+export const fetchOneRow = async (endpoint: string, id: number) => {
+  try {
+    const data = await httpMysqlClient({
+      method: "GET",
+      url: `/${endpoint}/${id}`,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error al obtener datos:", error);
+    throw error;
+  }
+};
+
 export const postData = async (
   endpoint: string,
   postData: Record<string, unknown>
