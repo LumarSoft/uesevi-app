@@ -25,16 +25,17 @@ export const LoginCard = () => {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
         router.push("/admin/dashboard");
       } else {
-        setError("Credenciales incorrectas");
+        const errorData = await response.json();
+        setError(errorData.message || "Credenciales incorrectas");
       }
     } catch (error) {
       setError("Error al iniciar sesión");
-      console.log(error);
+      console.error(error);
     }
   };
-
   return (
     <div className="max-w-lg w-full space-y-8 bg-white p-10 rounded-lg border border-zinc-300">
       <div>
