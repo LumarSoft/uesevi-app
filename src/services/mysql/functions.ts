@@ -20,9 +20,9 @@ export const postData = async (
       url: `/${endpoint}`,
       data: postData,
     });
-    console.log(response);
+    return response;
   } catch (error) {
-    console.error("Error al enviar datos:", error);
+    throw error;
   }
 };
 
