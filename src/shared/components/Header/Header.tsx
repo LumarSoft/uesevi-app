@@ -5,18 +5,9 @@ import { Boxes } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 import { MobileSidebar } from "../Sidebar/Mobile-Sidebar";
-import { useAuthStore } from "@/shared/stores/authStore";
-import { useRouter } from "next/navigation";
-import { deleteCookie } from "cookies-next";
-export default function Header() {
-  const logout = useAuthStore((state) => state.logout);
-  const router = useRouter();
+import { LogoutDialog } from "./LogoutDialog";
 
-  const handleLogout = () => {
-    logout();
-    deleteCookie("auth-token");
-    router.replace("/admin/login");
-  };
+export default function Header() {
   return (
     <div className="supports-backdrop-blur:bg-background/60 fixed left-0 right-0 top-0 z-20 border-b bg-background/95 backdrop-blur">
       <nav className="flex h-16 items-center justify-between px-4">
@@ -33,9 +24,7 @@ export default function Header() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button size="sm" onClick={handleLogout}>
-            Cerrar sesion
-          </Button>
+          <LogoutDialog />
         </div>
       </nav>
     </div>

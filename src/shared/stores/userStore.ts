@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { IAuthState } from "../types/IAuthState";
+import { IUser } from "@/shared/types/IUser";
 
-export const useAuthStore = create<IAuthState>()(
+export const userStore = create<IUser>()(
   persist(
     (set, get) => ({
       token: null,

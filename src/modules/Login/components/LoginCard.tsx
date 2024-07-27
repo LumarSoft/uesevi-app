@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { postData } from "@/services/mysql/functions";
-import { useAuthStore } from "@/shared/stores/authStore";
+import { userStore } from "@/shared/stores/userStore";
 import { setCookie } from "cookies-next";
 export const LoginCard = () => {
   const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ export const LoginCard = () => {
       console.log("Respuesta del servidor:", response);
 
       if (response && response.token) {
-        useAuthStore.getState().setAuth(response.token, response.user);
+        userStore.getState().setAuth(response.token, response.user);
         setCookie("auth-token", response.token);
         router.replace("/admin/dashboard");
       }
@@ -38,8 +38,8 @@ export const LoginCard = () => {
 
   return (
     <div className="max-w-lg w-full space-y-8 bg-white p-10 rounded-lg border border-zinc-300">
-      {/* <h1>administracion@uesevi.org.ar</h1> */}
-      {/* <h1>Zuviria5975</h1> */}
+      <h1>administracion@uesevi.org.ar</h1>
+      <h1>Zuviria5975</h1>
 
       <div>
         <img
@@ -65,7 +65,11 @@ export const LoginCard = () => {
             required
           />
         </div>
-        {error && <p className="text-red-500 text-base text-center font-semibold">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-base text-center font-semibold">
+            {error}
+          </p>
+        )}
         <Button type="submit" className="w-full">
           Iniciar sesión
         </Button>

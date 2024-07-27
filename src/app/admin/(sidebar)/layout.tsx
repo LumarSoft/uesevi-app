@@ -1,6 +1,5 @@
 import Header from "@/shared/components/Header/Header";
 import Sidebar from "@/shared/components/Sidebar/Sidebar";
-import { ThemeProvider } from "next-themes";
 
 export default function SidebarLayout({
   children,
@@ -9,15 +8,13 @@ export default function SidebarLayout({
 }>) {
   return (
     <>
-      <ThemeProvider attribute="class" defaultTheme="system">
-        <Header />
-        <div className="flex h-screen border-collapse overflow-hidden">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto overflow-x-hidden pt-16 bg-secondary/10 pb-1">
-            {children}
-          </main>
-        </div>
-      </ThemeProvider>
+      <Header />
+      <div className="flex h-screen border-collapse overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 overflow-y-auto overflow-x-hidden pt-16 bg-secondary/10 pb-1">
+          {children}
+        </main>
+      </div>
     </>
   );
 }
