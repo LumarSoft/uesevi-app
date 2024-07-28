@@ -27,19 +27,26 @@ export const LoginCard = () => {
       if (response && response.token) {
         userStore.getState().setAuth(response.token, response.user);
         setCookie("auth-token", response.token);
-        router.replace("/admin/dashboard");
+
+        if (response.user.rol === "admin") {
+          router.replace("/admin/dashboard");
+          console.log(response.user.rol);
+        } else if (response.user.rol === "empresa") {
+          router.replace("/admin/empresa/dashboard");
+        } else {
+          setError("Rol de usuario no reconocido");
+        }
       }
     } catch (error: any) {
-      if (error.message === "Request failed with status code 401") {
-        setError("Credenciales incorrectas");
-      }
+      console.error("Error en login:", error);
+      setError("Error al iniciar sesión. Por favor, intente de nuevo.");
     }
   };
 
   return (
     <div className="max-w-lg w-full space-y-8 bg-white p-10 rounded-lg border border-zinc-300">
-      <h1>administracion@uesevi.org.ar</h1>
-      <h1>Zuviria5975</h1>
+      <h1 className="text-black">administracion@uesevi.org.ar</h1>
+      <h1 className="text-black">Zuviria5975</h1>
 
       <div>
         <img
