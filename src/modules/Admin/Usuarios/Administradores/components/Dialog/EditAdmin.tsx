@@ -13,8 +13,8 @@ import { Label } from "@radix-ui/react-label";
 import { Pencil } from "lucide-react";
 import React, { useState } from "react";
 import { updateData } from "@/services/mysql/functions";
-
-export const DialogComponent = ({
+import { Select } from "@/components/ui/select";
+export const EditAdminDialog = ({
   data,
   onDataUpdate,
 }: {
@@ -30,15 +30,23 @@ export const DialogComponent = ({
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const result = await updateData(
-      "/update-admin/:id",
-      editedUser.id,
-      editedUser as any
-    );
-    if (result !== undefined && result !== null) {
-      onDataUpdate(editedUser);
-    } else {
-      console.error("Failed to update user");
+    try {
+      const result = await updateData(
+        "administradores/update-admin",
+        editedUser.id,
+        {
+          ...editedUser,
+        }
+      );
+      if (result) {
+        onDataUpdate(editedUser);
+      } else {
+        console.error(
+          "Failed to update user: No result returned from updateData"
+        );
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
     }
   };
 
@@ -53,7 +61,7 @@ export const DialogComponent = ({
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-semibold">
             Editar a{" "}
-            <span className="bg-blue-100 text-blue-800 text-lg font-medium  px-2.5 py-1 rounded dark:bg-blue-900 dark:text-blue-300">
+            <span className="bg-yellow-100 text-yellow-800 text-lg font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">
               {" "}
               {data.nombre} {data.apellido}
             </span>
@@ -101,19 +109,6 @@ export const DialogComponent = ({
                 value={editedUser.telefono}
                 onChange={handleInputChange}
               />
-            </div>
-            <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="estado">Estado</Label>
-              <select
-                id="estado"
-                name="estado"
-                value={editedUser.estado ? 1 : 0}
-                onChange={handleInputChange}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <option value={1}>Activo</option>
-                <option value={0}>Inactivo</option>
-              </select>
             </div>
           </div>
           <DialogFooter>

@@ -3,6 +3,7 @@ import { createColumns } from "./components/Table/Columns";
 import { IAdmin } from "@/shared/types/IAdmin";
 import { useState } from "react";
 import { DataTable } from "../Empresas/components/Table/Data-Table";
+import { AddAdmin } from "./components/Dialog/AddAdmin";
 
 const AdminUsuariosModule = ({ data }: { data: IAdmin[] }) => {
   const [usuarios, setUsuarios] = useState(data);
@@ -21,6 +22,9 @@ const AdminUsuariosModule = ({ data }: { data: IAdmin[] }) => {
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Administradores</h2>
+          <AddAdmin
+            
+          />
         </div>
 
         <DataTable columns={columns} data={usuarios} />

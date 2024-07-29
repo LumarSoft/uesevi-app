@@ -6,7 +6,7 @@ export interface IAdmin {
   nombre: string;
   apellido: string;
   rol: string;
-  estado: boolean;
+  estado: string;
   created: Date;
   modified: Date;
   telefono: string;

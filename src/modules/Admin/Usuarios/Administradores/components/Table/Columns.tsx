@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IAdmin } from "@/shared/types/IAdmin";
-import { DialogComponent } from "../Dialog/Dialog";
+import { EditAdminDialog } from "../Dialog/EditAdmin";
 
 export const createColumns = (
   onDataUpdate: (updatedItem: IAdmin) => void
@@ -52,29 +52,11 @@ export const createColumns = (
     },
   },
   {
-    accessorKey: "estado",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Estado
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (row.original.estado ? "Activo" : "Inactivo"),
-  },
-  {
     id: "actions",
     cell: ({ row }) => {
       return (
-        <div className="flex gap-2">
-          <DialogComponent data={row.original} onDataUpdate={onDataUpdate} />
-        </div>
+        <EditAdminDialog data={row.original} onDataUpdate={onDataUpdate} />
       );
     },
   },
-  
 ];
