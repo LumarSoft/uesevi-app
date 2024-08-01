@@ -7,10 +7,13 @@ import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
 import { setCookie } from "cookies-next";
 import LoadingSpinner from "./LoadingSpinner";
+import { EyeIcon, EyeOffIcon } from "lucide-react"; // Asegúrate de tener el ícono de lucide-react instalado
 
 export const LoginCard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [hasInput, setHasInput] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -73,13 +76,27 @@ export const LoginCard = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <Input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setHasInput(e.target.value.length > 0);
+              }}
+              required
+            />
+            {hasInput && (
+              <button
+                type="button"
+                className="absolute right-2 top-2"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+              </button>
+            )}
+          </div>
         </div>
         {error && (
           <p className="text-red-500 text-base text-center font-semibold">

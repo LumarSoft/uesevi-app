@@ -38,7 +38,7 @@ export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: any }) => {
         rol: "admin",
       });
       if (result.ok) {
-        onAdminAdded(result.data.newUser); // Asegúrate de que aquí se está llamando con los datos correctos
+        onAdminAdded(result.data.newUser); 
         setIsOpen(false);
         setFormData({
           email: "",
