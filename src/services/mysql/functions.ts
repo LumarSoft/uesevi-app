@@ -21,8 +21,8 @@ export const postData = async (
       data: postData,
     });
     return { ok: true, data: response };
-  } catch (error) {
-    return { ok: false, error };
+  } catch (error: any) {
+    return { ok: false, error: error.response?.data || error.message };
   }
 };
 

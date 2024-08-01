@@ -6,14 +6,18 @@ import { useRouter } from "next/navigation";
 import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
 import { setCookie } from "cookies-next";
+import LoadingSpinner from "./LoadingSpinner";
+
 export const LoginCard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await postData("login", {
@@ -44,6 +48,7 @@ export const LoginCard = () => {
     } catch (error: any) {
       console.error("Error en login:", error);
       setError("Error al iniciar sesión. Por favor, intente de nuevo.");
+      setLoading(false);
     }
   };
 
@@ -81,8 +86,8 @@ export const LoginCard = () => {
             {error}
           </p>
         )}
-        <Button type="submit" className="w-full">
-          Iniciar sesión
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? <LoadingSpinner /> : "Iniciar sesión"}
         </Button>
       </form>
     </div>

@@ -21,6 +21,7 @@ export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: any }) => {
     nombre: "",
     apellido: "",
     telefono: "",
+    created: new Date().toISOString(),
   });
   const [error, setError] = useState("");
 
@@ -30,14 +31,14 @@ export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: any }) => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setError("");
     try {
       const result = await postData("administradores/add-admin", {
         ...formData,
         rol: "admin",
       });
-      console.log(result.data.newUser);
       if (result.ok) {
-        onAdminAdded(result.data.newUser);
+        onAdminAdded(result.data.newUser); // Asegúrate de que aquí se está llamando con los datos correctos
         setIsOpen(false);
         setFormData({
           email: "",
@@ -45,11 +46,16 @@ export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: any }) => {
           nombre: "",
           apellido: "",
           telefono: "",
+          created: new Date().toISOString(),
         });
       } else {
-        console.error("Error al añadir administrador:", result.error);
+        if (result.error) {
+          setError(
+            "Error al añadir administrador. El correo electrónico ya está en uso."
+          );
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error);
     }
   };
@@ -67,6 +73,7 @@ export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: any }) => {
           <DialogTitle>Agregar Nuevo Administrador</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && <div className="text-red-500">{error}</div>}
           <div>
             <Label htmlFor="nombre">Nombre</Label>
             <Input
@@ -108,7 +115,6 @@ export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: any }) => {
               required
             />
           </div>
-
           <div>
             <Label htmlFor="password">Contraseña</Label>
             <Input
@@ -120,7 +126,6 @@ export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: any }) => {
               required
             />
           </div>
-
           <Button type="submit">Agregar</Button>
         </form>
       </DialogContent>
