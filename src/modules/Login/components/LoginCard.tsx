@@ -24,18 +24,22 @@ export const LoginCard = () => {
 
       console.log("Respuesta del servidor:", response);
 
-      if (response && response.token) {
-        userStore.getState().setAuth(response.token, response.user);
-        setCookie("auth-token", response.token);
+      if (response.ok && response.data) {
+        const { token, user } = response.data;
 
-        if (response.user.rol === "admin") {
+        userStore.getState().setAuth(token, user as any);
+        setCookie("auth-token", token);
+
+        if (user.rol === "admin") {
           router.replace("/admin/dashboard");
-          console.log(response.user.rol);
-        } else if (response.user.rol === "empresa") {
+          console.log(user.rol);
+        } else if (user.rol === "empresa") {
           router.replace("/admin/empresa/dashboard");
         } else {
           setError("Rol de usuario no reconocido");
         }
+      } else {
+        setError("Error al iniciar sesión. Por favor, intente de nuevo.");
       }
     } catch (error: any) {
       console.error("Error en login:", error);

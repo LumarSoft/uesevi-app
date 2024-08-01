@@ -20,9 +20,9 @@ export const postData = async (
       url: `/${endpoint}`,
       data: postData,
     });
-    return response;
+    return { ok: true, data: response };
   } catch (error) {
-    throw error;
+    return { ok: false, error };
   }
 };
 

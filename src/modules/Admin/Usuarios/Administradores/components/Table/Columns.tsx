@@ -37,6 +37,11 @@ export const createColumns = (
         </Button>
       );
     },
+    cell: ({ row }) => {
+      if (row.original.created)
+        return new Date(row.original.created).toLocaleDateString();
+      else return "Fecha no encontrada";
+    },
   },
   {
     accessorKey: "email",
