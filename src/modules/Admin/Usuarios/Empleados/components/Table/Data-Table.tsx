@@ -53,7 +53,7 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
-      columnFilters
+      columnFilters,
     },
   });
 
@@ -68,9 +68,9 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-      </div>
-      <div className="flex items-center py-4">
-       <Combobox data={data}/>
+        <div className="ml-4">
+          <Combobox data={data} />
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -115,7 +115,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Sin resultados..
                 </TableCell>
               </TableRow>
             )}

@@ -42,6 +42,20 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
     },
   },
   {
+    accessorKey: "email",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          E-mail
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
     accessorKey: "created",
     header: ({ column }) => {
       return (
@@ -66,6 +80,27 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
           Empresa
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "sindicato_activo",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Afiliado
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <span>
+          {row.original.sindicato_activo ? "Si" : "No"}
+        </span>
       );
     },
   }
