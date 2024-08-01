@@ -54,7 +54,7 @@ export const NavItems: NavItem[] = [
 
       {
         title: "Empleados",
-        href: "/usuarios/empleados",
+        href: "/admin/usuarios/empleados",
         icon: Pickaxe,
         color: "text-rose-500",
       },
