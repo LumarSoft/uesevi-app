@@ -57,9 +57,6 @@ export const LoginCard = () => {
 
   return (
     <div className="max-w-lg w-full space-y-8 bg-white p-10 rounded-lg border border-zinc-300">
-      <h1 className="text-black">administracion@uesevi.org.ar</h1>
-      <h1 className="text-black">Zuviria5975</h1>
-
       <div>
         <img
           className="mx-auto w-72"
