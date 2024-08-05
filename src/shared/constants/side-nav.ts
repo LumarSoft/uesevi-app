@@ -76,7 +76,7 @@ export const NavItems: NavItem[] = [
   {
     title: "Noticias",
     icon: Newspaper,
-    href: "/noticias",
+    href: "/admin/noticias",
     color: "text-green-500",
   },
   //Ahora escalas, cambiando el color del icono

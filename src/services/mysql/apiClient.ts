@@ -44,7 +44,26 @@ const httpMysqlClient = async ({
     }
   } catch (error) {
     console.error("Error en la solicitud:", error);
-    throw error; // Puedes personalizar el manejo de errores
+    if (axios.isAxiosError(error)) {
+      // Errores específicos de Axios
+      if (error.response) {
+        // El servidor respondió con un código de estado fuera del rango 2xx
+        console.error("Error en la respuesta de la API:", error.response.data);
+        return { error: "Error en la respuesta de la API", details: error.response.data };
+      } else if (error.request) {
+        // La solicitud fue hecha pero no hubo respuesta
+        console.error("No se recibió respuesta de la API:", error.request);
+        return { error: "No se recibió respuesta de la API" };
+      } else {
+        // Error al configurar la solicitud
+        console.error("Error al configurar la solicitud:", error.message);
+        return { error: "Error al configurar la solicitud" };
+      }
+    } else {
+      // Errores no específicos de Axios
+      console.error("Error desconocido:", error);
+      return { error: "Error desconocido" };
+    }
   }
 };
 
