@@ -28,7 +28,7 @@ const AdminEmpresasModule = ({ data }: { data: IEmpresa[] }) => {
           <h2 className="text-3xl font-bold tracking-tight">Empresas</h2>
         </div>
 
-        <DataTable columns={columns} data={empresas} />
+        <DataTable columns={columns} data={empresas} filterColumn="nombre" />
       </div>
     </div>
   );

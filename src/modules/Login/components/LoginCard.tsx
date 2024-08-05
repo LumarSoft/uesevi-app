@@ -7,7 +7,7 @@ import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
 import { setCookie } from "cookies-next";
 import LoadingSpinner from "./LoadingSpinner";
-import { EyeIcon, EyeOffIcon } from "lucide-react"; // Asegúrate de tener el ícono de lucide-react instalado
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 export const LoginCard = () => {
   const [email, setEmail] = useState("");
@@ -39,7 +39,6 @@ export const LoginCard = () => {
 
         if (user.rol === "admin") {
           router.replace("/admin/dashboard");
-          console.log(user.rol);
         } else if (user.rol === "empresa") {
           router.replace("/admin/empresa/dashboard");
         } else {
