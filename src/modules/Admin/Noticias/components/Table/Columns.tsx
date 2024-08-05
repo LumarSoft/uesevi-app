@@ -1,26 +1,12 @@
-"use client";
-
-import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { INoticias } from "@/shared/types/Querys/INoticias";
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
 import { Delete } from "../AlertDialogs/Delete";
 
-export const columns: ColumnDef<INoticias>[] = [
-  {
-    accessorKey: "id",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          ID
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
+export const createColumns = (
+  onDataDelete: (deleteItem: INoticias) => void
+): ColumnDef<INoticias>[] => [
   {
     accessorKey: "titulo",
     header: ({ column }) => {
@@ -36,6 +22,15 @@ export const columns: ColumnDef<INoticias>[] = [
     },
   },
   {
+    accessorKey: "cuerpo",
+    header: "Cuerpo",
+    cell: ({ row }) => {
+      return (
+        <p className="line-clamp-1 lowercase w-1/2">{row.original.cuerpo}</p>
+      );
+    },
+  },
+  {
     accessorKey: "created",
     header: ({ column }) => {
       return (
@@ -43,7 +38,7 @@ export const columns: ColumnDef<INoticias>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Fecha
+          Creado
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -53,14 +48,7 @@ export const columns: ColumnDef<INoticias>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      return (
-        <div className="flex gap-2">
-          <Button className="flex gap-2">
-            Ver <Eye />
-          </Button>
-          <Delete data={row.original} />
-        </div>
-      );
+      return <Delete data={row.original} onDataDelete={onDataDelete}/>;
     },
   },
 ];
