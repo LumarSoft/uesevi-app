@@ -83,7 +83,7 @@ export const NavItems: NavItem[] = [
   {
     title: "Escalas",
     icon: FileText,
-    href: "/escalas",
+    href: "/admin/escalas",
     color: "text-yellow-500",
   },
 

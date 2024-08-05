@@ -29,7 +29,7 @@ const AdminUsuariosModule = ({ data }: { data: IAdmin[] }) => {
           <AddAdmin onAdminAdded={handleAdminAdded} />
         </div>
 
-        <DataTable columns={columns} data={usuarios} />
+        <DataTable columns={columns} data={usuarios} filterColumn="nombre" />
       </div>
     </div>
   );
