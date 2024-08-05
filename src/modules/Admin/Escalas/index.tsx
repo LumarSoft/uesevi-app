@@ -4,6 +4,8 @@ import { useState } from "react";
 import { createColumns } from "@/modules/Admin/Escalas/Table/Columns";
 import { DataTable } from "@/modules/Admin/Usuarios/Empresas/components/Table/Data-Table";
 import { IEscalas } from "@/shared/types/IEscalas";
+import { Button } from "@/components/ui/button";
+import { File } from "lucide-react";
 
 const EscalasModule = ({ data }: { data: IEscalas[] }) => {
   const [escalas, setEscalas] = useState(data);
@@ -23,8 +25,12 @@ const EscalasModule = ({ data }: { data: IEscalas[] }) => {
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Escalas</h2>
         </div>
-
-        <DataTable columns={columns} data={escalas} filterColumn="nombre"/>
+        <Button className="w-full text-lg">
+          {" "}
+          <File className="w-5 h-5 mr-3" />
+          Nuevo archivo
+        </Button>
+        <DataTable columns={columns} data={escalas} filterColumn="nombre" />
       </div>
     </div>
   );

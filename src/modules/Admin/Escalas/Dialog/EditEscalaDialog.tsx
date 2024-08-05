@@ -83,7 +83,7 @@ export const EditEscalaDialog = ({
                 id="created"
                 name="created"
                 value={editedEscala.created}
-                onChange={handleInputChange}
+                disabled
               />
             </div>
           </div>
