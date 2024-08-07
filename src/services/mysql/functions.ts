@@ -21,15 +21,15 @@ export const fetchOneRow = async (endpoint: string, id: number) => {
   return data;
 };
 
-export const postData = async (
-  endpoint: string,
-  postData: Record<string, unknown>
-) => {
+export const postData = async (endpoint: string, postData: FormData) => {
   try {
     const response = await httpMysqlClient({
       method: "POST",
       url: `/${endpoint}`,
       data: postData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     return { ok: true, data: response };
   } catch (error: any) {

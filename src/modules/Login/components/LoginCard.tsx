@@ -23,13 +23,12 @@ export const LoginCard = () => {
     setLoading(true);
 
     try {
-      const response = await postData("login", {
-        email,
-        password,
-        rol: "admin",
-      });
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("rol", "admin");
 
-      console.log("Respuesta del servidor:", response);
+      const response = await postData("login", formData);
 
       if (response.ok && response.data) {
         const { token, user } = response.data;
