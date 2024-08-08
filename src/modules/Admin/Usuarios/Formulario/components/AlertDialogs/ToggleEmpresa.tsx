@@ -11,35 +11,27 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { updateData } from "@/services/mysql/functions";
+import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { IFormulario } from "@/shared/types/Querys/IFormulario";
 import { RefreshCcw } from "lucide-react";
-
-
+import { ComboboxEmpresas } from "./ComboBox";
+import { useState } from "react";
 
 export const ToggleEmpresa = ({
   data,
+  empresas,
   onDataUpdate,
 }: {
   data: IFormulario;
+  empresas: IEmpresa[];
   onDataUpdate: (updateItem: IFormulario) => void;
 }) => {
-  const handleChange = async () => {
-    const result = await updateData(
-      "empresas/change-empresa",
-      data.numero_socio,
-      {
-        empresa_provisoria_nombre: select.empresa_seleccionada,
-      }
-    );
 
-    if (result !== undefined && result !== null) {
-      onDataUpdate({
-        ...data,
-        empresa_provisoria_nombre: data.empresa_provisoria_nombre,
-      });
-    } else {
-      console.error("Failed to update empresa");
-    }
+  const [nuevaEmpresa, setNuevaEmpresa] = useState(setNuevaEmpresa)
+
+  const handleChange = () => {
+    updateData("formularios", data.numero_socio, { empresa_provisoria_nombre: nuevaEmpresa });
+    onDataUpdate({ ...data, empresa: 1 });
   };
 
   return (
@@ -56,16 +48,7 @@ export const ToggleEmpresa = ({
           </AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogDescription>
-          <select
-            value={selectedEmpresa}
-            onChange={(e) => setSelectedEmpresa(e.target.value)}
-          >
-            {empresas.map((empresa) => (
-              <option key={empresa.id} value={empresa.nombre}>
-                {empresa.nombre}
-              </option>
-            ))}
-          </select>
+          <ComboboxEmpresas empresas={empresas} onChange={setNuevaEmpresa}/>
         </AlertDialogDescription>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>

@@ -6,9 +6,12 @@ import { ToggleEmpresa } from "../AlertDialogs/ToggleEmpresa";
 import { Button } from "@/components/ui/button";
 import { IFormulario } from "@/shared/types/Querys/IFormulario";
 import { DialogComponent } from "../Dialog/Dialog";
+import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 
-export const createColumns = (): ColumnDef<IFormulario>[] => [
-  //combinar los campos nombre y apellido
+export const createColumns = (
+  onDataUpdate: (updatedItem: IFormulario) => void,
+  empresas: IEmpresa[]
+): ColumnDef<IFormulario>[] => [
   {
     accessorKey: "nombre",
     header: ({ column }) => {
@@ -78,7 +81,7 @@ export const createColumns = (): ColumnDef<IFormulario>[] => [
       return (
         <div className="flex gap-2">
           <DialogComponent data={row.original} />
-          <ToggleEmpresa data={row.original} />
+          <ToggleEmpresa data={row.original} empresas={empresas} onDataUpdate={onDataUpdate} />
         </div>
       );
     },
