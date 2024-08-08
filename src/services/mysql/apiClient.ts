@@ -1,7 +1,8 @@
+import { BASE_API_URL } from "@/shared/providers/envProvider";
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:3006",
+  baseURL: BASE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -49,7 +50,10 @@ const httpMysqlClient = async ({
       if (error.response) {
         // El servidor respondió con un código de estado fuera del rango 2xx
         console.error("Error en la respuesta de la API:", error.response.data);
-        return { error: "Error en la respuesta de la API", details: error.response.data };
+        return {
+          error: "Error en la respuesta de la API",
+          details: error.response.data,
+        };
       } else if (error.request) {
         // La solicitud fue hecha pero no hubo respuesta
         console.error("No se recibió respuesta de la API:", error.request);

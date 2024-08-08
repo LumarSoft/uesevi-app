@@ -1,6 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
-
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -22,15 +20,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "react-toastify";
+import { INoticias } from "@/shared/types/Querys/INoticias";
 
-export default function AddNoticiaModule() {
-  const [epigraph, setEpigraph] = useState("");
-  const [headline, setHeadline] = useState("");
-  const [body, setBody] = useState("");
-  const [secondBody, setSecondBody] = useState("");
-  const [images, setImages] = useState<File[]>([]);
-  const [pdf, setPdf] = useState<File | null>(null);
-  const [destinatario, setDestinatario] = useState("");
+export default function EditNoticiaModule({ data }: { data: INoticias }) {
+  const [headline, setHeadline] = useState(data.titulo);
+  const [epigraph, setEpigraph] = useState(data.epigrafe);
+  const [body, setBody] = useState(data.cuerpo);
+  const [secondBody, setSecondBody] = useState(data.cuerpo_secundario);
+  const [images, setImages] = useState<any[]>(data.images || []);
+  const [pdf, setPdf] = useState<string | null>(data.archivo || null);
+  const [destinatario, setDestinatario] = useState(data.destinatario || "");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -74,6 +73,8 @@ export default function AddNoticiaModule() {
       toast.success("Noticia añadida correctamente");
     }
   };
+
+  console.log(data);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 w-full ">
@@ -180,8 +181,8 @@ export default function AddNoticiaModule() {
             </div>
             {pdf && (
               <a
-                className=" flex gap-2 border w-fit px-4 py-2 rounded-full"
-                href={URL.createObjectURL(pdf)}
+                className="flex gap-2 border w-fit px-4 py-2 rounded-full"
+                href={pdf}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -195,7 +196,7 @@ export default function AddNoticiaModule() {
                     {images.map((img, index) => (
                       <CarouselItem key={index}>
                         <img
-                          src={URL.createObjectURL(img)}
+                          src={`http://localhost:3006/${img.nombre}`}
                           alt={`News Image ${index + 1}`}
                           className="rounded-md object-cover aspect-[16/9]"
                         />
