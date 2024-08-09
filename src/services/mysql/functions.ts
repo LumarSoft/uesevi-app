@@ -40,12 +40,15 @@ export const postData = async (endpoint: string, postData: FormData) => {
 export const updateData = async (
   endpoint: string,
   id: number,
-  updateData: Record<string, unknown>
+  updateData: FormData
 ) => {
   const response = await httpMysqlClient({
     method: "PUT",
     url: `/${endpoint}/${id}`,
     data: updateData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
   if (response.error) {
     console.error("Error al actualizar datos:", response.error);

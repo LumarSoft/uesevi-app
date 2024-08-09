@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+
 "use client";
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
@@ -6,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { File } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { postData } from "@/services/mysql/functions";
+import { postData, updateData } from "@/services/mysql/functions";
 import {
   Carousel,
   CarouselContent,
@@ -21,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "react-toastify";
 import { INoticias } from "@/shared/types/Querys/INoticias";
+import { BASE_API_URL } from "@/shared/providers/envProvider";
 
 export default function EditNoticiaModule({ data }: { data: INoticias }) {
   const [headline, setHeadline] = useState(data.titulo);
@@ -28,7 +31,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
   const [body, setBody] = useState(data.cuerpo);
   const [secondBody, setSecondBody] = useState(data.cuerpo_secundario);
   const [images, setImages] = useState<any[]>(data.images || []);
-  const [pdf, setPdf] = useState<string | null>(data.archivo || null);
+  const [pdf, setPdf] = useState<string | File | null>(data.archivo || null);
   const [destinatario, setDestinatario] = useState(data.destinatario || "");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,31 +53,23 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!headline || !epigraph || !body || !destinatario) {
-      toast.error("Por favor, rellene todos los campos");
-    }
-
     const formData = new FormData();
     formData.append("titulo", headline);
     formData.append("epigrafe", epigraph);
     formData.append("cuerpo", body);
-    formData.append("cuerpo2", secondBody);
+    formData.append("cuerpo2", secondBody || "");
     formData.append("destinatario", destinatario);
     if (pdf) {
       formData.append("pdf", pdf);
     }
     images.forEach((image) => {
-      formData.append("images", image); // Usa el mismo nombre para el campo de las imágenes
+      formData.append("images", image);
     });
 
-    const response = await postData("noticias/add-noticia", formData);
+    const res = await updateData("noticias/update-noticia", data.id, formData);
 
-    if (response.ok === true) {
-      toast.success("Noticia añadida correctamente");
-    }
+    console.log(res);
   };
-
-  console.log(data);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 w-full ">
@@ -182,7 +177,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
             {pdf && (
               <a
                 className="flex gap-2 border w-fit px-4 py-2 rounded-full"
-                href={pdf}
+                href={typeof pdf === "string" ? pdf : URL.createObjectURL(pdf)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -196,7 +191,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
                     {images.map((img, index) => (
                       <CarouselItem key={index}>
                         <img
-                          src={`http://localhost:3006/${img.nombre}`}
+                          src={`${BASE_API_URL}/${img.nombre}`}
                           alt={`News Image ${index + 1}`}
                           className="rounded-md object-cover aspect-[16/9]"
                         />
@@ -206,7 +201,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
                 </Carousel>
               ) : (
                 <img
-                  src={URL.createObjectURL(images[0])}
+                  src={`${BASE_API_URL}/${images[0].nombre}`}
                   alt="News Image"
                   className="rounded-md object-cover aspect-[16/9] mt-6"
                 />

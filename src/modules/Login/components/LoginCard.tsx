@@ -65,7 +65,7 @@ export const LoginCard = () => {
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-4">
           <p className="text-black">
-            administracion@uesevi.org.ar <p>Zuviria5975</p>
+            administracion@uesevi.org.ar <span>Zuviria5975</span>
           </p>
 
           <Input
