@@ -19,13 +19,6 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
         </Button>
       );
     },
-    cell: ({ row }) => {
-      return (
-        <span>
-          {row.original.nombre} {row.original.apellido}{" "}
-        </span>
-      );
-    },
   },
   {
     accessorKey: "cuil",
@@ -97,11 +90,7 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
       );
     },
     cell: ({ row }) => {
-      return (
-        <span>
-          {row.original.sindicato_activo ? "Si" : "No"}
-        </span>
-      );
+      return <span>{row.original.sindicato_activo ? "Si" : "No"}</span>;
     },
-  }
+  },
 ];
