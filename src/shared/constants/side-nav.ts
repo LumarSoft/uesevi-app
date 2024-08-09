@@ -59,12 +59,6 @@ export const NavItems: NavItem[] = [
         color: "text-rose-500",
       },
       {
-        title: "Busqueda por empresa",
-        href: "/usuarios/busqueda",
-        icon: Search,
-        color: "text-rose-500",
-      },
-      {
         title: "Formulario",
         href: "/admin/usuarios/formulario",
         icon: BookCopy,
