@@ -85,7 +85,7 @@ export const NavItems: NavItem[] = [
   {
     title: "Categorías",
     icon: BookUser,
-    href: "/categorias",
+    href: "/admin/categorias",
     color: "text-blue-500",
   },
   // Otro color
