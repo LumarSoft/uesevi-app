@@ -23,7 +23,7 @@ export const fetchOneRow = async (endpoint: string, id: number) => {
 
 export const postData = async (
   endpoint: string,
-  postData: Record<string, unknown>
+  postData: FormData
 ) => {
   try {
     const response = await httpMysqlClient({
@@ -40,7 +40,7 @@ export const postData = async (
 export const updateData = async (
   endpoint: string,
   id: number,
-  updateData: Record<string, unknown>
+  updateData: FormData
 ) => {
   const response = await httpMysqlClient({
     method: "PUT",
