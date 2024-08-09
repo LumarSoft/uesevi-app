@@ -1,3 +1,5 @@
+export const revalidate = 1;
+
 import httpMysqlClient from "./apiClient";
 
 export const fetchData = async (endpoint: string): Promise<any> => {

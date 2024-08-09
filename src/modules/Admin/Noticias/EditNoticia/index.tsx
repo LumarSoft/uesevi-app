@@ -1,14 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { File } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { postData, updateData } from "@/services/mysql/functions";
+import { updateData } from "@/services/mysql/functions";
 import {
   Carousel,
   CarouselContent,
@@ -33,9 +33,6 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
   const [images, setImages] = useState<any[]>(data.images || []);
   const [pdf, setPdf] = useState<string | File | null>(data.archivo || null);
   const [destinatario, setDestinatario] = useState(data.destinatario || "");
-
-  console.log(pdf)
-
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -62,16 +59,26 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
     formData.append("cuerpo", body);
     formData.append("cuerpo2", secondBody || "");
     formData.append("destinatario", destinatario);
-    if (pdf) {
-      formData.append("pdf", pdf);
-    }
+
+    // Añade nuevas imágenes
     images.forEach((image) => {
       formData.append("images", image);
     });
 
+    // Añade el archivo PDF
+    if (pdf) {
+      formData.append("pdf", pdf);
+    }
+
     const res = await updateData("noticias/update-noticia", data.id, formData);
 
     console.log(res);
+
+    if (res.affectedRows > 0) {
+      toast.success("Noticia actualizada correctamente");
+    } else {
+      toast.error("Ocurrió un error al actualizar la noticia");
+    }
   };
 
   return (
@@ -180,7 +187,11 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
             {pdf && (
               <a
                 className="flex gap-2 border w-fit px-4 py-2 rounded-full"
-                href={typeof pdf === "string" ? `${BASE_API_URL}/${pdf}` : URL.createObjectURL(pdf)}
+                href={
+                  typeof pdf === "string"
+                    ? `${BASE_API_URL}/${pdf}`
+                    : URL.createObjectURL(pdf)
+                }
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -194,7 +205,11 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
                     {images.map((img, index) => (
                       <CarouselItem key={index}>
                         <img
-                          src={`${BASE_API_URL}/${img.nombre}`}
+                          src={
+                            img.type
+                              ? URL.createObjectURL(img)
+                              : `${BASE_API_URL}/${img.nombre}`
+                          }
                           alt={`News Image ${index + 1}`}
                           className="rounded-md object-cover aspect-[16/9]"
                         />
@@ -204,7 +219,11 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
                 </Carousel>
               ) : (
                 <img
-                  src={`${BASE_API_URL}/${images[0].nombre}`}
+                  src={
+                    images[0].type
+                      ? URL.createObjectURL(images[0])
+                      : `${BASE_API_URL}/${images[0].nombre}`
+                  }
                   alt="News Image"
                   className="rounded-md object-cover aspect-[16/9] mt-6"
                 />
