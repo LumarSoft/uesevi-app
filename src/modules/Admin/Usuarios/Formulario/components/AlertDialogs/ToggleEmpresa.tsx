@@ -10,12 +10,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { updateData } from "@/services/mysql/functions";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { IFormulario } from "@/shared/types/Querys/IFormulario";
 import { RefreshCcw } from "lucide-react";
 import { ComboboxEmpresas } from "./ComboBox";
 import { useState } from "react";
+import { updateData } from "@/services/mysql/functions";
 
 export const ToggleEmpresa = ({
   data,
@@ -26,12 +26,18 @@ export const ToggleEmpresa = ({
   empresas: IEmpresa[];
   onDataUpdate: (updateItem: IFormulario) => void;
 }) => {
-
-  const [nuevaEmpresa, setNuevaEmpresa] = useState(setNuevaEmpresa)
+  const [nuevaEmpresa, setNuevaEmpresa] = useState(
+    data.empresa_provisoria_nombre
+  );
 
   const handleChange = () => {
-    updateData("formularios", data.numero_socio, { empresa_provisoria_nombre: nuevaEmpresa });
-    onDataUpdate({ ...data, empresa: 1 });
+    updateData("formulario/change-empresa", data.numero_socio, {
+      empresa_provisoria_nombre: nuevaEmpresa,
+    });
+    onDataUpdate({
+      ...data,
+      empresa_provisoria_nombre: nuevaEmpresa,
+    });
   };
 
   return (
@@ -48,7 +54,10 @@ export const ToggleEmpresa = ({
           </AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogDescription>
-          <ComboboxEmpresas empresas={empresas} onChange={setNuevaEmpresa}/>
+          <ComboboxEmpresas
+            empresas={empresas}
+            onChangeEmpresa={setNuevaEmpresa}
+          />
         </AlertDialogDescription>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>

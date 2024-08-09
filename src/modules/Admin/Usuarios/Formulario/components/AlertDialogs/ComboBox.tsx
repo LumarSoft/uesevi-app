@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
+import * as React from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -12,18 +12,25 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { IEmpresa } from "@/shared/types/Querys/IEmpresa"
+} from "@/components/ui/popover";
+import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 
-export function ComboboxEmpresas({empresas, onChange}: {empresas: IEmpresa[], onChange: (value: string) => void}) {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
+export function ComboboxEmpresas({
+  empresas,
+  onChangeEmpresa,
+}: {
+  empresas: IEmpresa[];
+  onChangeEmpresa: (value: string) => void;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
 
+  
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -34,7 +41,9 @@ export function ComboboxEmpresas({empresas, onChange}: {empresas: IEmpresa[], on
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-        {value ? empresas.find((empresa) => empresa.nombre === value)?.nombre : "Seleccionar empresa..."}
+          {value
+            ? empresas.find((empresa) => empresa.nombre === value)?.nombre
+            : "Select framework..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -49,8 +58,9 @@ export function ComboboxEmpresas({empresas, onChange}: {empresas: IEmpresa[], on
                   key={empresa.id}
                   value={empresa.nombre}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
-                    setOpen(false)
+                    setValue(currentValue === value ? "" : currentValue);
+                    setOpen(false);
+                    onChangeEmpresa(currentValue);
                   }}
                 >
                   <Check
@@ -67,5 +77,5 @@ export function ComboboxEmpresas({empresas, onChange}: {empresas: IEmpresa[], on
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
