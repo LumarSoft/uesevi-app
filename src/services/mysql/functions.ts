@@ -1,3 +1,5 @@
+export const revalidate = 1;
+
 import httpMysqlClient from "./apiClient";
 
 export const fetchData = async (endpoint: string): Promise<any> => {
@@ -21,15 +23,15 @@ export const fetchOneRow = async (endpoint: string, id: number) => {
   return data;
 };
 
-export const postData = async (
-  endpoint: string,
-  postData: FormData
-) => {
+export const postData = async (endpoint: string, postData: FormData) => {
   try {
     const response = await httpMysqlClient({
       method: "POST",
       url: `/${endpoint}`,
       data: postData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     return { ok: true, data: response };
   } catch (error: any) {
@@ -46,6 +48,9 @@ export const updateData = async (
     method: "PUT",
     url: `/${endpoint}/${id}`,
     data: updateData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
   if (response.error) {
     console.error("Error al actualizar datos:", response.error);

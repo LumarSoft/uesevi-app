@@ -14,9 +14,17 @@ import { deleteData } from "@/services/mysql/functions";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { Trash2 } from "lucide-react";
 
-export const Delete = ({ data }: { data: IEmpresa }) => {
+export const Delete = ({
+  data,
+  onDataDelete,
+}: {
+  data: IEmpresa;
+  onDataDelete: (updateItem: IEmpresa) => void;
+}) => {
   const handleDelete = async () => {
     const result = await deleteData("empresas/delete", data.id);
+
+    onDataDelete(data);
   };
 
   return (

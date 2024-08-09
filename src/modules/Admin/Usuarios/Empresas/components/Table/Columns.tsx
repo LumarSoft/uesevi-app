@@ -104,7 +104,7 @@ export const createColumns = (
         <div className="flex gap-2">
           <DialogComponent data={row.original} />
           <ToggleStatus data={row.original} onDataUpdate={onDataUpdate}/>
-          <Delete data={row.original} />
+          <Delete data={row.original} onDataDelete={onDataDelete}/>
         </div>
       );
     },

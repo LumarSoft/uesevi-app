@@ -1,10 +1,14 @@
 export interface INoticias {
   id: number;
   titulo: string;
+  epigrafe: string;
   cuerpo: string;
-  portada: string;
   created: Date;
   modified: Date;
-  principal: number;
-  archivo: string;
+  principal?: number;
+  archivo?: string;
+  portada?: string;
+  destinatario?: string;
+  cuerpo_secundario?: string;
+  images?: any[];
 }
