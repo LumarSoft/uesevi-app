@@ -30,7 +30,6 @@ export function ComboboxEmpresas({
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -59,7 +58,9 @@ export function ComboboxEmpresas({
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
                     setOpen(false);
-                    onChangeFilterCombobox(currentValue);
+                    onChangeFilterCombobox(
+                      currentValue === value ? "" : currentValue
+                    );
                   }}
                 >
                   <Check

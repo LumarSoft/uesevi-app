@@ -62,7 +62,7 @@ export function DataTable<TData, TValue>({
 
   const onChangeFilterCombobox = (currentValue: string) => {
     table.getColumn("nombre_empresa")?.setFilterValue(currentValue);
-  }
+  };
 
   return (
     <div>
