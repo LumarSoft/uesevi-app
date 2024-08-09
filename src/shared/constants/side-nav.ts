@@ -83,16 +83,16 @@ export const NavItems: NavItem[] = [
 
   //Ahora categorias
   {
-    title: "Categorias",
+    title: "Categorías",
     icon: BookUser,
     href: "/categorias",
     color: "text-blue-500",
   },
   // Otro color
   {
-    title: "Tasa de interes",
+    title: "Tasa de interés",
     icon: Percent,
-    href: "/interes",
+    href: "/admin/tasa",
     color: "text-red-500",
   },
   {
