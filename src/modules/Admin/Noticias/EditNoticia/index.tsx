@@ -34,6 +34,9 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
   const [pdf, setPdf] = useState<string | File | null>(data.archivo || null);
   const [destinatario, setDestinatario] = useState(data.destinatario || "");
 
+  console.log(pdf)
+
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -177,7 +180,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
             {pdf && (
               <a
                 className="flex gap-2 border w-fit px-4 py-2 rounded-full"
-                href={typeof pdf === "string" ? pdf : URL.createObjectURL(pdf)}
+                href={typeof pdf === "string" ? `${BASE_API_URL}/${pdf}` : URL.createObjectURL(pdf)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
