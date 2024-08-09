@@ -26,16 +26,19 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
-import { Combobox } from "./Combobox";
+import { ComboboxEmpresas } from "./Combobox";
+import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  empresas: IEmpresa[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  empresas,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -57,6 +60,10 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const onChangeFilterCombobox = (currentValue: string) => {
+    table.getColumn("nombre_empresa")?.setFilterValue(currentValue);
+  }
+
   return (
     <div>
       <div className="flex items-center py-4">
@@ -69,7 +76,10 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
         <div className="ml-4">
-          <Combobox data={data} />
+          <ComboboxEmpresas
+            empresas={empresas}
+            onChangeFilterCombobox={onChangeFilterCombobox}
+          />
         </div>
       </div>
       <div className="rounded-md border">

@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
+import * as React from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -12,19 +12,24 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { filterEmpresas } from "@/shared/utils/filterEmpresas"
+} from "@/components/ui/popover";
+import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 
-export function Combobox({ data }: { data: any[] }) {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
+export function ComboboxEmpresas({
+  empresas,
+  onChangeFilterCombobox,
+}: {
+  empresas: IEmpresa[];
+  onChangeFilterCombobox: (value: string) => void;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
 
-  const empresas = filterEmpresas(data)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -33,36 +38,37 @@ export function Combobox({ data }: { data: any[] }) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[400px] justify-between"
         >
           {value
-            ? empresas.find((empresa) => empresa.value === value)?.label
-            : "Seleccionar empresa..."}
+            ? empresas.find((empresa) => empresa.nombre === value)?.nombre
+            : "Selecciona una empresa..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[300px] p-0">
         <Command>
-          <CommandInput placeholder="Buscar empresa..." />
-          <CommandEmpty>No se encontraron empresas.</CommandEmpty>
+          <CommandInput placeholder="Busca una empresa" />
           <CommandList>
+            <CommandEmpty>Empresa no encontrada</CommandEmpty>
             <CommandGroup>
               {empresas.map((empresa) => (
                 <CommandItem
-                  key={empresa.value}
-                  value={empresa.value}
+                  key={empresa.id}
+                  value={empresa.nombre}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
-                    setOpen(false)
+                    setValue(currentValue === value ? "" : currentValue);
+                    setOpen(false);
+                    onChangeFilterCombobox(currentValue);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === empresa.value ? "opacity-100" : "opacity-0"
+                      value === empresa.nombre ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {empresa.label}
+                  {empresa.nombre}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -70,5 +76,5 @@ export function Combobox({ data }: { data: any[] }) {
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
