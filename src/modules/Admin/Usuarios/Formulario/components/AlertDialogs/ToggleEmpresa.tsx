@@ -10,51 +10,55 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { updateData } from "@/services/mysql/functions";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
+import { IFormulario } from "@/shared/types/Querys/IFormulario";
 import { RefreshCcw } from "lucide-react";
+import { ComboboxEmpresas } from "./ComboBox";
+import { useState } from "react";
+import { updateData } from "@/services/mysql/functions";
 
-export const ToggleStatus = ({
+export const ToggleEmpresa = ({
   data,
+  empresas,
   onDataUpdate,
 }: {
-  data: IEmpresa;
-  onDataUpdate: (updateItem: IEmpresa) => void;
+  data: IFormulario;
+  empresas: IEmpresa[];
+  onDataUpdate: (updateItem: IFormulario) => void;
 }) => {
+  const [nuevaEmpresa, setNuevaEmpresa] = useState(
+    data.empresa_provisoria_nombre
+  );
 
-  const handleChange = async () => {
-    const result = await updateData("empresas/change-state", data.id, {
-      estado: data.estado === "Activo" ? "Inactivo" : "Activo",
+  const handleChange = () => {
+    updateData("formulario/change-empresa", data.numero_socio, {
+      empresa_provisoria_nombre: nuevaEmpresa,
     });
-
-    if (result !== undefined && result !== null) {
-      onDataUpdate({
-        ...data,
-        estado: data.estado === "Activo" ? "Inactivo" : "Activo",
-      });
-    } else {
-      console.error("Failed to update status");
-    }
+    onDataUpdate({
+      ...data,
+      empresa_provisoria_nombre: nuevaEmpresa,
+    });
   };
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button className="flex gap-2">
-          Estado <RefreshCcw />
+          Empresa <RefreshCcw />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Estas seguro de cambiar el estado?
+            Seleccione la empresa a la que pertenece el socio
           </AlertDialogTitle>
-          <AlertDialogDescription>
-            Esto cambiara el estado de la empresa {data.nombre} a{" "}
-            {data.estado === "Activo" ? "Inactivo" : "Activo"} dentro del
-            sistema.
-          </AlertDialogDescription>
         </AlertDialogHeader>
+        <AlertDialogDescription>
+          <ComboboxEmpresas
+            empresas={empresas}
+            onChangeEmpresa={setNuevaEmpresa}
+          />
+        </AlertDialogDescription>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction onClick={handleChange}>

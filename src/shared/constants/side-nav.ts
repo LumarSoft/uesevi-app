@@ -66,7 +66,7 @@ export const NavItems: NavItem[] = [
       },
       {
         title: "Formulario",
-        href: "/usuarios/formulario",
+        href: "/admin/usuarios/formulario",
         icon: BookCopy,
         color: "text-rose-500",
       },
