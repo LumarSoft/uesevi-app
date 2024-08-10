@@ -26,8 +26,7 @@ export const Delete = ({
     const result = await deleteData("noticias/delete-noticia", data.id);
 
     if (result && result.warningStatus > 0) {
-      toast.error("Error al eliminar datos:", result);
-      return;
+      return toast.error("Error al eliminar datos:", result);
     }
 
     onDataDelete(data);
@@ -38,7 +37,7 @@ export const Delete = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-      <Button className="bg-red-600 hover:bg-red-700 text-white flex gap-2">
+        <Button className="bg-red-600 hover:bg-red-700 text-white flex gap-2">
           Eliminar <Trash2 />
         </Button>
       </AlertDialogTrigger>

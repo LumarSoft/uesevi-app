@@ -1,5 +1,3 @@
-"use client";
-import React, { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,51 +10,73 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { postData } from "@/services/mysql/functions";
+import { Label } from "@/components/ui/label";
+import { updateData } from "@/services/mysql/functions";
+import { ICategoria } from "@/shared/types/Querys/ICategorias";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
-export const AddCategoria = () => {
-  const [nombre, setNombre] = useState("");
-  const [sueldo, setSueldo] = useState(0);
+export const ProgramCategory = ({
+  data,
+  onDataUpdate,
+}: {
+  data: ICategoria;
+  onDataUpdate: (deleteItem: ICategoria) => void;
+}) => {
+  const [fechaCambio, setFechaCambio] = useState<string | null>(
+    data.fecha_vigencia
+  );
+  const [sueldoFuturo, setSueldoFuturo] = useState<string | null>(
+    data.sueldo_futuro
+  );
 
-  const handleSubmit = async () => {
-    if (!nombre || !sueldo) {
-      return toast.error("Por favor, llene todos los campos");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fechaCambio || !sueldoFuturo) {
+      return;
     }
 
     const formData = new FormData();
-    formData.append("nombre", nombre);
-    formData.append("sueldo", sueldo.toString());
+    formData.append("sueldo_futuro", sueldoFuturo);
+    formData.append("fecha_futuro", fechaCambio);
 
-    const result = await postData("categorias/add-categoria", formData);
+    const result = await updateData(
+      "categorias/salario-futuro",
+      data.id,
+      formData
+    );
 
-    if (result.ok === true){
-        toast.success("Categoria agregada correctamente");
+    if (result.affectedRows > 0) {
+      onDataUpdate({
+        ...data,
+        sueldo_futuro: sueldoFuturo,
+        fecha_vigencia: fechaCambio,
+      });
+      toast.success("Programado con exito");
     }
-
   };
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button>Agregar categoria</Button>
+        <Button>Programar</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <form onSubmit={handleSubmit}>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-center text-2xl">
-              Agregar categoria
+              Programar categoria
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center">
-              Se agregara una nueva categoria a la base de datos
+              Programa una categoria para un futuro
             </AlertDialogDescription>
             <div className="grid w-full  items-center gap-1.5">
-              <Label>Nombre de la categoria</Label>
+              <Label>Fecha vigencia del sueldo futuro</Label>
               <Input
                 placeholder="Nombre"
-                onChange={(e) => setNombre(e.target.value)}
+                type="date"
+                onChange={(e) => setFechaCambio(e.target.value)}
               />
             </div>
             <div className="grid w-full  items-center gap-1.5">
@@ -64,7 +84,8 @@ export const AddCategoria = () => {
               <Input
                 placeholder="Sueldo"
                 type="number"
-                onChange={(e) => setSueldo(Number(e.target.value))}
+                value={sueldoFuturo || ""}
+                onChange={(e) => setSueldoFuturo(e.target.value.toString())}
               />
             </div>
           </AlertDialogHeader>
