@@ -34,7 +34,7 @@ export default function CategoriasModule({ data }: { data: ICategoria[] }) {
           <AddCategoria />
         </div>
 
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={categoria} />
       </div>
     </div>
   );

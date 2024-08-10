@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { DeleteCategoria } from "../Dialog/DeleteCategoria";
 import EditCategoria from "../Dialog/EditCategoria";
+import { ProgramCategory } from "../Dialog/ProgramCategory";
 
 export const createColumns = (
   onDataDelete: (deleteItem: ICategoria) => void,
@@ -70,6 +71,29 @@ export const createColumns = (
       );
     },
   },
+  {
+    accessorKey: "fecha_vigencia",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Vigencia del sueldo futuro
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <p>
+          {row.original.fecha_vigencia
+            ? row.original.fecha_vigencia
+            : "No definido"}
+        </p>
+      );
+    },
+  },
 
   {
     accessorKey: "modified",
@@ -91,8 +115,9 @@ export const createColumns = (
     cell: ({ row }) => {
       return (
         <div className="flex gap-4">
-          <EditCategoria data={row.original} />
-          <DeleteCategoria data={row.original} />
+          <ProgramCategory data={row.original} onDataUpdate={onDataUpdate} />
+          <EditCategoria data={row.original} onDateUpdate={onDataUpdate} />
+          <DeleteCategoria data={row.original} onDataDelete={onDataDelete} />
         </div>
       );
     },

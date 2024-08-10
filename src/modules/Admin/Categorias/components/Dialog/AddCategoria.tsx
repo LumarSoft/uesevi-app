@@ -14,13 +14,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { postData } from "@/services/mysql/functions";
+import { toast } from "react-toastify";
 
 export const AddCategoria = () => {
   const [nombre, setNombre] = useState("");
   const [sueldo, setSueldo] = useState(0);
 
-  const handleSubmit = () => {
-    console.log(nombre, sueldo);
+  const handleSubmit = async () => {
+    if (!nombre || !sueldo) {
+      return toast.error("Por favor, llene todos los campos");
+    }
+
+    const formData = new FormData();
+    formData.append("nombre", nombre);
+    formData.append("sueldo", sueldo.toString());
+
+    const result = await postData("categorias/add-categoria", formData);
+
+    if (result.ok === true){
+        toast.success("Categoria agregada correctamente");
+    }
+
   };
 
   return (

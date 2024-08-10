@@ -10,9 +10,28 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { deleteData } from "@/services/mysql/functions";
 import { ICategoria } from "@/shared/types/Querys/ICategorias";
+import { toast } from "react-toastify";
 
-export const DeleteCategoria = ({ data }: { data: ICategoria }) => {
+export const DeleteCategoria = ({
+  data,
+  onDataDelete,
+}: {
+  data: ICategoria;
+  onDataDelete: (deleteItem: ICategoria) => void;
+}) => {
+  const handleDelete = async () => {
+    const result = await deleteData("categorias/delete-categoria", data.id);
+
+    if (result && result.warningStatus > 0) {
+      return toast.error("Error al eliminar datos:", result);
+    }
+
+    onDataDelete(data);
+
+    toast.success("Categoria eliminada correctamente");
+  };
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -20,15 +39,19 @@ export const DeleteCategoria = ({ data }: { data: ICategoria }) => {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>
+            Estas seguro de eliminar la categoria: {data.nombre}?
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            Estas a punto de eliminar la categoria {data.nombre} de forma
+            permanente. Esta accion no se puede deshacer.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete}>
+            Continuar
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
