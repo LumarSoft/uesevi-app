@@ -17,7 +17,11 @@ const EscalasModule = ({ data }: { data: IEscalas[] }) => {
     setEscalas(newData);
   };
 
-  const columns = createColumns(handleUpdate);
+  const handleDelete = (deleteItem: IEscalas) => {
+    const newData = escalas.filter((item) => item.id !== deleteItem.id);
+    setEscalas(newData);
+  };
+  const columns = createColumns(handleUpdate, handleDelete);
 
   return (
     <div className="flex h-full flex-col">

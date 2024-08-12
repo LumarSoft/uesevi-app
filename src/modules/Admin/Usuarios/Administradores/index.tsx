@@ -24,7 +24,7 @@ const AdminUsuariosModule = ({ data }: { data: IAdmin[] }) => {
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
+        <div className="flex flex-col items-center justify-between space-y-2 sm:flex-row sm:items-center">
           <h2 className="text-3xl font-bold tracking-tight">Administradores</h2>
           <AddAdmin onAdminAdded={handleAdminAdded} />
         </div>
