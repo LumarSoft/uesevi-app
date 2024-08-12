@@ -13,9 +13,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { postData } from "@/services/mysql/functions";
 
-export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: any }) => {
+// Define the type for the form data
+interface FormData {
+  email: string;
+  password: string;
+  nombre: string;
+  apellido: string;
+  telefono: string;
+  created: string;
+}
+
+export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: (newUser: any) => void }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
     nombre: "",
@@ -25,18 +35,23 @@ export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: any }) => {
   });
   const [error, setError] = useState("");
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+
+    // Crear una nueva instancia de FormData
+    const formDataObj = new FormData();
+    for (const key in formData) {
+      formDataObj.append(key, formData[key as keyof FormData]);
+    }
+    formDataObj.append("rol", "admin");
+
     try {
-      const result = await postData("administradores/add-admin", {
-        ...formData,
-        rol: "admin",
-      });
+      const result = await postData("administradores/add-admin", formDataObj);
       if (result.ok) {
         onAdminAdded(result.data.newUser); 
         setIsOpen(false);

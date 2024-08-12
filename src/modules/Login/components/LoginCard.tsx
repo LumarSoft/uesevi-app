@@ -23,13 +23,12 @@ export const LoginCard = () => {
     setLoading(true);
 
     try {
-      const response = await postData("login", {
-        email,
-        password,
-        rol: "admin",
-      });
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("rol", "admin");
 
-      console.log("Respuesta del servidor:", response);
+      const response = await postData("login", formData);
 
       if (response.ok && response.data) {
         const { token, user } = response.data;
@@ -65,6 +64,10 @@ export const LoginCard = () => {
       </div>
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-4">
+          <p className="text-black">
+            administracion@uesevi.org.ar <span>Zuviria5975</span>
+          </p>
+
           <Input
             type="email"
             placeholder="Correo electrónico"

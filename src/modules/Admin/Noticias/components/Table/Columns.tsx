@@ -3,6 +3,7 @@ import { INoticias } from "@/shared/types/Querys/INoticias";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Delete } from "../AlertDialogs/Delete";
+import Link from "next/link";
 
 export const createColumns = (
   onDataDelete: (deleteItem: INoticias) => void
@@ -48,7 +49,14 @@ export const createColumns = (
   {
     id: "actions",
     cell: ({ row }) => {
-      return <Delete data={row.original} onDataDelete={onDataDelete}/>;
+      return (
+        <div className="flex gap-4">
+          <Link href={`/admin/noticias/edit-noticia/${row.original.id}`}>
+            <Button variant="secondary">Editar</Button>
+          </Link>
+          <Delete data={row.original} onDataDelete={onDataDelete} />
+        </div>
+      );
     },
   },
 ];
