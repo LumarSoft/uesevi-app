@@ -54,19 +54,13 @@ export const NavItems: NavItem[] = [
 
       {
         title: "Empleados",
-        href: "/usuarios/empleados",
+        href: "/admin/usuarios/empleados",
         icon: Pickaxe,
         color: "text-rose-500",
       },
       {
-        title: "Busqueda por empresa",
-        href: "/usuarios/busqueda",
-        icon: Search,
-        color: "text-rose-500",
-      },
-      {
         title: "Formulario",
-        href: "/usuarios/formulario",
+        href: "/admin/usuarios/formulario",
         icon: BookCopy,
         color: "text-rose-500",
       },
@@ -89,16 +83,16 @@ export const NavItems: NavItem[] = [
 
   //Ahora categorias
   {
-    title: "Categorias",
+    title: "Categorías",
     icon: BookUser,
-    href: "/categorias",
+    href: "/admin/categorias",
     color: "text-blue-500",
   },
   // Otro color
   {
-    title: "Tasa de interes",
+    title: "Tasa de interés",
     icon: Percent,
-    href: "/interes",
+    href: "/admin/tasa",
     color: "text-red-500",
   },
   {

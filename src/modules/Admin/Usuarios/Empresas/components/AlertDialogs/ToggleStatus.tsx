@@ -21,6 +21,7 @@ export const ToggleStatus = ({
   data: IEmpresa;
   onDataUpdate: (updateItem: IEmpresa) => void;
 }) => {
+
   const handleChange = async () => {
     const result = await updateData("empresas/change-state", data.id, {
       estado: data.estado === "Activo" ? "Inactivo" : "Activo",

@@ -22,7 +22,6 @@ export const createColumns = (
         </Button>
       );
     },
-    cell: ({ row }) => `${row.original.nombre} ${row.original.apellido}`,
   },
   {
     accessorKey: "created",
