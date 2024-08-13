@@ -3,6 +3,7 @@ import { fetchData } from "@/services/mysql/functions";
 
 export default async function Escalas() {
   const result = await fetchData("escalas");
+  console.log(result);
 
   if (result) {
     return <EscalasModule data={result} />;
