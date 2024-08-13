@@ -13,38 +13,40 @@ import { Label } from "@radix-ui/react-label";
 import { File } from "lucide-react";
 import { postData } from "@/services/mysql/functions";
 import { toast } from "react-toastify";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-export const UploadEscalaDialog = ({
-  onUploadSuccess,
-}: {
-  onUploadSuccess: (result: any) => void;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const UploadEscalaDialog = ({ id }: { id: number }) => {
   const [nombre, setNombre] = useState("");
   const [archivo, setArchivo] = useState<File | null>(null);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
     if (!nombre) {
-      toast.error("Por favor, ingrese un nombre.");
-      return;
+      return toast.error("Por favor, ingrese un nombre.");
     } else if (!archivo) {
-      toast.error("Por favor, seleccione un archivo.");
-      return;
+      return toast.error("Por favor, seleccione un archivo.");
     }
 
     const formData = new FormData();
+    formData.append("id", id.toString());
     formData.append("nombre", nombre);
-    formData.append("archivo", archivo);
+    formData.append("pdf", archivo);
 
     try {
       const result = await postData("escalas/create", formData);
+      console.log(result);
       if (result.ok) {
-        onUploadSuccess(result.data.escala);
-        setIsOpen(false);
-        setNombre("");
-        setArchivo(null);
+        toast.success("Archivo subido correctamente.");
       } else {
         setError("Error al subir el archivo. Por favor, inténtelo de nuevo.");
       }
@@ -55,20 +57,11 @@ export const UploadEscalaDialog = ({
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="w-full text-lg">
-          <File className="w-5 h-5 mr-3" />
-          Nuevo archivo
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-semibold">
-            Subir Nueva Escala
-          </DialogTitle>
-        </DialogHeader>
-
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button>Agregar categoria</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid w-full items-center gap-1.5">
@@ -90,11 +83,12 @@ export const UploadEscalaDialog = ({
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button type="submit">Subir archivo</Button>
-          </DialogFooter>
+          <AlertDialogFooter className="mt-4">
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction type="submit">Guardar</AlertDialogAction>
+          </AlertDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
