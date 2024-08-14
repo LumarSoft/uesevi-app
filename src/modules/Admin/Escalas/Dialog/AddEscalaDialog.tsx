@@ -18,14 +18,11 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export const UploadEscalaDialog = ({ id }: { id: number }) => {
+export const AddEscalaDialog = ({ id }: { id: number }) => {
   const [nombre, setNombre] = useState("");
   const [archivo, setArchivo] = useState<File | null>(null);
   const [error, setError] = useState("");
