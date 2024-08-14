@@ -20,11 +20,10 @@ const EscalasModule = ({ data }: { data: IEscalas[] }) => {
     setEscalas(newData);
   };
 
-  const handleUploadSuccess = (newEscala: IEscalas) => {
-    setEscalas([newEscala, ...escalas]);
-  };
-
   const columns = createColumns(handleUpdate, handleDelete);
+
+  //Conseguir el ultimo id de la data
+  const lastId = data[0].id + 1;
 
   return (
     <div className="flex h-full flex-col">
@@ -32,7 +31,7 @@ const EscalasModule = ({ data }: { data: IEscalas[] }) => {
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Escalas</h2>
         </div>
-        <UploadEscalaDialog onUploadSuccess={handleUploadSuccess} />
+        <UploadEscalaDialog id={lastId} />
         <DataTable columns={columns} data={escalas} filterColumn="nombre" />
       </div>
     </div>
