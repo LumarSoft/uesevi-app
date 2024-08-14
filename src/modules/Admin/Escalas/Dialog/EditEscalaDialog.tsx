@@ -31,12 +31,13 @@ export const EditEscalaDialog = ({
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
+      formData.append("nombre", editedEscala.nombre);
+
       const result = await updateData(
         "escalas/update-escala",
         editedEscala.id,
-        {
-          ...editedEscala,
-        }
+        formData
       );
       if (result) {
         onDataUpdate(editedEscala);
@@ -82,7 +83,7 @@ export const EditEscalaDialog = ({
                 type="text"
                 id="created"
                 name="created"
-                value={editedEscala.created}
+                value={editedEscala.created.toString()}
                 disabled
               />
             </div>
