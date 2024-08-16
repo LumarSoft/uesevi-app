@@ -1,6 +1,8 @@
 import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
 import SearchCard from "./components/Search/SearchCard";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
+import { DataTable } from "../Categorias/components/Table/Data-Table";
+import { createColumns } from "./components/Table/Columns";
 
 export default function AntiguasModule({
   empleados,
@@ -9,6 +11,14 @@ export default function AntiguasModule({
   empleados: IEmpleado[];
   empresas: IEmpresa[];
 }) {
+
+  const handleView = (empresa: IEmpresa) => {
+    console.log("Ver detalles de la empresa:", empresa);
+    // Implementa la lógica para mostrar detalles aquí, como abrir un modal
+  };
+
+  const columns = createColumns(handleView);
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -22,6 +32,7 @@ export default function AntiguasModule({
           previamente a la fecha: <b>28/10/2021</b>
         </p>
         <SearchCard empleados={empleados} empresas={empresas} />
+        <DataTable columns={columns} data={empresas} />
       </div>
     </div>
   );

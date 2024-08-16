@@ -1,3 +1,4 @@
+"use client"
 import AntiguasModule from "@/modules/Admin/Antiguas";
 import { fetchData } from "@/services/mysql/functions";
 
