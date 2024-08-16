@@ -23,7 +23,7 @@ export const ComboboxEmpleado = ({ empleados }: { empleados: IEmpleado[] }) => {
   const [value, setValue] = React.useState("");
   return (
     <div className="space-y-2 w-full">
-      <Label htmlFor="date-range">Desde y hasta</Label>
+      <Label htmlFor="date-range">Empleados</Label>
       <div className={cn("grid gap-2")}>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -34,21 +34,21 @@ export const ComboboxEmpleado = ({ empleados }: { empleados: IEmpleado[] }) => {
               className="w-full justify-between"
             >
               {value
-                ? empleados.find((empresa) => empresa.nombre === value)?.nombre
-                : "Selecciona una empresa..."}
+                ? empleados.find((empleado) => empleado.nombre === value)?.nombre
+                : "Selecciona un empleado..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[300px] p-0">
             <Command>
-              <CommandInput placeholder="Busca una empresa" />
+              <CommandInput placeholder="Busca un empleado" />
               <CommandList>
-                <CommandEmpty>Empresa no encontrada</CommandEmpty>
+                <CommandEmpty>Empleado no encontrado</CommandEmpty>
                 <CommandGroup>
-                  {empleados.map((empresa) => (
+                  {empleados.map((empleado) => (
                     <CommandItem
-                      key={empresa.id}
-                      value={empresa.nombre}
+                      key={empleado.cuil}
+                      value={empleado.nombre}
                       onSelect={(currentValue) => {
                         setValue(currentValue === value ? "" : currentValue);
                         setOpen(false);
@@ -57,10 +57,10 @@ export const ComboboxEmpleado = ({ empleados }: { empleados: IEmpleado[] }) => {
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          value === empresa.nombre ? "opacity-100" : "opacity-0"
+                          value === empleado.nombre ? "opacity-100" : "opacity-0"
                         )}
                       />
-                      {empresa.nombre}
+                      {empleado.nombre}
                     </CommandItem>
                   ))}
                 </CommandGroup>
