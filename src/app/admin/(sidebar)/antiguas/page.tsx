@@ -4,9 +4,11 @@ import { fetchData } from "@/services/mysql/functions";
 export default async function Antiguas() {
   const result = await fetchData("antiguas");
 
-  console.log(result);
+  const empleados = ['empleado1', 'empleado2', 'empleado3'];
+  const empresas = ['empresa1', 'empresa2', 'empresa3'];
+
   if (result) {
-    return <AntiguasModule/>;
+    return <AntiguasModule empleados={empleados} empresas={empresas}/>;
   } else {
     return <div>Error: al solicitar los datos</div>;
   }
