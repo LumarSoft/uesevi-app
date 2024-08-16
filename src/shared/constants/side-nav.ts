@@ -105,13 +105,13 @@ export const NavItems: NavItem[] = [
       // Una para declaraciones juradas y otra para declaraciones juradas antiguas
       {
         title: "Declaraciones juradas",
-        href: "/declaraciones/declaraciones",
+        href: "/admin/declaraciones",
         icon: Scroll,
         color: "text-indigo-500",
       },
       {
         title: "Declaraciones antiguas",
-        href: "/declaraciones/antiguas",
+        href: "/admin/antiguas",
         icon: BookMarked,
         color: "text-indigo-500",
       },
