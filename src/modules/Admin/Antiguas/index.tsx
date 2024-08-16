@@ -1,4 +1,14 @@
-export default function AntiguasModule() {
+import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
+import SearchCard from "./components/Search/SearchCard";
+import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
+
+export default function AntiguasModule({
+  empleados,
+  empresas,
+}: {
+  empleados: IEmpleado[];
+  empresas: IEmpresa[];
+}) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -11,6 +21,7 @@ export default function AntiguasModule() {
           Desde aquí, se podrán acceder a todas las antiguas DDJJ generadas
           previamente a la fecha: <b>28/10/2021</b>
         </p>
+        <SearchCard empleados={empleados} empresas={empresas} />
       </div>
     </div>
   );
