@@ -13,7 +13,6 @@ import { Label } from "@radix-ui/react-label";
 import { Pencil } from "lucide-react";
 import React, { useState } from "react";
 import { updateData } from "@/services/mysql/functions";
-import { Select } from "@/components/ui/select";
 export const EditAdminDialog = ({
   data,
   onDataUpdate,
