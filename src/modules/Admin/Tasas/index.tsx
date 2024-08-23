@@ -11,20 +11,29 @@ const TasasModule = ({ data }: { data: ITasas[] }) => {
   const [tasas, setTasas] = useState(data);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    console.log("Input change value:", value); // Log del valor del input
     const updatedTasas = tasas.map((item) =>
-      item.id === tasas[0].id ? { ...item, porcentaje: e.target.value } : item
+      item.id === tasas[0].id ? { ...item, porcentaje: value } : item
     );
     setTasas(updatedTasas);
+    console.log("Updated tasas state:", updatedTasas); // Log del estado actualizado
   };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    const tasaActualizada = tasas[0]; // Toma la primera tasa (puedes ajustar según lo necesario)
+    console.log("Tasa actualizada para enviar:", tasaActualizada); // Log de la tasa a enviar
+
     const formData = new FormData();
-    formData.append("porcentaje", tasas[0].porcentaje);
+    formData.append("porcentaje", tasaActualizada.porcentaje);
+
     try {
-      await updateData("tasas/update-tasa", tasas[0].id, formData);
+      console.log("Sending request with formData:", formData); // Log antes de enviar la solicitud
+      await updateData("tasas/update-tasa", tasaActualizada.id, formData);
       toast.success("Tasa actualizada correctamente");
     } catch (error) {
+      toast.error("Error al actualizar la tasa");
       console.error("Error al actualizar la tasa:", error);
     }
   };

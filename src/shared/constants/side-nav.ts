@@ -111,7 +111,7 @@ export const NavItems: NavItem[] = [
       },
       {
         title: "Declaraciones antiguas",
-        href: "/declaraciones/antiguas",
+        href: "/admin/antiguas",
         icon: BookMarked,
         color: "text-indigo-500",
       },
