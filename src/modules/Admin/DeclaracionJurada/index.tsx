@@ -1,6 +1,8 @@
 import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
 import SearchCard from "./components/Search/SearchCard";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
+import { DataTable } from "./components/Table/Data-Table";
+import { columns } from "./components/Table/columns";
 
 export default function DeclaracionesModule({
   empleados,
@@ -18,6 +20,7 @@ export default function DeclaracionesModule({
           </h2>
         </div>
         <SearchCard empleados={empleados} empresas={empresas} />
+        <DataTable columns={columns} data={[]} filterColumn="nombre_empresa" />
       </div>
     </div>
   );

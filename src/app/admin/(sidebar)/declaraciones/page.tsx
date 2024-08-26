@@ -1,4 +1,4 @@
-import DeclaracionJuradaModule from "@/modules/Admin/DeclaracionJurada";
+import DeclaracionesModule from "@/modules/Admin/DeclaracionJurada";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function Declaraciones() {
@@ -6,5 +6,8 @@ export default async function Declaraciones() {
 
   const empresas = await fetchData("empresas");
 
-  return <DeclaracionJuradaModule empleados={empleados} empresas={empresas}/>;
+  const declaraciones = await fetchData("declaraciones");
+
+
+  return <DeclaracionesModule empleados={empleados} empresas={empresas} />;
 }

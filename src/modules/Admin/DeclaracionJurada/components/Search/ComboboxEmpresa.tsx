@@ -23,10 +23,9 @@ export const ComboboxEmpresa = ({ empresas }: { empresas: IEmpresa[] }) => {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
-
   return (
     <div className="space-y-2 w-full">
-      <Label htmlFor="date-range">Desde y hasta</Label>
+      <Label htmlFor="date-range">Empresa</Label>
       <div className={cn("grid gap-2")}>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
