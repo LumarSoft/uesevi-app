@@ -1,12 +1,14 @@
+import { Navbar } from "@/shared/components/Navbar/Navbar";
+
 export default function ClientLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-      <p>Navbar</p>
+    <main className="overflow-x-hidden">
+      <Navbar />
       {children}
-    </div>
+    </main>
   );
 }
