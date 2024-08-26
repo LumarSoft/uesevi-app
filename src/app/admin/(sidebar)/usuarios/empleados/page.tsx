@@ -8,7 +8,7 @@ export default async function AdminEmpleados() {
 
 
   if (result) {
-    return <AdminEmpleadosModule data={result} empresas={empresas}/>;
+    return <AdminEmpleadosModule data={result} empresas={empresas} />;
   } else {
     return <div>Error: Error al consultar los datos</div>;
   }
