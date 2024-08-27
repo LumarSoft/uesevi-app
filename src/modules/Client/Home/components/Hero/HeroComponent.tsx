@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
+import Link from "next/link";
 import React from "react";
 
 export const HeroComponent = () => {
@@ -9,10 +10,12 @@ export const HeroComponent = () => {
         <FramerComponent
           style="flex flex-col items-center"
           animationInitial={{ x: -200, opacity: 0 }}
-          animationAnimate={{ x: 0, opacity: 1,  }}
+          animationAnimate={{ x: 0, opacity: 1 }}
         >
           <img src="/logo_uesevi.png" alt="" className="w-3/4" />
-          <Button className="w-1/2 mt-4">Ultimas noticias</Button>
+          <Button className="w-1/2 mt-4">
+            <Link href={"/noticias"}>Ultimas noticias</Link>
+          </Button>
         </FramerComponent>
       </div>
       <FramerComponent
