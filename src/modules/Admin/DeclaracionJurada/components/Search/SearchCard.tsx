@@ -46,7 +46,7 @@ export default function SearchCard({
 
           <ComboboxEmpresa empresas={empresas} />
 
-          <ComboboxEmpleado empleados={empleados}/>
+          <ComboboxEmpleado empleados={empleados} />
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">

@@ -22,20 +22,20 @@ export const ToggleStatus = ({
   onDataUpdate: (updateItem: IEmpresa) => void;
 }) => {
 
-  const handleChange = async () => {
-    const result = await updateData("empresas/change-state", data.id, {
-      estado: data.estado === "Activo" ? "Inactivo" : "Activo",
-    });
+  // const handleChange = async () => {
+  //   const result = await updateData("empresas/change-state", data.id, {
+  //     estado: data.estado === "Activo" ? "Inactivo" : "Activo",
+  //   });
 
-    if (result !== undefined && result !== null) {
-      onDataUpdate({
-        ...data,
-        estado: data.estado === "Activo" ? "Inactivo" : "Activo",
-      });
-    } else {
-      console.error("Failed to update status");
-    }
-  };
+  //   if (result !== undefined && result !== null) {
+  //     onDataUpdate({
+  //       ...data,
+  //       estado: data.estado === "Activo" ? "Inactivo" : "Activo",
+  //     });
+  //   } else {
+  //     console.error("Failed to update status");
+  //   }
+  // };
 
   return (
     <AlertDialog>
@@ -57,7 +57,7 @@ export const ToggleStatus = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={handleChange}>
+          <AlertDialogAction>
             Continuar
           </AlertDialogAction>
         </AlertDialogFooter>
