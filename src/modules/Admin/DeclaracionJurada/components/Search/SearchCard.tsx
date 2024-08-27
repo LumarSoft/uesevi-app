@@ -7,7 +7,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
 import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
@@ -28,8 +28,10 @@ export default function SearchCard({
     from: new Date(2022, 0, 20),
     to: addDays(new Date(2022, 0, 20), 20),
   });
-  const [company, setCompany] = useState<string | undefined>();
-  const [employee, setEmployee] = useState<string | undefined>();
+  const [company, setCompany] = useState<string | IEmpresa>("");
+  const [employee, setEmployee] = useState<string | IEmpleado>("");
+
+  const handleFilter = () => {};
 
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
@@ -44,16 +46,24 @@ export default function SearchCard({
         <CardContent className="flex-1 flex gap-4">
           <CalendarComponent date={date} setDate={setDate} />
 
-          <ComboboxEmpresa empresas={empresas} />
+          <ComboboxEmpresa
+            empresas={empresas}
+            company={company}
+            setCompany={setCompany}
+          />
 
-          <ComboboxEmpleado empleados={empleados} />
+          <ComboboxEmpleado
+            empleados={empleados}
+            employee={employee}
+            setEmployee={setEmployee}
+          />
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">
           <Button variant="destructive" className="flex-1">
             Limpiar
           </Button>
-          <Button variant="default" className="flex-1">
+          <Button variant="default" className="flex-1" onClick={handleFilter}>
             Buscar
           </Button>
         </CardFooter>
