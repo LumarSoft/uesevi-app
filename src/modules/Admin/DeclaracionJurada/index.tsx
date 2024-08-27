@@ -6,18 +6,20 @@ import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { DataTable } from "./components/Table/Data-Table";
 import { createColumns } from "./components/Table/columns";
 import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
+import { IContratos } from "@/shared/types/Querys/IContratos";
+import { useState } from "react";
 
 export default function DeclaracionesModule({
-  empleados,
   empresas,
   declaraciones,
+  contratos,
 }: {
-  empleados: IEmpleado[];
   empresas: IEmpresa[];
   declaraciones: IDeclaracion[];
+  contratos: IContratos[];
 }) {
+  const [declaracionesState, setDeclaracionesState] = useState(declaraciones);
   const columns = createColumns();
-
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -26,12 +28,13 @@ export default function DeclaracionesModule({
             Declaraciones Juradas
           </h2>
         </div>
-        <SearchCard empleados={empleados} empresas={empresas} />
-        <DataTable
-          columns={columns}
-          data={declaraciones || []}
-          filterColumn="nombre_empresa"
+        <SearchCard
+          empresas={empresas}
+          contratos={contratos}
+          declaraciones={declaraciones}
+          setDeclaracionesState={setDeclaracionesState}
         />
+        <DataTable columns={columns} data={declaracionesState || []} />
       </div>
     </div>
   );
