@@ -1,14 +1,7 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import CardNoticias from "@/shared/components/CardNoticias/CardNoticias";
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
 import { INoticias } from "@/shared/types/Querys/INoticias";
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -50,7 +43,9 @@ const LatestNews = ({ noticias }: { noticias: INoticias[] }) => {
       animationViewPort={{ once: true, offset: 0.4 }}
     >
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-8 text-center">Latest News</h2>
+        <h2 className="text-3xl font-bold mb-8 text-center">
+          Ultimas noticias
+        </h2>
         <FramerComponent
           style="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8"
           animationVariants={container}
@@ -64,37 +59,12 @@ const LatestNews = ({ noticias }: { noticias: INoticias[] }) => {
               animationInitial={{ opacity: 0, y: 50 }}
               animationVariants={itemAnimado}
             >
-              <Card className="flex flex-col h-full">
-                <CardHeader>
-                  <CardTitle className="text-xl line-clamp-2">
-                    {noticia.titulo}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow flex flex-col">
-                  <div className="relative h-48 mb-4">
-                    <Image
-                      src={"/logo_uesevi.png"}
-                      alt={noticia.titulo}
-                      layout="fill"
-                      objectFit="cover"
-                      className="rounded-lg"
-                    />
-                  </div>
-                  <p className="text-sm flex-grow line-clamp-4">
-                    {noticia.cuerpo}
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="outline" className="w-full">
-                    Leer mas
-                  </Button>
-                </CardFooter>
-              </Card>
+              <CardNoticias noticia={noticia}/>
             </FramerComponent>
           ))}
         </FramerComponent>
         <div className="text-center">
-          <Link href="/news">
+          <Link href="/noticias">
             <Button>Ver mas noticias</Button>
           </Link>
         </div>

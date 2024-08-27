@@ -1,5 +1,6 @@
 import Header from "@/shared/components/Header/Header";
 import Sidebar from "@/shared/components/Sidebar/Sidebar";
+import { ThemeProvider } from "next-themes";
 
 export default function SidebarLayout({
   children,
@@ -7,7 +8,7 @@ export default function SidebarLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <ThemeProvider attribute="class" defaultTheme="system">
       <Header />
       <div className="flex h-screen border-collapse overflow-hidden">
         <Sidebar />
@@ -15,6 +16,6 @@ export default function SidebarLayout({
           {children}
         </main>
       </div>
-    </>
+    </ThemeProvider>
   );
 }
