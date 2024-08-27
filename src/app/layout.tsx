@@ -5,8 +5,6 @@ import { cn } from "@/lib/utils";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { ThemeProvider } from "next-themes";
-
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -30,10 +28,8 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="system">
-          {children}
-          <ToastContainer />
-        </ThemeProvider>
+        {children}
+        <ToastContainer />
       </body>
     </html>
   );
