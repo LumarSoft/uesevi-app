@@ -3,6 +3,7 @@
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation"; // Importa usePathname
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +14,7 @@ import { Menu } from "lucide-react";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname(); // Obtener la ruta actual
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,8 +36,14 @@ export const Navbar = () => {
     };
   }, []);
 
+  // Verificar si la ruta actual es "/"
+  const isHomePage = pathname === "/";
+
+  // Mostrar la navbar condicionalmente en la página de inicio
+  const shouldShowNavbar = isHomePage ? scrolled : true;
+
   return (
-    scrolled && (
+    shouldShowNavbar && (
       <FramerComponent
         style={`w-full top-0 flex justify-between items-center px-4 md:px-28 2xl:px-80 2xl:h-20 fixed z-20 transition-shadow duration-500 bg-white ${
           scrolled ? "shadow-xl" : ""
