@@ -8,30 +8,54 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
-import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { CalendarComponent } from "./Calendar";
 import { ComboboxEmpresa } from "./ComboboxEmpresa";
 import { Button } from "@/components/ui/button";
 import { ComboboxEmpleado } from "./ComboboxEmpleado";
+import { filterDeclaraciones } from "@/shared/utils/filterDeclaraciones";
+import { IContratos } from "@/shared/types/Querys/IContratos";
+import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
+import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
+import { fetchData } from "@/services/mysql/functions";
 
 export default function SearchCard({
-  empleados,
   empresas,
+  contratos,
+  declaraciones,
+  setDeclaracionesState,
 }: {
-  empleados: IEmpleado[];
   empresas: IEmpresa[];
+  contratos: IContratos[];
+  declaraciones: IDeclaracion[];
+  setDeclaracionesState: React.Dispatch<React.SetStateAction<IDeclaracion[]>>;
 }) {
-  const [date, setDate] = useState<DateRange | undefined>({
+  const [date, setDate] = useState<{ from: Date; to: Date }>({
     from: new Date(2022, 0, 20),
     to: addDays(new Date(2022, 0, 20), 20),
   });
-  const [company, setCompany] = useState<string | IEmpresa>("");
-  const [employee, setEmployee] = useState<string | IEmpleado>("");
 
-  const handleFilter = () => {};
+  const [company, setCompany] = useState<number | null>(null);
+
+  const [idEmployee, setIdEmployee] = useState<number | null>(null);
+
+  const [empleados, setEmpleados] = useState<IEmpleado[] | []>([]);
+
+  useEffect(() => {
+    const empleadosDeEsaEmpresa = fetchData()
+  }, [company]);
+
+  const handleFilter = () => {
+    const filtrado = filterDeclaraciones(
+      date,
+      company,
+      idEmployee,
+      contratos,
+      declaraciones
+    );
+    setDeclaracionesState(filtrado);
+  };
 
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
@@ -52,11 +76,7 @@ export default function SearchCard({
             setCompany={setCompany}
           />
 
-          <ComboboxEmpleado
-            empleados={empleados}
-            employee={employee}
-            setEmployee={setEmployee}
-          />
+          {/* <ComboboxEmpleado empleados={empleados} setEmployee={setIdEmployee} /> */}
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">

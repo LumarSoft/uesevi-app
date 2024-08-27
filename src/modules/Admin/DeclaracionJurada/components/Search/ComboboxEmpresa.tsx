@@ -25,11 +25,10 @@ export const ComboboxEmpresa = ({
   setCompany,
 }: {
   empresas: IEmpresa[];
-  company: string | IEmpresa;
-  setCompany: (companyitem: string | IEmpresa) => void;
+  company: number | null;
+  setCompany: (companyitem: number | null) => void;
 }) => {
   const [open, setOpen] = React.useState(false);
-
 
   return (
     <div className="space-y-2 w-full">
@@ -44,7 +43,7 @@ export const ComboboxEmpresa = ({
               className="w-full justify-between"
             >
               {company
-                ? empresas.find((empresa) => empresa.nombre === company)?.nombre
+                ? empresas.find((empresa) => empresa.id === company)?.nombre
                 : "Selecciona una empresa..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
@@ -58,16 +57,16 @@ export const ComboboxEmpresa = ({
                   {empresas.map((empresa) => (
                     <CommandItem
                       key={empresa.id}
-                      value={empresa.nombre}
-                      onSelect={(currentcompany) => {
-                        setCompany(currentcompany === company ? "" : currentcompany);
+                      value={String(empresa.id)}
+                      onSelect={() => {
+                        setCompany(company === empresa.id ? null : empresa.id);
                         setOpen(false);
                       }}
                     >
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          company === empresa.nombre ? "opacity-100" : "opacity-0"
+                          company === empresa.id ? "opacity-100" : "opacity-0"
                         )}
                       />
                       {empresa.nombre}
