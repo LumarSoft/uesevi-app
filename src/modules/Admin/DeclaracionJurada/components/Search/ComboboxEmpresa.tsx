@@ -19,9 +19,17 @@ import { cn } from "@/lib/utils";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { Label } from "@/components/ui/label";
 
-export const ComboboxEmpresa = ({ empresas }: { empresas: IEmpresa[] }) => {
+export const ComboboxEmpresa = ({
+  empresas,
+  company,
+  setCompany,
+}: {
+  empresas: IEmpresa[];
+  company: string | IEmpresa;
+  setCompany: (companyitem: string | IEmpresa) => void;
+}) => {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+
 
   return (
     <div className="space-y-2 w-full">
@@ -35,8 +43,8 @@ export const ComboboxEmpresa = ({ empresas }: { empresas: IEmpresa[] }) => {
               aria-expanded={open}
               className="w-full justify-between"
             >
-              {value
-                ? empresas.find((empresa) => empresa.nombre === value)?.nombre
+              {company
+                ? empresas.find((empresa) => empresa.nombre === company)?.nombre
                 : "Selecciona una empresa..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
@@ -51,15 +59,15 @@ export const ComboboxEmpresa = ({ empresas }: { empresas: IEmpresa[] }) => {
                     <CommandItem
                       key={empresa.id}
                       value={empresa.nombre}
-                      onSelect={(currentValue) => {
-                        setValue(currentValue === value ? "" : currentValue);
+                      onSelect={(currentcompany) => {
+                        setCompany(currentcompany === company ? "" : currentcompany);
                         setOpen(false);
                       }}
                     >
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          value === empresa.nombre ? "opacity-100" : "opacity-0"
+                          company === empresa.nombre ? "opacity-100" : "opacity-0"
                         )}
                       />
                       {empresa.nombre}

@@ -34,7 +34,7 @@ export function SideNav({ items, setOpen, className }: SideNavProps) {
       setLastOpenItem(openItem);
       setOpenItem("");
     }
-  }, [isOpen, lastOpenItem, openItem]);
+  }, [isOpen]);
 
   return (
     <nav className="space-y-2">
