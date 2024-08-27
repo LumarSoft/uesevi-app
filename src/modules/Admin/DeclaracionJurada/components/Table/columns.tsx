@@ -1,13 +1,9 @@
-"use client"
+"use client";
 
-import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion"
-import { ColumnDef } from "@tanstack/react-table"
+import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
+import { ColumnDef } from "@tanstack/react-table";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-
-
-export const columns: ColumnDef<IDeclaracion>[] = [
+export const createColumns = (): ColumnDef<IDeclaracion>[] => [
   {
     accessorKey: "nombre_empresa",
     header: "Empresa",
@@ -16,5 +12,26 @@ export const columns: ColumnDef<IDeclaracion>[] = [
     accessorKey: "cuit_empresa",
     header: "Cuit",
   },
-  
-]
+  {
+    accessorKey: "mes",
+    header: "Mes",
+  },
+  {
+    accessorKey: "year",
+    header: "Año",
+  },
+  {
+    accessorKey: "fecha",
+    header: "Fecha de presentación",
+  },
+  {
+    accessorKey: "estado",
+    header: "Estado",
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      return <></>;
+    },
+  },
+];

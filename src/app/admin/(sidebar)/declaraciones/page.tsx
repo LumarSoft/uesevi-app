@@ -8,6 +8,11 @@ export default async function Declaraciones() {
 
   const declaraciones = await fetchData("declaraciones");
 
-
-  return <DeclaracionesModule empleados={empleados} empresas={empresas} />;
+  return (
+    <DeclaracionesModule
+      empleados={empleados}
+      empresas={empresas}
+      declaraciones={declaraciones}
+    />
+  );
 }
