@@ -13,12 +13,12 @@ import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { CalendarComponent } from "./Calendar";
 import { ComboboxEmpresa } from "./ComboboxEmpresa";
 import { Button } from "@/components/ui/button";
-import { ComboboxEmpleado } from "./ComboboxEmpleado";
 import { filterDeclaraciones } from "@/shared/utils/filterDeclaraciones";
 import { IContratos } from "@/shared/types/Querys/IContratos";
 import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
 import { fetchData } from "@/services/mysql/functions";
+import { ComboboxEmpleado } from "./ComboboxEmpleado";
 
 export default function SearchCard({
   empresas,
@@ -37,13 +37,24 @@ export default function SearchCard({
   });
 
   const [company, setCompany] = useState<number | null>(null);
-
   const [idEmployee, setIdEmployee] = useState<number | null>(null);
-
   const [empleados, setEmpleados] = useState<IEmpleado[] | []>([]);
 
+  const fetchEmpleadosByEmpresa = async (company: number) => {
+    try {
+      const result = await fetchData(`empleados/getByEmpresa/${company}`);
+      setEmpleados(result);
+      console.log(result);
+    } catch (error) {
+      console.error("Error fetching empleados:", error);
+    }
+  };
+
   useEffect(() => {
-    const empleadosDeEsaEmpresa = fetchData()
+    if (company !== null) {
+      fetchEmpleadosByEmpresa(company);
+      console.log(company);
+    }
   }, [company]);
 
   const handleFilter = () => {
@@ -76,7 +87,7 @@ export default function SearchCard({
             setCompany={setCompany}
           />
 
-          {/* <ComboboxEmpleado empleados={empleados} setEmployee={setIdEmployee} /> */}
+          <ComboboxEmpleado empleados={empleados} setEmployee={setIdEmployee} />
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">
