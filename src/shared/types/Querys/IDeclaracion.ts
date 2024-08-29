@@ -11,7 +11,7 @@ export interface IDeclaracion {
   importe: string;
   vencimiento?: null;
   fecha_pago?: string | null;
-  estado?: null;
+  estado?: number | null;
   pago_parcial?: null;
   sueldo_basico: number;
   created: Date;
