@@ -23,25 +23,23 @@ const AboutUs = () => {
         </div>
       </FramerComponent>
       <FramerComponent
-        style="flex flex-col gap-2 lg:pt-24 lg:max-w-lg"
+        style="flex flex-col gap-2  lg:max-w-lg"
         animationInitial={{ x: 200, opacity: 0 }}
         animationWhileInView={{ x: 0, opacity: 1 }}
         animationViewPort={{ once: true, offset: 0.4 }}
       >
-        <h3 className="text-[#5f92cc] font-semibold text-2xl">MISIÓN</h3>
+        <h3 className="text-[#5f92cc] font-semibold text-2xl">Titulo 1</h3>
         <p className="text-neutral-400">
-          END Servicios Aeronauticos S.R.L. se ha transformado en una empresa
-          con trayectoria en los ensayos no destructivos en ramas tales como el
-          Mantenimiento de Estructuras, Motores, Hélices y componentes
-          aeronáuticos.{" "}
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Maxime modi
+          iste facilis eligendi asperiores laborum officia nemo beatae impedit,
+          natus saepe consequuntur iure eius perspiciatis debitis explicabo enim
+          dolor ex.
         </p>
         <h2 className="text-xl lg:text-2xl font-semibold">
-          Somos una empresa con responsabilidad profesional, y nuestra meta
-          principal es satisfacer los requerimientos de nuestros Clientes con la
-          mayor calidad disponible en el área y permitiendo innovar en los
-          métodos con una permanente Asistencia Técnica y Asesoramiento de
-          nuestros profesionales. Todos nuestros trabajos son realizados por
-          especialistas calificados y de basta experiencia operativa.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio, quia
+          labore. Dignissimos ex adipisci optio libero, quam suscipit architecto
+          velit quas vel cupiditate voluptatem veritatis distinctio assumenda ad
+          consectetur odit.
         </h2>
       </FramerComponent>
     </div>
