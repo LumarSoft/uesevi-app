@@ -5,6 +5,8 @@ import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye } from "lucide-react";
 import { StateDialog } from "../Dialog/StateDialog";
+import InteresesDialog from "../Dialog/InteresesDialog";
+import Link from "next/link";
 
 export const createColumns = (
   changeState: (updateItem: IDeclaracion) => void
@@ -46,30 +48,12 @@ export const createColumns = (
     cell: ({ row }) => {
       return (
         <div className="flex gap-3">
-          <StateDialog declaracion={row.original} changeState={changeState}/>
+          <StateDialog declaracion={row.original} changeState={changeState} />
+          <InteresesDialog declaracion={row.original} />
           <Button>
-            <Eye />
-          </Button>
-          <Button>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-chart-no-axes-combined"
-            >
-              <path d="M12 16v5" />
-              <path d="M16 14v7" />
-              <path d="M20 10v11" />
-              <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15" />
-              <path d="M4 18v3" />
-              <path d="M8 14v7" />
-            </svg>
+            <Link href={`/admin/declaraciones/${row.original.id}`}>
+              <Eye />
+            </Link>
           </Button>
         </div>
       );
