@@ -19,7 +19,16 @@ export default function DeclaracionesModule({
   contratos: IContratos[];
 }) {
   const [declaracionesState, setDeclaracionesState] = useState(declaraciones);
-  const columns = createColumns();
+
+  const changeState = (updatedItem: IDeclaracion) => {
+    const newData = declaracionesState.map((item) =>
+      item.id === updatedItem.id ? updatedItem : item
+    );
+    setDeclaracionesState(newData);
+  };
+
+  const columns = createColumns(changeState);
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
