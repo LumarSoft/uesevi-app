@@ -20,7 +20,7 @@ const CardNoticias = ({ noticia }: { noticia: INoticias }) => {
       <CardContent className="flex-grow flex flex-col">
         <div className="relative h-48 mb-4">
           <Image
-            src={"/logo_uesevi.png"}
+            src={noticia.portada ? `https://uesevi.org.ar/img/news/main/${noticia.portada}` : "/logo_uesevi.png"}
             alt={noticia.titulo}
             layout="fill"
             objectFit="cover"
