@@ -1,23 +1,33 @@
+"use client";
+
 import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
 import SearchCard from "./components/Search/SearchCard";
-import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
-import { DataTable } from "../Categorias/components/Table/Data-Table";
-import { createColumns } from "./components/Table/Columns";
+import { IOldEmpresa } from "@/shared/types/Querys/IOldEmpresa";
+import { DataTable } from "./components/Table/Data-Table";
+import { createColumns } from "./components/Table/columns";
+import { IOldDeclaracion } from "@/shared/types/Querys/IOldDeclaracion";
+import { IOldContratos } from "@/shared/types/Querys/IOldContratos";
+import { useState } from "react";
 
-export default function AntiguasModule({
-  empleados,
+export default function DeclaracionesModule({
   empresas,
+  declaraciones,
+  contratos,
 }: {
-  empleados: IEmpleado[];
-  empresas: IEmpresa[];
+  empresas: IOldEmpresa[];
+  declaraciones: IOldDeclaracion[];
+  contratos: IOldContratos[];
 }) {
+  const [declaracionesState, setDeclaracionesState] = useState(declaraciones);
 
-  const handleView = (empresa: IEmpresa) => {
-    console.log("Ver detalles de la empresa:", empresa);
-    // Implementa la lógica para mostrar detalles aquí, como abrir un modal
+  const changeState = (updatedItem: IOldDeclaracion) => {
+    const newData = declaracionesState.map((item) =>
+      item.id === updatedItem.id ? updatedItem : item
+    );
+    setDeclaracionesState(newData);
   };
 
-  const columns = createColumns(handleView);
+  const columns = createColumns(changeState);
 
   return (
     <div className="flex h-full flex-col">
@@ -27,12 +37,14 @@ export default function AntiguasModule({
             Declaraciones Juradas Antiguas
           </h2>
         </div>
-        <p>
-          Desde aquí, se podrán acceder a todas las antiguas DDJJ generadas
-          previamente a la fecha: <b>28/10/2021</b>
-        </p>
-        <SearchCard empleados={empleados} empresas={empresas} />
-        <DataTable columns={columns} data={empresas} />
+        <p><i>Con fecha previa al 28/10/2021</i></p>
+        <SearchCard
+          empresas={empresas}
+          contratos={contratos}
+          declaraciones={declaraciones}
+          setDeclaracionesState={setDeclaracionesState}
+        />
+        <DataTable columns={columns} data={declaracionesState || []} />
       </div>
     </div>
   );

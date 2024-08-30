@@ -16,17 +16,23 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
+import { IOldEmpresa } from "@/shared/types/Querys/IOldEmpresa";
 import { Label } from "@/components/ui/label";
 
-export const ComboboxEmpresa = ({ empresas }: { empresas: IEmpresa[] }) => {
+export const ComboboxEmpresa = ({
+  empresas,
+  company,
+  setCompany,
+}: {
+  empresas: IOldEmpresa[];
+  company: number | null;
+  setCompany: (companyitem: number | null) => void;
+}) => {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
-
 
   return (
     <div className="space-y-2 w-full">
-      <Label htmlFor="date-range">Empresas</Label>
+      <Label htmlFor="date-range">Empresa</Label>
       <div className={cn("grid gap-2")}>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -36,8 +42,8 @@ export const ComboboxEmpresa = ({ empresas }: { empresas: IEmpresa[] }) => {
               aria-expanded={open}
               className="w-full justify-between"
             >
-              {value
-                ? empresas.find((empresa) => empresa.nombre === value)?.nombre
+              {company
+                ? empresas.find((empresa) => empresa.id === company)?.nombre
                 : "Selecciona una empresa..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
@@ -51,16 +57,16 @@ export const ComboboxEmpresa = ({ empresas }: { empresas: IEmpresa[] }) => {
                   {empresas.map((empresa) => (
                     <CommandItem
                       key={empresa.id}
-                      value={empresa.nombre}
-                      onSelect={(currentValue) => {
-                        setValue(currentValue === value ? "" : currentValue);
+                      value={String(empresa.id)}
+                      onSelect={() => {
+                        setCompany(company === empresa.id ? null : empresa.id);
                         setOpen(false);
                       }}
                     >
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          value === empresa.nombre ? "opacity-100" : "opacity-0"
+                          company === empresa.id ? "opacity-100" : "opacity-0"
                         )}
                       />
                       {empresa.nombre}
