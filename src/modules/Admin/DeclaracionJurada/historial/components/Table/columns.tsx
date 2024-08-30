@@ -1,16 +1,10 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, FileStack } from "lucide-react";
-import { StateDialog } from "../Dialog/StateDialog";
-import InteresesDialog from "../Dialog/InteresesDialog";
+import { EyeIcon } from "lucide-react";
 import Link from "next/link";
 
-export const createColumns = (
-  changeState: (updateItem: IDeclaracion) => void
-): ColumnDef<IDeclaracion>[] => [
+export const createColumns = (): ColumnDef<IDeclaracion>[] => [
   {
     accessorKey: "nombre_empresa",
     header: "Empresa",
@@ -47,24 +41,14 @@ export const createColumns = (
     id: "actions",
     cell: ({ row }) => {
       return (
-        <div className="flex gap-3">
-          <StateDialog declaracion={row.original} changeState={changeState} />
-          <InteresesDialog declaracion={row.original} />
-          <Button>
-            <Link href={`/admin/declaraciones/${row.original.id}`}>
-              <Eye />
-            </Link>
-          </Button>
-          {row.original.rectificada !== 0 && (
+        <>
+          <Link href={`/admin/declaraciones/${row.original.id}`}>
             <Button>
-              <Link
-                href={`/admin/declaraciones/historial/${row.original.empresa_id}/${row.original.year}/${row.original.mes}`}
-              >
-                <FileStack />
-              </Link>
+              <EyeIcon />
+              Ver
             </Button>
-          )}
-        </div>
+          </Link>
+        </>
       );
     },
   },
