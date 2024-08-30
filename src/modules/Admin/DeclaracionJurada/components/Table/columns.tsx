@@ -51,7 +51,9 @@ export const createColumns = (
           <StateDialog declaracion={row.original} changeState={changeState} />
           <InteresesDialog declaracion={row.original} />
           <Button>
-            <Link href={`/admin/declaraciones/${row.original.id}`}>
+            <Link
+              href={`/admin/declaraciones/${row.original.empresa_id}/${row.original.id}`}
+            >
               <Eye />
             </Link>
           </Button>

@@ -1,6 +1,5 @@
 "use client";
 
-import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
 import SearchCard from "./components/Search/SearchCard";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { DataTable } from "./components/Table/Data-Table";
