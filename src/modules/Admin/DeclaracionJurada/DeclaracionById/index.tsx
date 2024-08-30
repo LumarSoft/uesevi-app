@@ -1,13 +1,13 @@
 "use client";
-import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { Info } from "./components/Info/Info";
 import { createColumns } from "./components/Table/Columns";
 import { DataTable } from "./components/Table/Data-Table";
+import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 
 export const DeclaracionModule = ({
   declaracion,
 }: {
-  declaracion: IDeclaracion;
+  declaracion: IInfoDeclaracion;
 }) => {
   const columns = createColumns();
   return (
@@ -19,7 +19,7 @@ export const DeclaracionModule = ({
           </h2>
         </div>
         <Info declaracion={declaracion} />
-        <DataTable columns={columns} data={[]} />
+        <DataTable columns={columns} data={declaracion.empleados} />
       </div>
     </div>
   );

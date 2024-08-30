@@ -42,7 +42,9 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
     cell: ({ row }) => {
       return (
         <>
-          <Link href={`/admin/declaraciones/${row.original.id}`}>
+          <Link
+            href={`/admin/declaraciones/${row.original.empresa_id}/${row.original.id}`}
+          >
             <Button>
               <EyeIcon />
               Ver

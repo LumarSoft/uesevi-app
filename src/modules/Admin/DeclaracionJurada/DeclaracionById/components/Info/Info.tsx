@@ -1,14 +1,16 @@
-import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
+import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 import React from "react";
 
-export const Info = ({ declaracion }: { declaracion: IDeclaracion }) => {
+export const Info = ({ declaracion }: { declaracion: IInfoDeclaracion }) => {
   return (
     <div className="w-full flex">
       <div className="flex flex-col w-full gap-3">
         <span>Empresa: {declaracion.nombre_empresa}</span>
-        <span>Empleados: </span>
-        <span>Afiliados: </span>
-        <span>Fecha: {declaracion.fecha.toString()}</span>
+        <span>Empleados: {declaracion.cantidad_empleados_declaracion}</span>
+        <span>Afiliados: {declaracion.cantidad_afiliados_declaracion}</span>
+        <span>
+          Fecha: {declaracion.mes}/{declaracion.year}
+        </span>
       </div>
       <div className="flex flex-col w-full gap-3">
         <span>Rectificada: {declaracion.rectificada}</span>
