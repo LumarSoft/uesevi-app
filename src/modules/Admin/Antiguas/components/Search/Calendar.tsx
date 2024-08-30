@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 
 export const CalendarComponent = ({ date, setDate }) => {
@@ -26,14 +29,14 @@ export const CalendarComponent = ({ date, setDate }) => {
               {date?.from ? (
                 date.to ? (
                   <>
-                    {format(date.from, "dd 'de' MMMM 'de' yyyy", { locale: es })} -{" "}
-                    {format(date.to, "dd 'de' MMMM 'de' yyyy", { locale: es })}
+                    {format(date.from, "LLL dd, y")} -{" "}
+                    {format(date.to, "LLL dd, y")}
                   </>
                 ) : (
-                  format(date.from, "dd 'de' MMMM 'de' yyyy", { locale: es })
+                  format(date.from, "LLL dd, y")
                 )
               ) : (
-                <span>Selecciona una fecha</span>
+                <span>Pick a date</span>
               )}
             </Button>
           </PopoverTrigger>
