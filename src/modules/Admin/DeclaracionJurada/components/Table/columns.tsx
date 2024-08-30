@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye } from "lucide-react";
+import { Eye, FileStack } from "lucide-react";
 import { StateDialog } from "../Dialog/StateDialog";
 import InteresesDialog from "../Dialog/InteresesDialog";
 import Link from "next/link";
@@ -55,6 +55,15 @@ export const createColumns = (
               <Eye />
             </Link>
           </Button>
+          {row.original.rectificada !== 0 && (
+            <Button>
+              <Link
+                href={`/admin/declaraciones/historial/${row.original.empresa_id}/${row.original.year}/${row.original.mes}`}
+              >
+                <FileStack />
+              </Link>
+            </Button>
+          )}
         </div>
       );
     },

@@ -18,6 +18,8 @@ export default function DeclaracionesModule({
   declaraciones: IDeclaracion[];
   contratos: IContratos[];
 }) {
+  // En caso que haya el campo distinto rectificado sea distinto de 0 me pongo el boton para ver todas las rectificadas
+
   const [declaracionesState, setDeclaracionesState] = useState(declaraciones);
 
   const changeState = (updatedItem: IDeclaracion) => {
