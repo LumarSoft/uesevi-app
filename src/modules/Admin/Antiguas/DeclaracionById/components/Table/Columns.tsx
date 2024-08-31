@@ -17,10 +17,10 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
     header: "Sueldo basico",
   },
   {
-    header: "Remunerativo adicional",
+    header: "Categoria",
   },
   {
-    header: "Categoria",
+    header: "Sueldo S/ categoria",
   },
   {
     header: "Adicional",
@@ -29,13 +29,10 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
     header: "Total bruto",
   },
   {
-    header: "Aporte extraordinario",
+    header: "FAS 1%",
   },
   {
-    header: "FAS",
-  },
-  {
-    header: "Aporte solidario",
+    header: "Aporte solidario 2%",
   },
   {
     header: "Sindicato",

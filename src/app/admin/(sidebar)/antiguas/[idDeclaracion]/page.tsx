@@ -11,5 +11,5 @@ export default async function Declaracion({
   const declaracion = await fetchData(
     `antiguas/getInfo/${idEmpresa}/${idDeclaracion}`
   );
-  // return <DeclaracionModule declaracion={declaracion} />;
+  return <DeclaracionModule declaracion={declaracion} />;
 }
