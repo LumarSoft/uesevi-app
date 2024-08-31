@@ -13,7 +13,7 @@ import Link from "next/link";
 
 const CardNoticias = ({ noticia }: { noticia: INoticias }) => {
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col h-full bg-muted">
       <CardHeader>
         <CardTitle className="text-xl line-clamp-2">{noticia.titulo}</CardTitle>
       </CardHeader>
@@ -22,15 +22,14 @@ const CardNoticias = ({ noticia }: { noticia: INoticias }) => {
           <Image
             src={noticia.portada ? `https://uesevi.org.ar/img/news/main/${noticia.portada}` : "/logo_uesevi.png"}
             alt={noticia.titulo}
-            layout="fill"
-            objectFit="cover"
-            className="rounded-lg"
+            fill
+            className="rounded-lg object-cover"
           />
         </div>
         <p className="text-sm flex-grow line-clamp-4">{noticia.cuerpo}</p>
       </CardContent>
       <CardFooter>
-        <Button variant="outline" className="w-full">
+        <Button variant="link" className="w-full">
           <Link href={`/noticias/${noticia.id}`}>Leer mas</Link>
         </Button>
       </CardFooter>

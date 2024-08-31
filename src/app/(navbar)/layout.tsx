@@ -1,4 +1,4 @@
-import { Navbar } from "@/shared/components/Navbar/Navbar";
+import { DropDownNav, Navbar } from "@/shared/components/Navbar/Navbar";
 
 export default function ClientLayout({
   children,
@@ -8,6 +8,7 @@ export default function ClientLayout({
   return (
     <main className="overflow-x-hidden">
       <Navbar />
+      <DropDownNav />
       {children}
     </main>
   );
