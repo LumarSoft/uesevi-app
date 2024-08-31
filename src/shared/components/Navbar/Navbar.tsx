@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -45,7 +46,7 @@ export const Navbar = () => {
   return (
     shouldShowNavbar && (
       <FramerComponent
-        style={`w-full top-0 flex justify-between items-center px-4 md:px-28 2xl:px-80 2xl:h-20 fixed z-20 transition-shadow duration-500 bg-white ${
+        style={`w-full top-0 hidden md:flex justify-between items-center px-4  md:px-28 2xl:px-80 2xl:h-20 fixed z-20 transition-shadow duration-500 bg-white ${
           scrolled ? "shadow-xl" : ""
         }`}
         animationInitial={{ y: -100, opacity: 0 }}
@@ -64,7 +65,7 @@ export const Navbar = () => {
             Afiliaciones
           </Link>
           <Link
-            href={"/noticias"}
+            href={"/noticias/page/1"}
             className="hover:text-primary transition duration-300"
           >
             Noticias
@@ -84,8 +85,6 @@ export const Navbar = () => {
           </Link>
         </nav>
 
-        <DropDownNav />
-
         <Link href={"/wsp"} className="block lg:hidden fixed bottom-10 right-4">
           <img src="/whatsapp.svg" className="w-10 h-10" alt="Whatsapp icono" />
         </Link>
@@ -94,11 +93,16 @@ export const Navbar = () => {
   );
 };
 
-const DropDownNav = () => {
+export const DropDownNav = () => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="lg:hidden">
-        <Menu />
+      <DropdownMenuTrigger
+        className="lg:hidden fixed top-6 right-4 z-50"
+        asChild
+      >
+        <div className="px-3 bg-[#1f294c] py-3 rounded-full">
+          <Menu color="white" />
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>
