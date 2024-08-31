@@ -38,7 +38,7 @@ export const createColumns = (
       return (
         <div className="flex gap-3">
           <Button>
-            <Link href={`/admin/antiguas/${row.original.id}`}>
+            <Link href={`/admin/antiguas/${row.original.old_empresa_id}/${row.original.id}`}>
               <Eye />
             </Link>
           </Button>
