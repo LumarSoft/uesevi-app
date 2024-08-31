@@ -1,5 +1,5 @@
 "use client";
-import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
+import { IOldDeclaracion } from "@/shared/types/Querys/IOldDeclaracion";
 import { Info } from "./components/Info/Info";
 import { createColumns } from "./components/Table/Columns";
 import { DataTable } from "./components/Table/Data-Table";
@@ -7,7 +7,7 @@ import { DataTable } from "./components/Table/Data-Table";
 export const DeclaracionModule = ({
   declaracion,
 }: {
-  declaracion: IDeclaracion;
+  declaracion: IOldDeclaracion;
 }) => {
   const columns = createColumns();
   return (
