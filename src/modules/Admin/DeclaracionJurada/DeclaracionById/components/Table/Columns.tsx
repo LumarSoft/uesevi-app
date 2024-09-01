@@ -58,8 +58,5 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
   },
   {
     header: "Total",
-    cell: ({ row }) => {
-      return <>${row.original.total_bruto}</>;
-    },
   },
 ];

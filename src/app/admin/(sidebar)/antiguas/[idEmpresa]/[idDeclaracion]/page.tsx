@@ -1,4 +1,4 @@
-import { DeclaracionModule } from "@/modules/Admin/DeclaracionJurada/DeclaracionById";
+import { DeclaracionModule } from "@/modules/Admin/Antiguas/DeclaracionById";
 import { fetchData } from "@/services/mysql/functions";
 
 // Aca necesito traerme la infromacion de la declaracion jurada (Nombre de la empresa, cantidad de empleados por esa declaracion, cantidad de afiliados, fecha, si fue rectificada, fecha de vencimiento, fecha de pago y los datos de las personas)
