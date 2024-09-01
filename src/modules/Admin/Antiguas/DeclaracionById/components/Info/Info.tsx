@@ -1,7 +1,7 @@
-import { IOldDeclaracion } from "@/shared/types/Querys/IOldDeclaracion";
+import { IOldInfoDeclaracion } from "@/shared/types/Querys/IOldInfoDeclaracion";
 import React from "react";
 
-export const Info = ({ declaracion }: { declaracion: IOldDeclaracion }) => {
+export const Info = ({ declaracion }: { declaracion: IOldInfoDeclaracion }) => {
   return (
     <div className="w-full flex">
       <div className="flex flex-col w-full gap-3">
