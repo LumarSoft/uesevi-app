@@ -57,7 +57,7 @@ export const ComboboxEmpresa = ({
                   {empresas.map((empresa) => (
                     <CommandItem
                       key={empresa.id}
-                      value={String(empresa.id)}
+                      value={String(empresa.nombre)}
                       onSelect={() => {
                         setCompany(company === empresa.id ? null : empresa.id);
                         setOpen(false);
