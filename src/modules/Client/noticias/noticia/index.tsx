@@ -10,8 +10,11 @@ import {
 } from "@/components/ui/carousel";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
+  console.log(noticia);
+
   return (
     <div className="w-full">
       <div className="container mx-auto py-8 md:py-20">
@@ -24,10 +27,12 @@ export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
             )}
             <h2 className="text-2xl font-semibold">{noticia.titulo}</h2>
             {noticia.archivo && (
-              <Button className="mt-4">
-                <Download />
-                Archivo
-              </Button>
+              <a href={`http://localhost:3006/uploads/${noticia.archivo}`} target="_blank" rel="noopener noreferrer">
+                <Button className="mt-4">
+                  <Download />
+                  Archivo
+                </Button>
+              </a>
             )}
             <p className="mt-2 text-sm text-muted-foreground">
               {noticia.epigrafe}
@@ -40,7 +45,7 @@ export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
             </p>
             <div className="mt-4 flex items-center justify-between">
               <div className="text-xs text-muted-foreground">
-                {/* {noticia.createdAt} - {noticia.modifiedAt} */}
+                {noticia.created.toString()}
               </div>
             </div>
           </CardContent>
@@ -50,7 +55,7 @@ export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
                 {noticia.images.map((img, index) => (
                   <CarouselItem key={index}>
                     <img
-                      src={`https://uesevi.org.ar/img/news/${img}`}
+                      src={`http://localhost:3006/uploads/${img}`}
                       alt={`News Image ${index + 1}`}
                       className="rounded-md object-cover aspect-[16/9]"
                     />
