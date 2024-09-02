@@ -31,9 +31,9 @@ export default function SearchCard({
   declaraciones: IOldDeclaracion[];
   setDeclaracionesState: React.Dispatch<React.SetStateAction<IOldDeclaracion[]>>;
 }) {
-  const [date, setDate] = useState<{ from: Date; to: Date }>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
+  const [date, setDate] = useState<{ from: Date | null; to: Date | null}>({
+    from: null,
+    to: null,
   });
 
   const [company, setCompany] = useState<number | null>(null);
@@ -66,17 +66,14 @@ export default function SearchCard({
       declaraciones
     );
     setDeclaracionesState(filtrado);
-  };
+  };  
 
   const handleClear = () => {
-    setDate({
-      from: new Date(2022, 0, 20),
-      to: addDays(new Date(2022, 0, 20), 20),
-    });
+    setDate({ from: null, to: null});
     setCompany(null);
     setIdEmployee(null);
     setEmpleados([]);
-    setDeclaracionesState(declaraciones); // Reset filtered declarations to initial state
+    setDeclaracionesState(declaraciones);
   };
 
   return (
@@ -98,7 +95,11 @@ export default function SearchCard({
             setCompany={setCompany}
           />
 
-          <ComboboxEmpleado empleados={empleados} setEmployee={setIdEmployee} />
+          <ComboboxEmpleado
+            empleados={empleados}
+            setEmployee={setIdEmployee}
+            idEmployee={idEmployee} 
+          />
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">
