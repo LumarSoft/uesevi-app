@@ -2,7 +2,7 @@ import { IOldContratos } from "../types/Querys/IOldContratos";
 import { IOldDeclaracion } from "../types/Querys/IOldDeclaracion";
 
 export const filterOldDeclaraciones = (
-  fecha: { from: Date; to: Date } | undefined,
+  fecha: { from: Date | null; to: Date | null } | undefined,
   empresa: number | null,
   empleado: number | null,
   contratos: IOldContratos[],
@@ -12,29 +12,30 @@ export const filterOldDeclaraciones = (
 
   let declaracionesFiltradas: IOldDeclaracion[] = [...declaraciones];
 
-  // Primero filtramos por la fecha
-  if (fecha) {
+  // Filtrar por fecha solo si se han proporcionado ambas fechas
+  if (fecha && fecha.from !== null && fecha.to !== null) {
     declaracionesFiltradas = declaracionesFiltradas.filter((declaracion) => {
       const fechaDeclaracion = new Date(declaracion.fecha);
-      return fechaDeclaracion >= fecha.from && fechaDeclaracion <= fecha.to;
+      return fecha.from !== null && fecha.to !== null && fechaDeclaracion >= fecha.from && fechaDeclaracion <= fecha.to;
     });
   }
-  
+
   console.log(declaracionesFiltradas);
 
-  // Luego filtramos por la empresa
-  if (empresa) {
+  // Filtrar por empresa si se ha proporcionado
+  if (empresa !== null) {
     declaracionesFiltradas = declaracionesFiltradas.filter(
       (declaracion) => declaracion.old_empresa_id === empresa
     );
   }
   console.log(declaracionesFiltradas);
 
-  // Luego filtramos por empleado
-  if (empleado) {
+  // Filtrar por empleado si se ha proporcionado
+  if (empleado !== null) {
     const contrato = contratos.find(
       (contrato) => contrato.empleado_id === empleado
     );
+    console.log(contrato);
     if (contrato) {
       declaracionesFiltradas = declaracionesFiltradas.filter(
         (declaracion) => declaracion.old_empresa_id === contrato.empresa_id

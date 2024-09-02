@@ -8,7 +8,6 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { addDays } from "date-fns";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { CalendarComponent } from "./Calendar";
 import { ComboboxEmpresa } from "./ComboboxEmpresa";
@@ -31,9 +30,9 @@ export default function SearchCard({
   declaraciones: IDeclaracion[];
   setDeclaracionesState: React.Dispatch<React.SetStateAction<IDeclaracion[]>>;
 }) {
-  const [date, setDate] = useState<{ from: Date; to: Date }>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
+  const [date, setDate] = useState<{ from: Date | null; to: Date | null }>({
+    from: null,
+    to: null,
   });
 
   const [company, setCompany] = useState<number | null>(null);
@@ -52,7 +51,6 @@ export default function SearchCard({
   useEffect(() => {
     if (company !== null) {
       fetchEmpleadosByEmpresa(company);
-      console.log(company);
     }
   }, [company]);
 
@@ -68,10 +66,7 @@ export default function SearchCard({
   };
 
   const handleClear = () => {
-    setDate({
-      from: new Date(2022, 0, 20),
-      to: addDays(new Date(2022, 0, 20), 20),
-    });
+    setDate({ from: null, to: null });
     setCompany(null);
     setIdEmployee(null);
     setEmpleados([]);
@@ -97,7 +92,11 @@ export default function SearchCard({
             setCompany={setCompany}
           />
 
-          <ComboboxEmpleado empleados={empleados} setEmployee={setIdEmployee} />
+          <ComboboxEmpleado
+            empleados={empleados}
+            setEmployee={setIdEmployee}
+            idEmployee={idEmployee} 
+          />
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">
