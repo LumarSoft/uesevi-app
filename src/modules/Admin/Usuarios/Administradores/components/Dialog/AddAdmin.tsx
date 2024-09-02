@@ -23,7 +23,11 @@ interface FormData {
   created: string;
 }
 
-export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: (newUser: any) => void }) => {
+export const AddAdmin = ({
+  onAdminAdded,
+}: {
+  onAdminAdded: (newUser: any) => void;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -53,7 +57,7 @@ export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: (newUser: any) => voi
     try {
       const result = await postData("administradores/add-admin", formDataObj);
       if (result.ok) {
-        onAdminAdded(result.data.newUser); 
+        onAdminAdded(result.data.newUser);
         setIsOpen(false);
         setFormData({
           email: "",
