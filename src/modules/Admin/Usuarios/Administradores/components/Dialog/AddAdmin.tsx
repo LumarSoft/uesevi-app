@@ -85,7 +85,7 @@ export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: (newUser: any) => voi
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Agregar Nuevo Administrador</DialogTitle>
+          <DialogTitle>Agregar nuevo Administrador</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <div className="text-red-500">{error}</div>}

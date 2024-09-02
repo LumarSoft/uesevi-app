@@ -31,9 +31,10 @@ export const ToggleEmpresa = ({
   );
 
   const handleChange = () => {
-    updateData("formulario/change-empresa", data.numero_socio, {
-      empresa_provisoria_nombre: nuevaEmpresa,
-    });
+    const formData = new FormData();
+    formData.append("empresa_provisoria_nombre", nuevaEmpresa);
+
+    updateData("formulario/change-empresa", data.numero_socio, formData);
     onDataUpdate({
       ...data,
       empresa_provisoria_nombre: nuevaEmpresa,
