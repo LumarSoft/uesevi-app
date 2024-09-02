@@ -22,6 +22,9 @@ export const createColumns = (
         </Button>
       );
     },
+    cell: ({ row }) => {
+      return `${row.original.nombre} ${row.original.apellido}`;
+    },
   },
   {
     accessorKey: "created",
@@ -51,6 +54,19 @@ export const createColumns = (
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Email
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "telefono",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Teléfono
         </Button>
       );
     },

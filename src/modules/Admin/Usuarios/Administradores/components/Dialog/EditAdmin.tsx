@@ -29,13 +29,19 @@ export const EditAdminDialog = ({
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    const formData = new FormData();
+
+    formData.append("nombre", editedUser.nombre);
+    formData.append("apellido", editedUser.apellido);
+    formData.append("email", editedUser.email);
+    formData.append("telefono", editedUser.telefono);
+
     try {
       const result = await updateData(
         "administradores/update-admin",
         editedUser.id,
-        {
-          ...editedUser,
-        }
+        formData
       );
       if (result) {
         onDataUpdate(editedUser);
