@@ -1,13 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { FramerComponent } from "@/shared/Framer/FramerComponent";
 import { Mail, MapPin, Phone } from "lucide-react";
 import React from "react";
 
 const Footer = () => {
   return (
     <footer className="bg-[#1f294c] text-primary-foreground py-16">
-      <div className="container mx-auto px-4">
+      <FramerComponent
+        style="container mx-auto px-4"
+        animationInitial={{ opacity: 0, y: 50 }}
+        animationWhileInView={{ opacity: 1, y: 0 }}
+        animationTransition={{ duration: 0.3, delay: 0.1 }}
+        animationViewPort={{ once: true, offset: 0.4 }}
+      >
         <h2 className="text-3xl font-bold mb-8 text-center">Contacto</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
@@ -36,11 +43,11 @@ const Footer = () => {
             </div>
             <div className="flex items-center">
               <Phone className="mr-2" />
-              <span>+1 (555) 123-4567</span>
+              <span>0341 2974615</span>
             </div>
             <div className="flex items-center">
               <MapPin className="mr-2" />
-              <span>123 Security Ave, Safetown, ST 12345</span>
+              <span>Moreno 58</span>
             </div>
             <div className="rounded-xl overflow-hidden w-full">
               <iframe
@@ -51,7 +58,7 @@ const Footer = () => {
             </div>
           </div>
         </div>
-      </div>
+      </FramerComponent>
     </footer>
   );
 };
