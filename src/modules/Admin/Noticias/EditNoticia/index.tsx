@@ -105,7 +105,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
           <Input
             id="headline"
             placeholder="Escriba el titulo"
-            value={headline}
+            defaultValue={headline}
             onChange={(e) => setHeadline(e.target.value)}
           />
         </div>
@@ -115,7 +115,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
           <Input
             id="epigraph"
             placeholder="Escriba el epigrafe"
-            value={epigraph}
+            defaultValue={epigraph}
             onChange={(e) => setEpigraph(e.target.value)}
           />
         </div>
@@ -125,7 +125,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
           <Textarea
             id="body"
             placeholder="Cuerpo de la noticia"
-            value={body}
+            defaultValue={body}
             onChange={(e) => setBody(e.target.value)}
             className="min-h-[200px]"
           />
@@ -157,7 +157,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
           <Textarea
             id="body"
             placeholder="Cuerpo de la noticia"
-            value={secondBody}
+            defaultValue={secondBody}
             onChange={(e) => setSecondBody(e.target.value)}
             className="min-h-[200px]"
           />
