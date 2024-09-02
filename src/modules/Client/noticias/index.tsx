@@ -6,12 +6,12 @@ import { INoticias } from "@/shared/types/Querys/INoticias";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { FramerComponent } from "@/shared/Framer/FramerComponent";
 
 const NoticiasPageModule = ({
   noticias,
@@ -22,6 +22,32 @@ const NoticiasPageModule = ({
   totalPages: number;
   currentPage: number;
 }) => {
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        delayChildren: 0.1,
+        staggerChildren: 0.1,
+        viewport: { once: true, offset: 0.4 },
+      },
+    },
+  };
+
+  const itemAnimado = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+      scale: 0.9,
+    },
+    show: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.5 },
+    },
+  };
+
   const [selectedType, setSelectedType] = useState("all");
   const filteredNews =
     selectedType === "all"
@@ -40,11 +66,23 @@ const NoticiasPageModule = ({
         </TabsList>
       </Tabs>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <FramerComponent
+        style="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        animationVariants={container}
+        animationInitial="hidden"
+        animationWhileInView="show"
+        animationViewPort={{ once: true, offset: 0.4 }}
+      >
         {filteredNews.map((news) => (
-          <CardNoticias key={news.id} noticia={news} />
+          <FramerComponent
+            key={news.id}
+            animationInitial={{ opacity: 0, y: 50 }}
+            animationVariants={itemAnimado}
+          >
+            <CardNoticias noticia={news} />
+          </FramerComponent>
         ))}
-      </div>
+      </FramerComponent>
 
       <Pagination className="mt-10">
         <PaginationContent>
