@@ -68,6 +68,17 @@ export default function SearchCard({
     setDeclaracionesState(filtrado);
   };
 
+  const handleClear = () => {
+    setDate({
+      from: new Date(2022, 0, 20),
+      to: addDays(new Date(2022, 0, 20), 20),
+    });
+    setCompany(null);
+    setIdEmployee(null);
+    setEmpleados([]);
+    setDeclaracionesState(declaraciones); // Reset filtered declarations to initial state
+  };
+
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
       <Card className="w-full md:w-auto flex-1">
@@ -91,7 +102,7 @@ export default function SearchCard({
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">
-          <Button variant="destructive" className="flex-1">
+          <Button variant="destructive" className="flex-1" onClick={handleClear}>
             Limpiar
           </Button>
           <Button variant="default" className="flex-1" onClick={handleFilter}>
