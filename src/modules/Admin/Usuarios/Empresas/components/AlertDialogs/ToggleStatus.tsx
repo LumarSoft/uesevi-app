@@ -21,11 +21,12 @@ export const ToggleStatus = ({
   data: IEmpresa;
   onDataUpdate: (updateItem: IEmpresa) => void;
 }) => {
-
   const handleChange = async () => {
-    const result = await updateData("empresas/change-state", data.id, {
-      estado: data.estado === "Activo" ? "Inactivo" : "Activo",
-    });
+    const formData = new FormData();
+
+    formData.append("estado", data.estado === "Activo" ? "Inactivo" : "Activo");
+
+    const result = await updateData("empresas/change-state", data.id, formData);
 
     if (result !== undefined && result !== null) {
       onDataUpdate({
