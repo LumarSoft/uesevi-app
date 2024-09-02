@@ -7,9 +7,9 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
   return (
@@ -22,12 +22,13 @@ export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
                 {noticia.destinatario ? noticia.destinatario : "Todos"}
               </Badge>
             )}
-            {noticia.archivo && (
-              <Badge variant="outline" className="mb-2">
-                Archived
-              </Badge>
-            )}
             <h2 className="text-2xl font-semibold">{noticia.titulo}</h2>
+            {noticia.archivo && (
+              <Button className="mt-4">
+                <Download />
+                Archivo
+              </Button>
+            )}
             <p className="mt-2 text-sm text-muted-foreground">
               {noticia.epigrafe}
             </p>
@@ -43,13 +44,13 @@ export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
               </div>
             </div>
           </CardContent>
-          {noticia.images?.length && noticia.images.length > 1 ? (
+          {noticia.images?.length && noticia.images.length > 0 ? (
             <Carousel>
               <CarouselContent>
                 {noticia.images.map((img, index) => (
                   <CarouselItem key={index}>
                     <img
-                      src={`https://uesevi.org.ar/img/news/${img.url}`}
+                      src={`https://uesevi.org.ar/img/news/${img}`}
                       alt={`News Image ${index + 1}`}
                       className="rounded-md object-cover aspect-[16/9]"
                     />
@@ -59,9 +60,7 @@ export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
             </Carousel>
           ) : (
             <img
-              src={`https://uesevi.org.ar/img/news/${
-                noticia.images?.[0] ?? ""
-              }`}
+              src={`/logo_uesevi.png`}
               alt="News Image"
               className="rounded-md object-cover aspect-[16/9] m-auto"
             />
