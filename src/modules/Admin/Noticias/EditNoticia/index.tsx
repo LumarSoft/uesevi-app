@@ -189,7 +189,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
                 className="flex gap-2 border w-fit px-4 py-2 rounded-full"
                 href={
                   typeof pdf === "string"
-                    ? `${BASE_API_URL}/${pdf}`
+                    ? `${BASE_API_URL}/uploads/${pdf}`
                     : URL.createObjectURL(pdf)
                 }
                 target="_blank"
@@ -208,7 +208,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
                           src={
                             img.type
                               ? URL.createObjectURL(img)
-                              : `${BASE_API_URL}/${img.nombre}`
+                              : `${BASE_API_URL}/uploads/${img.nombre}`
                           }
                           alt={`News Image ${index + 1}`}
                           className="rounded-md object-cover aspect-[16/9]"
@@ -222,7 +222,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
                   src={
                     images[0].type
                       ? URL.createObjectURL(images[0])
-                      : `${BASE_API_URL}/${images[0].nombre}`
+                      : `${BASE_API_URL}/uploads/${images[0].nombre}`
                   }
                   alt="News Image"
                   className="rounded-md object-cover aspect-[16/9] mt-6"
