@@ -59,12 +59,12 @@ const LatestNews = ({ noticias }: { noticias: INoticias[] }) => {
               animationInitial={{ opacity: 0, y: 50 }}
               animationVariants={itemAnimado}
             >
-              <CardNoticias noticia={noticia}/>
+              <CardNoticias noticia={noticia} />
             </FramerComponent>
           ))}
         </FramerComponent>
         <div className="text-center">
-          <Link href="/noticias">
+          <Link href="/noticias/page/1">
             <Button>Ver mas noticias</Button>
           </Link>
         </div>
