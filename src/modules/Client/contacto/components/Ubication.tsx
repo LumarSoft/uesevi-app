@@ -9,7 +9,7 @@ const Ubication = () => {
       animationInitial={{ x: 200, opacity: 0, backgroundColor: "white" }}
       animationAnimate={{ x: 0, opacity: 1, backgroundColor: "#334155" }}
     >
-      <div className="w-full max-w-xl space-y-8 text-center">
+      <div className="w-full max-w-xl space-y-8 text-center lg:pt-16">
         <div className="flex flex-col items-center space-y-4">
           <MapPin className="w-12 h-12" />
           <h2 className="text-3xl font-bold lg:text-4xl">¿Dónde estamos?</h2>
