@@ -73,11 +73,11 @@ export default function SearchCard({
   };
 
   const handleClear = () => {
-    setDate({ from: null, to: null});
+    setDate({ from: undefined, to: undefined});
     setCompany(null);
     setIdEmployee(null);
-    setEmpleados([]);
-    setDeclaracionesState(declaraciones);
+    setEmployees([]);
+    setStatementsState(statements);
   };
 
   return (
@@ -99,7 +99,7 @@ export default function SearchCard({
             setCompany={setCompany}
           />
 
-          <ComboboxEmployee employees={employees} setEmployee={setIdEmployee} />
+          <ComboboxEmployee employees={employees} setEmployee={setIdEmployee} idEmployee={idEmployee}/>
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">

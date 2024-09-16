@@ -1,12 +1,12 @@
 import { IOldInfoDeclaracion } from "@/shared/types/Querys/IOldInfoDeclaracion";
 import React from "react";
 
-export const Info = ({ declaracion }: { declaracion: IOldInfoDeclaracion }) => {
+export const Info = ({ statement }: { statement: IOldInfoDeclaracion }) => {
   return (
     <div className="w-full flex">
       <div className="flex flex-col w-full gap-3">
       <span>
-          Fecha: {declaracion.mes}/{declaracion.year}
+          Fecha: {statement.mes}/{statement.year}
         </span>
       </div>
     </div>

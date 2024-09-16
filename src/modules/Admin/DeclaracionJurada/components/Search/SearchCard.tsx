@@ -20,7 +20,6 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 
-
 export default function SearchCard({
   companies,
   contracts,
@@ -70,13 +69,12 @@ export default function SearchCard({
   };
 
   const handleClear = () => {
-    setDate({ from: null, to: null });
+    setDate({ from: undefined, to: undefined });
     setCompany(null);
     setIdEmployee(null);
     setEmployees([]);
     setStatementsState(statements); // Resetea las declaraciones al estado inicial
   };
-
 
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
@@ -89,7 +87,6 @@ export default function SearchCard({
         </CardHeader>
 
         <CardContent className="flex-1 flex gap-4">
-
           <CalendarComponent date={date} setDate={setDate} />
 
           <ComboboxCompanies
@@ -98,11 +95,19 @@ export default function SearchCard({
             setCompany={setCompany}
           />
 
-          <ComboboxEmployee employees={employees} setEmployee={setIdEmployee} />
+          <ComboboxEmployee
+            employees={employees}
+            setEmployee={setIdEmployee}
+            idEmployee={idEmployee}
+          />
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">
-          <Button variant="destructive" className="flex-1" onClick={handleClear}>
+          <Button
+            variant="destructive"
+            className="flex-1"
+            onClick={handleClear}
+          >
             Limpiar
           </Button>
           <Button variant="default" className="flex-1" onClick={handleFilter}>
