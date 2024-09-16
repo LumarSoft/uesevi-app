@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Trash, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IEscalas } from "@/shared/types/IEscalas";
-import { EditEscalaDialog } from "@/modules/Admin/Escalas/Dialog/EditEscalaDialog";
+import { EditScalesDialog } from "@/modules/Admin/Escalas/Dialog/EditEscalaDialog";
 import { Delete } from "@/modules/Admin/Escalas/AlertDialogs/Delete";
 
 export const createColumns = (
@@ -68,7 +68,7 @@ export const createColumns = (
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
-          <EditEscalaDialog data={row.original} onDataUpdate={onDataUpdate} />
+          <EditScalesDialog data={row.original} onDataUpdate={onDataUpdate} />
 
           <Delete data={row.original} onDataDelete={onDataDelete} />
         </div>

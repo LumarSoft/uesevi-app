@@ -5,9 +5,9 @@ import { DataTable } from "./components/Table/Data-Table";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 
 export const DeclaracionModule = ({
-  declaracion,
+  statement,
 }: {
-  declaracion: IInfoDeclaracion;
+  statement: IInfoDeclaracion;
 }) => {
   const columns = createColumns();
   return (
@@ -18,8 +18,8 @@ export const DeclaracionModule = ({
             Declaracion jurada
           </h2>
         </div>
-        <Info declaracion={declaracion} />
-        <DataTable columns={columns} data={declaracion.empleados} />
+        <Info statement={statement} />
+        <DataTable columns={columns} data={statement.empleados} />
       </div>
     </div>
   );

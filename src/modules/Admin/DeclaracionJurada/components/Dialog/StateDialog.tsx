@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,14 +24,14 @@ import { Label } from "@/components/ui/label";
 import { updateData } from "@/services/mysql/functions";
 
 export const StateDialog = ({
-  declaracion,
+  statement,
   changeState,
 }: {
-  declaracion: IDeclaracion;
+  statement: IDeclaracion;
   changeState: (updateItem: IDeclaracion) => void;
 }) => {
-  const [nuevoEstado, setNuevoEstado] = useState<number | undefined | null>(
-    declaracion.estado
+  const [newState, setNewState] = useState<number | undefined | null>(
+    statement.estado
   );
 
   const SwitchEstado = (estado: number | null | undefined) => {
@@ -51,17 +51,17 @@ export const StateDialog = ({
 
   const handleChange = async () => {
     const formData = new FormData();
-    formData.append("state", String(nuevoEstado));
+    formData.append("state", String(newState));
 
     try {
       const result: any = await updateData(
-        "declaraciones/changeState",
-        declaracion.id,
+        "statements/changeState",
+        statement.id,
         formData
       );
 
       if (result.message === "Estado de la declaración actualizado") {
-        changeState({ ...declaracion, estado: nuevoEstado });
+        changeState({ ...statement, estado: newState });
       } else {
         console.log(result.error);
       }
@@ -86,10 +86,10 @@ export const StateDialog = ({
             Esta accion cambiara el estado de la declaracion en la base de datos
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div>Estado actual: {SwitchEstado(declaracion.estado)}</div>
+        <div>Estado actual: {SwitchEstado(statement.estado)}</div>
         <Label>
           Cambiar a:{" "}
-          <Select onValueChange={(value) => setNuevoEstado(Number(value))}>
+          <Select onValueChange={(value) => setNewState(Number(value))}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Estados" />
             </SelectTrigger>

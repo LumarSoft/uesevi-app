@@ -9,23 +9,23 @@ import { IContratos } from "@/shared/types/Querys/IContratos";
 import { useState } from "react";
 
 export default function DeclaracionesModule({
-  empresas,
-  declaraciones,
-  contratos,
+  companies,
+  statements,
+  contracts,
 }: {
-  empresas: IEmpresa[];
-  declaraciones: IDeclaracion[];
-  contratos: IContratos[];
+  companies: IEmpresa[];
+  statements: IDeclaracion[];
+  contracts: IContratos[];
 }) {
   // En caso que haya el campo distinto rectificado sea distinto de 0 me pongo el boton para ver todas las rectificadas
 
-  const [declaracionesState, setDeclaracionesState] = useState(declaraciones);
+  const [statementsState, setStatementsState] = useState(statements);
 
   const changeState = (updatedItem: IDeclaracion) => {
-    const newData = declaracionesState.map((item) =>
+    const newData = statementsState.map((item) =>
       item.id === updatedItem.id ? updatedItem : item
     );
-    setDeclaracionesState(newData);
+    setStatementsState(newData);
   };
 
   const columns = createColumns(changeState);
@@ -39,12 +39,12 @@ export default function DeclaracionesModule({
           </h2>
         </div>
         <SearchCard
-          empresas={empresas}
-          contratos={contratos}
-          declaraciones={declaraciones}
-          setDeclaracionesState={setDeclaracionesState}
+          companies={companies}
+          contracts={contracts}
+          statements={statements}
+          setStatementsState={setStatementsState}
         />
-        <DataTable columns={columns} data={declaracionesState || []} />
+        <DataTable columns={columns} data={statementsState || []} />
       </div>
     </div>
   );

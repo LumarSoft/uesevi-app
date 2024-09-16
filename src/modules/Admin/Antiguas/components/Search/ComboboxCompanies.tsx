@@ -18,14 +18,15 @@ import {
 import { cn } from "@/lib/utils";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { Label } from "@/components/ui/label";
+import { IOldEmpresa } from "@/shared/types/Querys/IOldEmpresa";
 
-export const ComboboxEmpresa = ({
-  empresas,
-  company,
+export const ComboboxCompanies = ({
+  companies,
+  companyProp,
   setCompany,
 }: {
-  empresas: IEmpresa[];
-  company: number | null;
+  companies: IOldEmpresa[];
+  companyProp: number | null;
   setCompany: (companyitem: number | null) => void;
 }) => {
   const [open, setOpen] = React.useState(false);
@@ -42,8 +43,9 @@ export const ComboboxEmpresa = ({
               aria-expanded={open}
               className="w-full justify-between"
             >
-              {company
-                ? empresas.find((empresa) => empresa.id === company)?.nombre
+              {companyProp
+                ? companies.find((empresa) => empresa.id === companyProp)
+                    ?.nombre
                 : "Selecciona una empresa..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
@@ -54,22 +56,26 @@ export const ComboboxEmpresa = ({
               <CommandList>
                 <CommandEmpty>Empresa no encontrada</CommandEmpty>
                 <CommandGroup>
-                  {empresas.map((empresa) => (
+                  {companies.map((company) => (
                     <CommandItem
-                      key={empresa.id}
-                      value={String(empresa.id)}
+                      key={company.id}
+                      value={String(company.id)}
                       onSelect={() => {
-                        setCompany(company === empresa.id ? null : empresa.id);
+                        setCompany(
+                          companyProp === company.id ? null : company.id
+                        );
                         setOpen(false);
                       }}
                     >
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          company === empresa.id ? "opacity-100" : "opacity-0"
+                          companyProp === company.id
+                            ? "opacity-100"
+                            : "opacity-0"
                         )}
                       />
-                      {empresa.nombre}
+                      {company.nombre}
                     </CommandItem>
                   ))}
                 </CommandGroup>

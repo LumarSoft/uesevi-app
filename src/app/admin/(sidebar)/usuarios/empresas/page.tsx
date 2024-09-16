@@ -2,7 +2,7 @@ import AdminEmpresasModule from "@/modules/Admin/Usuarios/Empresas";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function AdminEmpresas() {
-  const result = await fetchData("empresas");
+  const result = await fetchData("companies");
 
   if (result) {
     return <AdminEmpresasModule data={result} />;

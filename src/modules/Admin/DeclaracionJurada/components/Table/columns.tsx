@@ -48,7 +48,7 @@ export const createColumns = (
     cell: ({ row }) => {
       return (
         <div className="flex gap-3">
-          <StateDialog declaracion={row.original} changeState={changeState} />
+          <StateDialog statement={row.original} changeState={changeState} />
           <InteresesDialog declaracion={row.original} />
           <Button>
             <Link

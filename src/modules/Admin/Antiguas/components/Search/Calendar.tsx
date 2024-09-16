@@ -9,8 +9,16 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
+import { Dispatch, SetStateAction } from "react";
 
-export const CalendarComponent = ({ date, setDate }) => {
+export const CalendarComponent = ({
+  date,
+  setDate,
+}: {
+  date: DateRange | undefined;
+  setDate: Dispatch<SetStateAction<DateRange | undefined>>; // Aceptamos DateRange o undefined
+}) => {
   return (
     <div className="space-y-2 w-full">
       <Label htmlFor="date-range">Desde y hasta</Label>

@@ -23,7 +23,7 @@ export const Delete = ({
   onDataDelete: (deleteItem: INoticias) => void;
 }) => {
   const handleDelete = async () => {
-    const result = await deleteData("noticias/delete-noticia", data.id);
+    const result = await deleteData("news/delete-new", data.id);
 
     if (result && result.warningStatus > 0) {
       return toast.error("Error al eliminar datos:", result);

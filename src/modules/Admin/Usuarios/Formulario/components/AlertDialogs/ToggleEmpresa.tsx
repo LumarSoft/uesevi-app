@@ -19,24 +19,23 @@ import { updateData } from "@/services/mysql/functions";
 
 export const ToggleEmpresa = ({
   data,
-  empresas,
+  companies,
   onDataUpdate,
 }: {
   data: IFormulario;
-  empresas: IEmpresa[];
+  companies: IEmpresa[];
   onDataUpdate: (updateItem: IFormulario) => void;
 }) => {
-  const [nuevaEmpresa, setNuevaEmpresa] = useState(
-    data.empresa_provisoria_nombre
-  );
+  const [newCompany, setNewCompany] = useState(data.empresa_provisoria_nombre);
 
   const handleChange = () => {
-    updateData("formulario/change-empresa", data.numero_socio, {
-      empresa_provisoria_nombre: nuevaEmpresa,
-    });
+    const formData = new FormData();
+    formData.append("company_provisory_name", newCompany);
+
+    updateData("forms/change-company", data.numero_socio, formData);
     onDataUpdate({
       ...data,
-      empresa_provisoria_nombre: nuevaEmpresa,
+      empresa_provisoria_nombre: newCompany,
     });
   };
 
@@ -55,8 +54,8 @@ export const ToggleEmpresa = ({
         </AlertDialogHeader>
         <AlertDialogDescription>
           <ComboboxEmpresas
-            empresas={empresas}
-            onChangeEmpresa={setNuevaEmpresa}
+            empresas={companies}
+            onChangeEmpresa={setNewCompany}
           />
         </AlertDialogDescription>
         <AlertDialogFooter>

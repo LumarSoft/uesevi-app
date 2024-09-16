@@ -1,4 +1,11 @@
-"use client";
+import { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker"; // Importa el tipo DateRange
+import { CalendarComponent } from "./Calendar";
+import { addDays } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { filterDeclaraciones } from "@/shared/utils/filterDeclaraciones";
+import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
+import { fetchData } from "@/services/mysql/functions";
 import {
   Card,
   CardHeader,
@@ -7,43 +14,39 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { useEffect, useState } from "react";
-import { addDays } from "date-fns";
+import { ComboboxCompanies } from "./ComboboxCompanies";
+import { ComboboxEmployee } from "./ComboboxEmployee";
 import { IOldEmpresa } from "@/shared/types/Querys/IOldEmpresa";
-import { CalendarComponent } from "./Calendar";
-import { ComboboxEmpresa } from "./ComboboxEmpresa";
-import { Button } from "@/components/ui/button";
-import { filterOldDeclaraciones } from "@/shared/utils/filterOldDeclaraciones";
-import { IOldContratos } from "@/shared/types/Querys/IOldContratos";
 import { IOldDeclaracion } from "@/shared/types/Querys/IOldDeclaracion";
-import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
-import { fetchData } from "@/services/mysql/functions";
-import { ComboboxEmpleado } from "./ComboboxEmpleado";
+import { IOldContratos } from "@/shared/types/Querys/IOldContratos";
+import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 
 export default function SearchCard({
-  empresas,
-  contratos,
-  declaraciones,
-  setDeclaracionesState,
+  companies,
+  contracts,
+  statements,
+  setStatementsState,
 }: {
-  empresas: IOldEmpresa[];
-  contratos: IOldContratos[];
-  declaraciones: IOldDeclaracion[];
-  setDeclaracionesState: React.Dispatch<React.SetStateAction<IOldDeclaracion[]>>;
+  companies: IOldEmpresa[];
+  contracts: IOldContratos[];
+  statements: IOldDeclaracion[];
+  setStatementsState: React.Dispatch<
+    React.SetStateAction<IOldDeclaracion[] | IDeclaracion[]>
+  >;
 }) {
-  const [date, setDate] = useState<{ from: Date; to: Date }>({
+  const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(2022, 0, 20),
     to: addDays(new Date(2022, 0, 20), 20),
-  });
+  }); // Cambiamos a DateRange | undefined
 
   const [company, setCompany] = useState<number | null>(null);
   const [idEmployee, setIdEmployee] = useState<number | null>(null);
-  const [empleados, setEmpleados] = useState<IEmpleado[] | []>([]);
+  const [employees, setEmployees] = useState<IEmpleado[] | []>([]);
 
   const fetchEmpleadosByEmpresa = async (company: number) => {
     try {
-      const result = await fetchData(`empleados/getOldByEmpresa/${company}`);
-      setEmpleados(result);
+      const result = await fetchData(`empleados/getByEmpresa/${company}`);
+      setEmployees(result);
       console.log(result);
     } catch (error) {
       console.error("Error fetching empleados:", error);
@@ -58,14 +61,15 @@ export default function SearchCard({
   }, [company]);
 
   const handleFilter = () => {
-    const filtrado = filterOldDeclaraciones(
-      date,
+    if (!date || !date.from || !date.to) return;
+    const filtrado = filterDeclaraciones(
+      { from: date.from, to: date.to },
       company,
       idEmployee,
-      contratos,
-      declaraciones
+      contracts,
+      statements
     );
-    setDeclaracionesState(filtrado);
+    setStatementsState(filtrado);
   };
 
   return (
@@ -81,13 +85,13 @@ export default function SearchCard({
         <CardContent className="flex-1 flex gap-4">
           <CalendarComponent date={date} setDate={setDate} />
 
-          <ComboboxEmpresa
-            empresas={empresas}
-            company={company}
+          <ComboboxCompanies
+            companies={companies}
+            companyProp={company}
             setCompany={setCompany}
           />
 
-          <ComboboxEmpleado empleados={empleados} setEmployee={setIdEmployee} />
+          <ComboboxEmployee employees={employees} setEmployee={setIdEmployee} />
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">
