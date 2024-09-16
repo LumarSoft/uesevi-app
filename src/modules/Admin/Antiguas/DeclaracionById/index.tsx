@@ -5,9 +5,9 @@ import { createColumns } from "./components/Table/Columns";
 import { DataTable } from "./components/Table/Data-Table";
 
 export const DeclaracionModule = ({
-  declaracion,
+  statement,
 }: {
-  declaracion: IOldInfoDeclaracion;
+  statement: IOldInfoDeclaracion;
 }) => {
   const columns = createColumns();
 
@@ -19,8 +19,8 @@ export const DeclaracionModule = ({
             Declaracion jurada antigua
           </h2>
         </div>
-        <Info declaracion={declaracion} />
-        <DataTable columns={columns} data={declaracion.empleados} />
+        <Info statement={statement} />
+        <DataTable columns={columns} data={statement.empleados} />
       </div>
     </div>
   );
