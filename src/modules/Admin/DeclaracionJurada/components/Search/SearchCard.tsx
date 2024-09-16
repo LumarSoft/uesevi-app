@@ -20,6 +20,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 
+
 export default function SearchCard({
   companies,
   contracts,
@@ -53,7 +54,6 @@ export default function SearchCard({
   useEffect(() => {
     if (company !== null) {
       fetchEmpleadosByEmpresa(company);
-      console.log(company);
     }
   }, [company]);
 
@@ -68,6 +68,15 @@ export default function SearchCard({
     );
     setStatementsState(filtrado);
   };
+
+  const handleClear = () => {
+    setDate({ from: null, to: null });
+    setCompany(null);
+    setIdEmployee(null);
+    setEmployees([]);
+    setStatementsState(statements); // Resetea las declaraciones al estado inicial
+  };
+
 
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
@@ -93,7 +102,7 @@ export default function SearchCard({
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">
-          <Button variant="destructive" className="flex-1">
+          <Button variant="destructive" className="flex-1" onClick={handleClear}>
             Limpiar
           </Button>
           <Button variant="default" className="flex-1" onClick={handleFilter}>

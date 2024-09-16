@@ -1,4 +1,4 @@
-import { DeclaracionModule } from "@/modules/Admin/DeclaracionJurada/DeclaracionById";
+import { DeclaracionModule } from "@/modules/Admin/Antiguas/DeclaracionById";
 import { fetchData } from "@/services/mysql/functions";
 
 

@@ -39,19 +39,19 @@ export function ComboboxEmpresas({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[300px] justify-between"
         >
           {value
             ? empresas.find((empresa) => empresa.nombre === value)?.nombre
-            : "Select framework..."}
+            : "Seleccione una empresa..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[300px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." />
+          <CommandInput placeholder="Buscar empresa..." />
           <CommandList>
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>Empresa no encontrada.</CommandEmpty>
             <CommandGroup>
               {empresas.map((empresa) => (
                 <CommandItem
