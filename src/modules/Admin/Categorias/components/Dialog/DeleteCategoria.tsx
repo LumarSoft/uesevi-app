@@ -11,18 +11,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { deleteData } from "@/services/mysql/functions";
-import { ICategoria } from "@/shared/types/Querys/ICategorias";
+import { ICategory } from "@/shared/types/Querys/ICategory";
 import { toast } from "react-toastify";
 
 export const DeleteCategoria = ({
   data,
   onDataDelete,
 }: {
-  data: ICategoria;
-  onDataDelete: (deleteItem: ICategoria) => void;
+  data: ICategory;
+  onDataDelete: (deleteItem: ICategory) => void;
 }) => {
   const handleDelete = async () => {
-    const result = await deleteData("categorias/delete-categoria", data.id);
+    const result = await deleteData("category/delete-category", data.id);
 
     if (result && result.warningStatus > 0) {
       return toast.error("Error al eliminar datos:", result);

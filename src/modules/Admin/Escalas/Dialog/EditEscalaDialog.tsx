@@ -14,40 +14,28 @@ import { Pencil } from "lucide-react";
 import React, { useState } from "react";
 import { updateData } from "@/services/mysql/functions";
 
-export const EditEscalaDialog = ({
+export const EditScalesDialog = ({
   data,
   onDataUpdate,
 }: {
   data: IEscalas;
   onDataUpdate: (updatedItem: IEscalas) => void;
 }) => {
-  const [editedEscala, setEditedEscala] = useState(data);
+  const [newName, setNewName] = useState(data.nombre);
 
-  const handleInputChange = (e: any) => {
-    const { name, value } = e.target;
-    setEditedEscala({ ...editedEscala, [name]: value });
-  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("nombre", editedEscala.nombre);
+    if (newName === data.nombre) {
+      return;
+    }
 
-      const result = await updateData(
-        "escalas/update-escala",
-        editedEscala.id,
-        formData
-      );
-      if (result) {
-        onDataUpdate(editedEscala);
-      } else {
-        console.error(
-          "Failed to update escala: No result returned from updateData"
-        );
-      }
-    } catch (error) {
-      console.error("Error updating escala:", error);
+    const formData = new FormData();
+    formData.append("name", newName);
+
+    const result = await updateData("scales/update-escala", data.id, formData);
+
+    if (result.ok) {
+      onDataUpdate({ ...data, nombre: newName });
     }
   };
 
@@ -73,8 +61,8 @@ export const EditEscalaDialog = ({
                 type="text"
                 id="nombre"
                 name="nombre"
-                value={editedEscala.nombre}
-                onChange={handleInputChange}
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
               />
             </div>
             <div className="grid w-full items-center gap-1.5">
@@ -83,7 +71,7 @@ export const EditEscalaDialog = ({
                 type="text"
                 id="created"
                 name="created"
-                value={editedEscala.created.toString()}
+                value={data.created.toString()}
                 disabled
               />
             </div>

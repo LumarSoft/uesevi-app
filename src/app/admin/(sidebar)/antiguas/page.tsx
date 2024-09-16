@@ -1,18 +1,18 @@
 import DeclaracionesModule from "@/modules/Admin/Antiguas";
 import { fetchData } from "@/services/mysql/functions";
 
-export default async function Antiguas() {
-  const empresas = await fetchData("old-empresas");
+export default async function AntiguasPage() {
+  const companies = await fetchData("old-companies");
 
-  const declaraciones = await fetchData("antiguas");
+  const statements = await fetchData("old-statements");
 
-  const contratos = await fetchData("old-contratos");
+  const contracts = await fetchData("old-contracts");
 
   return (
     <DeclaracionesModule
-      empresas={empresas}
-      declaraciones={declaraciones}
-      contratos={contratos}
+      companies={companies}
+      statements={statements}
+      contracts={contracts}
     />
   );
 }

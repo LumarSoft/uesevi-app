@@ -12,22 +12,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateData } from "@/services/mysql/functions";
 import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 const InteresesDialog = ({ declaracion }: { declaracion: IDeclaracion }) => {
-  const [nuevaFecha, setNuevaFecha] = useState(declaracion.fecha_pago);
+  const [newDate, setNewDate] = useState(declaracion.fecha_pago);
 
   const subtotal = parseFloat(declaracion.subtotal ?? "0");
-  const interes = parseFloat(declaracion.interes ?? "0");
-  const total = subtotal + interes;
+  const interest = parseFloat(declaracion.interes ?? "0");
+  const total = subtotal + interest;
 
   const handleSave = async () => {
     const formData = new FormData();
-    formData.append("fecha", String(nuevaFecha));
+    formData.append("fecha", String(newDate));
 
     try {
       const resullt = await updateData(
-        "declaraciones/changeDatePayment",
+        "statements/changeDatePayment",
         declaracion.id,
         formData
       );
@@ -102,11 +102,13 @@ const InteresesDialog = ({ declaracion }: { declaracion: IDeclaracion }) => {
         </div>
         <div>
           <h4>Nueva fecha de pago</h4>
-          <Input type="date" onChange={(e) => setNuevaFecha(e.target.value)} />
+          <Input type="date" onChange={(e) => setNewDate(e.target.value)} />
         </div>
         <DialogFooter className="w-full">
           <DialogClose className="w-full">
-            <Button className="w-full" variant={"destructive"}>Cerrar</Button>
+            <Button className="w-full" variant={"destructive"}>
+              Cerrar
+            </Button>
           </DialogClose>
           <DialogClose className="w-full">
             <Button className="w-full" onClick={handleSave}>

@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
@@ -9,8 +10,15 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
 
-export const CalendarComponent = ({ date, setDate }) => {
+export const CalendarComponent = ({
+  date,
+  setDate,
+}: {
+  date: DateRange | undefined;
+  setDate: Dispatch<SetStateAction<DateRange | undefined>>; // Aceptamos DateRange o undefined
+}) => {
   return (
     <div className="space-y-2 w-full">
       <Label htmlFor="date-range">Desde y hasta</Label>
@@ -46,7 +54,7 @@ export const CalendarComponent = ({ date, setDate }) => {
               mode="range"
               defaultMonth={date?.from}
               selected={date}
-              onSelect={setDate}
+              onSelect={setDate} // Aceptamos DateRange directamente
               numberOfMonths={2}
             />
           </PopoverContent>

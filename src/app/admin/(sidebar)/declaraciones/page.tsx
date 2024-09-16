@@ -2,19 +2,17 @@ import DeclaracionesModule from "@/modules/Admin/DeclaracionJurada";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function Declaraciones() {
+  const companies = await fetchData("companies");
 
-  const empresas = await fetchData("empresas");
+  const statements = await fetchData("statements");
 
-  const declaraciones = await fetchData("declaraciones");
-
-  const contratos = await fetchData("contratos");
-
+  const contracts = await fetchData("contracts");
 
   return (
     <DeclaracionesModule
-      empresas={empresas}
-      declaraciones={declaraciones}
-      contratos={contratos}
+      companies={companies}
+      statements={statements}
+      contracts={contracts}
     />
   );
-}
+} 

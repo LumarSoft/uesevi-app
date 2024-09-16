@@ -17,25 +17,24 @@ import { Input } from "@/components/ui/input";
 import { postData } from "@/services/mysql/functions";
 import { toast } from "react-toastify";
 
-export const AddCategoria = () => {
-  const [nombre, setNombre] = useState("");
-  const [sueldo, setSueldo] = useState(0);
+export const AddCategory = () => {
+  const [name, setName] = useState("");
+  const [salary, setSalary] = useState(0);
 
   const handleSubmit = async () => {
-    if (!nombre || !sueldo) {
+    if (!name || !salary) {
       return toast.error("Por favor, llene todos los campos");
     }
 
     const formData = new FormData();
-    formData.append("nombre", nombre);
-    formData.append("sueldo", sueldo.toString());
+    formData.append("name", name);
+    formData.append("salary", salary.toString());
 
-    const result = await postData("categorias/add-categoria", formData);
+    const result = await postData("category/add-category", formData);
 
-    if (result.ok === true){
-        toast.success("Categoria agregada correctamente");
+    if (result.ok === true) {
+      toast.success("Categoria agregada correctamente");
     }
-
   };
 
   return (
@@ -56,7 +55,7 @@ export const AddCategoria = () => {
               <Label>Nombre de la categoria</Label>
               <Input
                 placeholder="Nombre"
-                onChange={(e) => setNombre(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div className="grid w-full  items-center gap-1.5">
@@ -64,12 +63,12 @@ export const AddCategoria = () => {
               <Input
                 placeholder="Sueldo"
                 type="number"
-                onChange={(e) => setSueldo(Number(e.target.value))}
+                onChange={(e) => setSalary(Number(e.target.value))}
               />
             </div>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-4">
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction type="submit">Guardar</AlertDialogAction>
           </AlertDialogFooter>
         </form>

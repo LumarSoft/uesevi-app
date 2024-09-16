@@ -6,17 +6,17 @@ import { DataTable } from "../Empresas/components/Table/Data-Table";
 import { AddAdmin } from "./components/Dialog/AddAdmin";
 
 const AdminUsuariosModule = ({ data }: { data: IAdmin[] }) => {
-  const [usuarios, setUsuarios] = useState(data);
+  const [users, setUser] = useState(data);
 
   const handleUpdate = (updatedItem: IAdmin) => {
-    const newData = usuarios.map((item) =>
+    const newData = users.map((item) =>
       item.id === updatedItem.id ? updatedItem : item
     );
-    setUsuarios(newData);
+    setUser(newData);
   };
 
   const handleAdminAdded = (newAdmin: IAdmin) => {
-    setUsuarios([...usuarios, newAdmin]);
+    setUser([...users, newAdmin]);
   };
 
   const columns = createColumns(handleUpdate);
@@ -29,7 +29,7 @@ const AdminUsuariosModule = ({ data }: { data: IAdmin[] }) => {
           <AddAdmin onAdminAdded={handleAdminAdded} />
         </div>
 
-        <DataTable columns={columns} data={usuarios} filterColumn="nombre" />
+        <DataTable columns={columns} data={users} filterColumn="nombre" />
       </div>
     </div>
   );

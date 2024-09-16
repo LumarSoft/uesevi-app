@@ -14,44 +14,43 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateData } from "@/services/mysql/functions";
-import { ICategoria } from "@/shared/types/Querys/ICategorias";
+import { ICategory } from "@/shared/types/Querys/ICategory";
 
 import React from "react";
 import { toast } from "react-toastify";
 
-const EditCategoria = ({
+export const EditCategory = ({
   data,
   onDateUpdate,
 }: {
-  data: ICategoria;
-  onDateUpdate: (deleteItem: ICategoria) => void;
+  data: ICategory;
+  onDateUpdate: (deleteItem: ICategory) => void;
 }) => {
-  const [nombre, setNombre] = React.useState(data.nombre);
-  const [sueldo, setSueldo] = React.useState(data.sueldo_basico);
+  const [name, setName] = React.useState(data.nombre);
+  const [salary, setSalary] = React.useState(data.sueldo_basico);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nombre || !sueldo) {
+    if (!name || !salary) {
       return;
     }
 
     const formData = new FormData();
-    formData.append("nombre", nombre);
-    formData.append("sueldo", sueldo);
+    formData.append("name", name);
+    formData.append("salary", salary);
 
     const result = await updateData(
-      "categorias/update-categoria",
+      "category/update-category",
       data.id,
       formData
     );
-
 
     if (result.affectedRows > 0) {
       toast.success("Categoria actualizada");
       onDateUpdate({
         ...data,
-        nombre,
-        sueldo_basico: sueldo,
+        nombre: name,
+        sueldo_basico: salary,
       });
     }
   };
@@ -74,8 +73,8 @@ const EditCategoria = ({
               <Label>Nombre de la categoria</Label>
               <Input
                 placeholder="Nombre"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div className="grid w-full  items-center gap-1.5">
@@ -83,8 +82,8 @@ const EditCategoria = ({
               <Input
                 placeholder="Sueldo"
                 type="number"
-                value={sueldo}
-                onChange={(e) => setSueldo(e.target.value.toString())}
+                value={salary}
+                onChange={(e) => setSalary(e.target.value.toString())}
               />
             </div>
           </AlertDialogHeader>
@@ -97,5 +96,3 @@ const EditCategoria = ({
     </AlertDialog>
   );
 };
-
-export default EditCategoria;

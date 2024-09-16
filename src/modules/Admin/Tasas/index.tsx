@@ -8,33 +8,20 @@ import { updateData } from "@/services/mysql/functions";
 import { toast } from "react-toastify";
 
 const TasasModule = ({ data }: { data: ITasas[] }) => {
-  const [tasas, setTasas] = useState(data);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    console.log("Input change value:", value); // Log del valor del input
-    const updatedTasas = tasas.map((item) =>
-      item.id === tasas[0].id ? { ...item, porcentaje: value } : item
-    );
-    setTasas(updatedTasas);
-    console.log("Updated tasas state:", updatedTasas); // Log del estado actualizado
-  };
+  const [percentage, setPercentage] = useState(data[0].porcentaje);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const tasaActualizada = tasas[0]; // Toma la primera tasa (puedes ajustar según lo necesario)
-    console.log("Tasa actualizada para enviar:", tasaActualizada); // Log de la tasa a enviar
 
     const formData = new FormData();
-    formData.append("porcentaje", tasaActualizada.porcentaje);
+    formData.append("percentage", percentage);
 
-    try {
-      console.log("Sending request with formData:", formData); // Log antes de enviar la solicitud
-      await updateData("tasas/update-tasa", tasaActualizada.id, formData);
-      toast.success("Tasa actualizada correctamente");
-    } catch (error) {
+    const result = await updateData("rates/update-rate", data[0].id, formData);
+
+    if (result) {
+      toast.success("Tasa actualizada");
+    } else {
       toast.error("Error al actualizar la tasa");
-      console.error("Error al actualizar la tasa:", error);
     }
   };
 
@@ -71,10 +58,10 @@ const TasasModule = ({ data }: { data: ITasas[] }) => {
                   <Input
                     id="tasa"
                     name="tasa"
-                    value={tasas[0].porcentaje}
+                    value={percentage}
                     required
                     className="w-full mt-2"
-                    onChange={handleInputChange}
+                    onChange={(e) => setPercentage(e.target.value)}
                   />
                 </div>
                 <span className="mt-8">%</span>

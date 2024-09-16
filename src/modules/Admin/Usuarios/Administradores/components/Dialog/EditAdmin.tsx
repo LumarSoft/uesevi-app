@@ -13,6 +13,7 @@ import { Label } from "@radix-ui/react-label";
 import { Pencil } from "lucide-react";
 import React, { useState } from "react";
 import { updateData } from "@/services/mysql/functions";
+
 export const EditAdminDialog = ({
   data,
   onDataUpdate,
@@ -20,29 +21,43 @@ export const EditAdminDialog = ({
   data: IAdmin;
   onDataUpdate: (updatedItem: IAdmin) => void;
 }) => {
-  const [editedUser, setEditedUser] = useState(data);
-
-  const handleInputChange = (e: any) => {
-    const { name, value } = e.target;
-    setEditedUser({ ...editedUser, [name]: value });
-  };
+  const [firstName, setFirstName] = useState(data.nombre);
+  const [lastName, setLastName] = useState(data.apellido);
+  const [email, setEmail] = useState(data.email);
+  const [phone, setPhone] = useState(data.telefono);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    // Creando FormData con los datos actualizados
+    const formData = new FormData();
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("email", email);
+    formData.append("phone", phone);
+
     try {
+      // Llamamos a la función que realiza la actualización en el backend
       const result = await updateData(
-        "administradores/update-admin",
-        editedUser.id,
-        {
-          ...editedUser,
-        }
+        "administrators/update-admin",
+        data.id,
+        formData
       );
+
       if (result) {
-        onDataUpdate(editedUser);
+        // Creamos el objeto actualizado para reflejar los cambios localmente
+        const updatedAdmin: IAdmin = {
+          ...data,
+          nombre: firstName,
+          apellido: lastName,
+          email: email,
+          telefono: phone,
+        };
+
+        // Llamamos a onDataUpdate con el objeto actualizado
+        onDataUpdate(updatedAdmin);
       } else {
-        console.error(
-          "Failed to update user: No result returned from updateData"
-        );
+        console.error("Failed to update user: No result returned from updateData");
       }
     } catch (error) {
       console.error("Error updating user:", error);
@@ -74,9 +89,9 @@ export const EditAdminDialog = ({
               <Input
                 type="text"
                 id="nombre"
-                name="nombre"
-                value={editedUser.nombre}
-                onChange={handleInputChange}
+                name="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
               />
             </div>
             <div className="grid w-full items-center gap-1.5">
@@ -84,9 +99,9 @@ export const EditAdminDialog = ({
               <Input
                 type="text"
                 id="apellido"
-                name="apellido"
-                value={editedUser.apellido}
-                onChange={handleInputChange}
+                name="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
               />
             </div>
             <div className="grid w-full items-center gap-1.5">
@@ -95,8 +110,8 @@ export const EditAdminDialog = ({
                 type="email"
                 id="email"
                 name="email"
-                value={editedUser.email}
-                onChange={handleInputChange}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="grid w-full items-center gap-1.5">
@@ -104,9 +119,9 @@ export const EditAdminDialog = ({
               <Input
                 type="tel"
                 id="telefono"
-                name="telefono"
-                value={editedUser.telefono}
-                onChange={handleInputChange}
+                name="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
             </div>
           </div>

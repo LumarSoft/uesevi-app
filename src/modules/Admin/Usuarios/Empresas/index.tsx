@@ -5,18 +5,18 @@ import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { useState } from "react";
 
 const AdminEmpresasModule = ({ data }: { data: IEmpresa[] }) => {
-  const [empresas, setEmpresas] = useState(data);
+  const [companies, setCompanies] = useState(data);
 
   const handleUpdate = (updatedItem: IEmpresa) => {
-    const newData = empresas.map((item) =>
+    const newData = companies.map((item) =>
       item.id === updatedItem.id ? updatedItem : item
     );
-    setEmpresas(newData);
+    setCompanies(newData);
   };
 
   const handleDelete = (deleteItem: IEmpresa) => {
-    const newData = empresas.filter((item) => item.id !== deleteItem.id);
-    setEmpresas(newData);
+    const newData = companies.filter((item) => item.id !== deleteItem.id);
+    setCompanies(newData);
   };
 
   const columns = createColumns(handleUpdate, handleDelete);
@@ -28,7 +28,7 @@ const AdminEmpresasModule = ({ data }: { data: IEmpresa[] }) => {
           <h2 className="text-3xl font-bold tracking-tight">Empresas</h2>
         </div>
 
-        <DataTable columns={columns} data={empresas} filterColumn="nombre" />
+        <DataTable columns={columns} data={companies} filterColumn="nombre" />
       </div>
     </div>
   );

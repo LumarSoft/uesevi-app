@@ -6,9 +6,9 @@ export default async function HistorialDeclaracioens({
 }: {
   params: { idEmpresa: number; anio: number; mes: number };
 }) {
-  const declaraciones = await fetchData(
-    `declaraciones/history/${idEmpresa}/${anio}/${mes}`
+  const statements = await fetchData(
+    `statements/history/${idEmpresa}/${anio}/${mes}`
   );
 
-  return <HistorialDeclaracionesModule declaraciones={declaraciones} />;
+  return <HistorialDeclaracionesModule statements={statements} />;
 }

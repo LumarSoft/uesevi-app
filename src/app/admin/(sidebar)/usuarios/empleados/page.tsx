@@ -2,13 +2,12 @@ import AdminEmpleadosModule from "@/modules/Admin/Usuarios/Empleados";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function AdminEmpleados() {
-  const result = await fetchData("empleados");
+  const employees = await fetchData("employees");
 
-  const empresas = await fetchData("empresas");
+  const companies = await fetchData("companies");
 
-
-  if (result) {
-    return <AdminEmpleadosModule data={result} empresas={empresas} />;
+  if (employees && companies) {
+    return <AdminEmpleadosModule employees={employees} companies={companies} />;
   } else {
     return <div>Error: Error al consultar los datos</div>;
   }
