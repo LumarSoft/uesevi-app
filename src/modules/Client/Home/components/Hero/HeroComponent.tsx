@@ -16,6 +16,7 @@ export const HeroComponent = () => {
           <Button className="w-1/2 mt-4">
             <Link href={"/noticias"}>Ultimas noticias</Link>
           </Button>
+          <img src="/flecha.svg" className="w-14 mt-14 animate-bounce animate-infinite" alt="" />
         </FramerComponent>
       </div>
       <FramerComponent

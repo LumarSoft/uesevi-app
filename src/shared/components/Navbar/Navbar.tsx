@@ -59,6 +59,12 @@ export const Navbar = () => {
 
         <nav className="lg:flex gap-2 md:gap-4 items-center font-semibold hidden">
           <Link
+            href={"/empresa"}
+            className="hover:text-primary transition duration-300"
+          >
+            Alta de empresa
+          </Link>
+          <Link
             href={"/afiliaciones"}
             className="hover:text-primary transition duration-300"
           >

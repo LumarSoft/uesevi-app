@@ -6,9 +6,8 @@ export default async function NoticiasPage({
 }: {
   params: { page: number };
 }) {
-  const noticias = await fetchData(`noticias/getAllClient/${page}`);
+  const noticias = await fetchData(`news/getAllClient/${page}`);
 
-  console.log(noticias);
   return (
     <NoticiasPageModule
       noticias={noticias.noticias}
