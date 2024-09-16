@@ -11,4 +11,5 @@ export interface INoticias {
   destinatario?: string;
   cuerpo_secundario?: string;
   images?: any[];
+  url?: string;
 }
