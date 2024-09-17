@@ -6,6 +6,6 @@ export default async function NoticiaPage({
 }: {
   params: { id: number };
 }) {
-  const noticia = await fetchOneRow("noticias", id);
+  const noticia = await fetchOneRow("news", id);
   return <NoticiaModule noticia={noticia}/>;
 }

@@ -11,8 +11,8 @@ import {
   BookText,
   BookMarked,
   Scroll,
-  Search,
   BookCopy,
+  MessageSquare,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 
@@ -116,5 +116,11 @@ export const NavItems: NavItem[] = [
         color: "text-indigo-500",
       },
     ],
+  },
+  {
+    title: "Consultas",
+    icon: MessageSquare,
+    href: "/admin/consultas",
+    color: "text-purple-500",
   },
 ];

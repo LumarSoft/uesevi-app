@@ -1,70 +1,44 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
-import emailjs from "@emailjs/browser";
-import { useToast } from "@/components/ui/use-toast";
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
+import { postData } from "@/services/mysql/functions";
+import { toast } from "react-toastify";
 
 export default function ContactCard() {
-  const [formData, setFormData] = useState({
-    user_name: "",
-    user_email: "",
-    user_phone: "",
-    message: "",
-  });
-
-  const form = useRef<HTMLFormElement | null>(null);
-  const { toast } = useToast();
-
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    if (!formData.user_email || !formData.user_phone || !formData.message) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Por favor, completa todos los campos.",
-      });
-      return;
-    }
+    const formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("phone", phone);
+    formData.append("message", message);
 
     try {
-      await emailjs.sendForm(
-        "service_bxf00hj",
-        "template_76rjx6b",
-        (form.current ?? undefined) as unknown as HTMLFormElement,
-        "QKnAoh9QQZ0-6AXIU"
-      );
-      toast({
-        title: "Mensaje enviado con éxito!",
-        className: "bg-green-200 text-green-600 border-green-500 font-bold",
-      });
-      setFormData({
-        user_name: "",
-        user_email: "",
-        user_phone: "",
-        message: "",
-      });
+      const result = await postData("inquiries/addInquiry", formData);
+      console.log(result);
+      if (!result) {
+        return toast.error("Error al enviar el mensaje");
+      } else if (result.data.message === "Inquiry added") {
+        return toast.success("Mensaje enviado correctamente");
+      }
+      setName("");
+      setEmail("");
+      setPhone("");
+      setMessage("");
     } catch (error) {
-      console.error("Error al enviar el mensaje:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description:
-          "Hubo un error al enviar el mensaje. Por favor, intenta de nuevo.",
-      });
+      console.error(error);
     }
   };
 
@@ -81,7 +55,7 @@ export default function ContactCard() {
             Contáctanos
           </h2>
         </div>
-        <form className="space-y-6" ref={form} onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="name">Nombre</Label>
@@ -90,8 +64,8 @@ export default function ContactCard() {
                 name="user_name"
                 placeholder="Juan Pérez"
                 type="text"
-                value={formData.user_name}
-                onChange={handleChange}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
               />
             </div>
@@ -102,8 +76,8 @@ export default function ContactCard() {
                 name="user_email"
                 type="email"
                 placeholder="tu@ejemplo.com"
-                value={formData.user_email}
-                onChange={handleChange}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -115,8 +89,8 @@ export default function ContactCard() {
               name="user_phone"
               type="number"
               placeholder="(555) 555-5555"
-              value={formData.user_phone}
-              onChange={handleChange}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               required
             />
           </div>
@@ -127,8 +101,8 @@ export default function ContactCard() {
               name="message"
               rows={4}
               placeholder="¿En qué podemos ayudarte?"
-              value={formData.message}
-              onChange={handleChange}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               required
             />
           </div>
