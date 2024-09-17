@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { createColumns } from "@/modules/Admin/Escalas/Table/Columns";
-import { DataTable } from "@/modules/Admin/Usuarios/Empresas/components/Table/Data-Table";
 import { IEscalas } from "@/shared/types/IEscalas";
 import { AddScaleDialog } from "@/modules/Admin/Escalas/Dialog/AddEscalaDialog";
+import { DataTable } from "./Table/Data-Table";
 
 const EscalasModule = ({ data }: { data: IEscalas[] }) => {
   const [scales, setScales] = useState(data);

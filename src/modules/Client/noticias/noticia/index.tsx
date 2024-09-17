@@ -7,11 +7,11 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
+  console.log(noticia);
+
   return (
     <div className="w-full">
       <div className="container mx-auto py-8 md:py-20">
@@ -39,32 +39,39 @@ export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
             </p>
             <div className="mt-4 flex items-center justify-between">
               <div className="text-xs text-muted-foreground">
-                {/* {noticia.createdAt} - {noticia.modifiedAt} */}
+                {/* Aquí podrías formatear y mostrar las fechas creadas y modificadas */}
+                <span>Fecha: {noticia.modified.toString()}</span>
               </div>
             </div>
           </CardContent>
-          {noticia.images?.length && noticia.images.length > 1 ? (
-            <Carousel>
-              <CarouselContent>
-                {noticia.images.map((img, index) => (
-                  <CarouselItem key={index}>
-                    <img
-                      src={`https://uesevi.org.ar/img/news/${img.url}`}
-                      alt={`News Image ${index + 1}`}
-                      className="rounded-md object-cover aspect-[16/9]"
-                    />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          ) : (
-            <img
-              src={`https://uesevi.org.ar/img/news/${
-                noticia.images?.[0] ?? ""
-              }`}
-              alt="News Image"
-              className="rounded-md object-cover aspect-[16/9] m-auto"
-            />
+
+          {/* Validar si hay imágenes */}
+          {noticia.images && noticia.images.length > 0 && (
+            <div className="p-6">
+              {noticia.images.length === 1 ? (
+                // Mostrar una sola imagen
+                <img
+                  src={`http://localhost:3006/uploads/${noticia.images[0].nombre}`}
+                  alt={noticia.titulo}
+                  className="w-full h-auto rounded-lg"
+                />
+              ) : (
+                // Mostrar un carrusel si hay más de una imagen
+                <Carousel>
+                  <CarouselContent>
+                    {noticia.images.map((image, index) => (
+                      <CarouselItem key={index}>
+                        <img
+                          src={`http://localhost:3006/uploads/${image.nombre}`}
+                          alt={`Imagen ${index + 1} de ${noticia.titulo}`}
+                          className="w-full h-auto rounded-lg"
+                        />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+              )}
+            </div>
           )}
         </Card>
       </div>

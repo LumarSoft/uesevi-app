@@ -14,7 +14,7 @@ export const HeroComponent = () => {
         >
           <img src="/logo_uesevi.png" alt="" className="w-3/4" />
           <Button className="w-1/2 mt-4">
-            <Link href={"/noticias"}>Ultimas noticias</Link>
+            <Link href={"/noticias/page/1"}>Ultimas noticias</Link>
           </Button>
           <img src="/flecha.svg" className="w-14 mt-14 animate-bounce animate-infinite" alt="" />
         </FramerComponent>
