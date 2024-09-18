@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 
-export interface NavItem {
+interface NavItem {
   title: string;
   href: string;
   icon: LucideIcon;
@@ -25,7 +25,7 @@ export interface NavItem {
   children?: NavItem[];
 }
 
-export const NavItems: NavItem[] = [
+export const NavItemsAdmin: NavItem[] = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,

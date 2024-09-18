@@ -28,7 +28,7 @@ const AboutUs = () => {
         animationWhileInView={{ x: 0, opacity: 1 }}
         animationViewPort={{ once: true, offset: 0.4 }}
       >
-        <h3 className="text-[#5f92cc] font-semibold text-2xl">Titulo 1</h3>
+        <h3 className="text-[#5f92cc] font-semibold text-2xl">Nosotros hacemos esto</h3>
         <p className="text-neutral-400">
           Lorem ipsum dolor, sit amet consectetur adipisicing elit. Maxime modi
           iste facilis eligendi asperiores laborum officia nemo beatae impedit,

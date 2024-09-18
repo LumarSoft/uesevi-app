@@ -1,5 +1,5 @@
 import Header from "@/shared/components/Header/Header";
-import Sidebar from "@/shared/components/SidebarAdmin/Sidebar";
+import Sidebar from "@/shared/components/SidebarCompany/Sidebar";
 import { ThemeProvider } from "next-themes";
 
 export default function SidebarLayout({
