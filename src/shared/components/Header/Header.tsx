@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Boxes } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
-import { MobileSidebar } from "../Sidebar/Mobile-Sidebar";
+import { MobileSidebar } from "../SidebarAdmin/Mobile-Sidebar";
 import { LogoutDialog } from "./LogoutDialog";
 
 export default function Header() {

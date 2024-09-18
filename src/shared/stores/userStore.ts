@@ -10,12 +10,8 @@ export const userStore = create<IUser>()(
       setAuth: (token, user) => set({ token, user }),
       logout: () => {
         set({ token: null, user: null });
-        console.log(
-          "Token y usuario después de logout:",
-          get().token,
-          get().user
-        );
       },
+      getUser: () => get().user,
     }),
     {
       name: "auth-storage",

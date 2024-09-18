@@ -11,7 +11,7 @@ import {
   AccordionTrigger,
 } from "./Subnav-Accordion";
 import { useEffect, useState } from "react";
-import { NavItem } from "@/shared/constants/side-nav";
+import { NavItem } from "@/shared/constants/side-nav-admin";
 import { useSidebar } from "@/shared/hooks/useSidebar";
 import { ChevronDownIcon } from "lucide-react";
 

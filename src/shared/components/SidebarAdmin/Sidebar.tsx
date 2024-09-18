@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { BsArrowLeftShort } from "react-icons/bs";
 import { SideNav } from "./Side-Nav";
-import { NavItems } from "@/shared/constants/side-nav";
+import { NavItemsAdmin } from "@/shared/constants/side-nav-admin";
 import { useSidebar } from "@/shared/hooks/useSidebar";
 
 interface SidebarProps {
@@ -40,7 +40,7 @@ export default function Sidebar({ className }: SidebarProps) {
           <div className="mt-3 space-y-1">
             <SideNav
               className="text-background opacity-0 transition-all duration-300 group-hover:z-50 group-hover:ml-4 group-hover:rounded group-hover:bg-foreground group-hover:p-2 group-hover:opacity-100"
-              items={NavItems}
+              items={NavItemsAdmin}
             />
           </div>
         </div>
