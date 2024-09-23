@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Trash, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { IEscalas } from "@/shared/types/IEscalas";
+import { IEscalas } from "@/shared/types/Querys/IEscalas";
 import { EditScalesDialog } from "@/modules/Admin/Escalas/Dialog/EditEscalaDialog";
 import { Delete } from "@/modules/Admin/Escalas/AlertDialogs/Delete";
 

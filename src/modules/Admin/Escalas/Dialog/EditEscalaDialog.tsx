@@ -8,7 +8,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { IEscalas } from "@/shared/types/IEscalas";
+import { IEscalas } from "@/shared/types/Querys/IEscalas";
 import { Label } from "@radix-ui/react-label";
 import { Pencil } from "lucide-react";
 import React, { useState } from "react";

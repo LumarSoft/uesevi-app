@@ -13,6 +13,9 @@ import { Button } from "@/components/ui/button";
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
 
 export const Formulario = () => {
+
+  // Enviar el formulario a la tabla inscripcion
+
   return (
     <FramerComponent
     animationInitial={{  opacity: 0 }}
