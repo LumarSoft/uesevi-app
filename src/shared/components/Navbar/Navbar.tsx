@@ -61,7 +61,7 @@ export const Navbar = () => {
           <Link href={"/loginempresa"}>Ingreso empresa</Link>
           <Link href={"/escalas"}>Escalas salariales</Link>
           <Link
-            href={"/empresa"}
+            href={"/afiliacion-empresa"}
             className="hover:text-primary transition duration-300"
           >
             Alta de empresa

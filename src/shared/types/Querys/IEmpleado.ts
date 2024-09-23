@@ -8,4 +8,6 @@ export interface IEmpleado {
   empresa_id: number;
   nombre_empresa: string;
   sindicato_activo: number;
+  telefono?: string;
+  domicilio?: string;
 }

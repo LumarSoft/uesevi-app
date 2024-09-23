@@ -53,7 +53,7 @@ export const NavItemsCompany: NavItem[] = [
       },
       {
         title: "Importacion masiva",
-        href: "/empresa/empleados/importar-empleados",
+        href: "/empresa/empleados/importacion",
         icon: Pickaxe,
         color: "text-rose-500",
       },
@@ -62,7 +62,13 @@ export const NavItemsCompany: NavItem[] = [
   {
     title: "Declaracion jurada",
     icon: Newspaper,
-    href: "/empresa/declaracion-jurada",
+    href: "/empresa/declaraciones",
     color: "text-indigo-500",
+  },
+  {
+    title: "Instructivo del sistema",
+    icon: BookUser,
+    href: "/empresa/instructivo",
+    color: "text-green-500",
   },
 ];
