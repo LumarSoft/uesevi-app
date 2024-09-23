@@ -64,7 +64,7 @@ const LatestNews = ({ noticias }: { noticias: INoticias[] }) => {
           ))}
         </FramerComponent>
         <div className="text-center">
-          <Link href="/noticias">
+          <Link href="/noticias/page/1">
             <Button>Ver mas noticias</Button>
           </Link>
         </div>
