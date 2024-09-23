@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BASE_API_URL } from "@/shared/providers/envProvider";
-import { IEscalas } from "@/shared/types/IEscalas";
+import { IEscalas } from "@/shared/types/Querys/IEscalas";
 
 export default function EscalasModule({ scales }: { scales: IEscalas[] }) {
   return (

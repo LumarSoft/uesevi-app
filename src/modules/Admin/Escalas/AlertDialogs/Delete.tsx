@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { deleteData } from "@/services/mysql/functions";
-import { IEscalas } from "@/shared/types/IEscalas";
+import { IEscalas } from "@/shared/types/Querys/IEscalas";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 

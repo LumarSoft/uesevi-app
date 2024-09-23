@@ -66,21 +66,23 @@ export const AddEmployee = () => {
       return toast.error("La adhesion al sindicato debe ser un número");
     }
 
-    // const formData = new FormData();
-    // formData.append("firstName", firstName);
-    // formData.append("lastName", lastName);
-    // formData.append("cuil", cuil);
-    // formData.append("category", category);
-    // formData.append("employmentStatus", employmentStatus);
-    // formData.append("unionAdhesion", unionAdhesion);
+    const formData = new FormData();
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("cuil", cuil);
+    formData.append("category", category);
+    formData.append("employmentStatus", employmentStatus);
+    formData.append("unionAdhesion", unionAdhesion);
 
-    // try {
-    //   const result = await postData("addEmployee", formData);
-    // } catch (error) {
-    //   toast.error("Error al agregar el empleado");
-    //   console.log(error);
-    // }
+    try {
+      const result = await postData("employees/addEmployee", formData);
+    } catch (error) {
+      toast.error("Error al agregar el empleado");
+      console.log(error);
+    }
   };
+
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Label>

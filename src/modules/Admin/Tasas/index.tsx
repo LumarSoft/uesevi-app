@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ITasas } from "@/shared/types/ITasas";
+import { ITasas } from "@/shared/types/Querys/ITasas";
 import { updateData } from "@/services/mysql/functions";
 import { toast } from "react-toastify";
 

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createColumns } from "@/modules/Admin/Escalas/Table/Columns";
-import { IEscalas } from "@/shared/types/IEscalas";
+import { IEscalas } from "@/shared/types/Querys/IEscalas";
 import { AddScaleDialog } from "@/modules/Admin/Escalas/Dialog/AddEscalaDialog";
 import { DataTable } from "./Table/Data-Table";
 
