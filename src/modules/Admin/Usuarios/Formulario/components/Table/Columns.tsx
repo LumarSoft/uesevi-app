@@ -87,7 +87,7 @@ export const createColumns = (
             companies={companies}
             onDataUpdate={onDataUpdate}
           />
-          <PrintFicha/>
+          <PrintFicha data={row.original}/>
         </div>
       );
     },
