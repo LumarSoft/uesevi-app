@@ -1,5 +1,5 @@
 import { Beneficios } from "./components/Beneficios/Beneficios";
-import { Formulario } from "./components/Formulario/Formulario";
+import { Form } from "./components/Formulario/Form";
 
 export default function AfiliacionesModule() {
   return (
@@ -9,7 +9,7 @@ export default function AfiliacionesModule() {
       </h1>
 
       <Beneficios />
-      <Formulario />
+      <Form />
     </div>
   );
 }
