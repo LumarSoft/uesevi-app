@@ -240,7 +240,8 @@ export const Form = () => {
     formData.append("objective", objective);
 
     try {
-      const result = await postData("", formData);
+      const result = await postData("forms/create-request", formData);
+      console.log(result);
     } catch (error) {}
   };
 
@@ -387,10 +388,10 @@ export const Form = () => {
                     <SelectValue>{civilStatus || "Seleccionar"}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="single">Soltero</SelectItem>
-                    <SelectItem value="married">Casado</SelectItem>
-                    <SelectItem value="divorced">Divorciado</SelectItem>
-                    <SelectItem value="widowed">Viudo</SelectItem>
+                    <SelectItem value="Soltero">Soltero</SelectItem>
+                    <SelectItem value="Casado">Casado</SelectItem>
+                    <SelectItem value="Divocriado">Divorciado</SelectItem>
+                    <SelectItem value="Viudo">Viudo</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
