@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { ToggleEmpresa } from "../AlertDialogs/ToggleEmpresa";
+import { PrintFicha } from "../AlertDialogs/PrintFicha";
 import { Button } from "@/components/ui/button";
 import { IFormulario } from "@/shared/types/Querys/IFormulario";
 import { DialogComponent } from "../Dialog/Dialog";
@@ -62,7 +63,7 @@ export const createColumns = (
     },
   },
   {
-    accessorKey: "empresa_provisoria_nombre",
+    accessorKey: "empresa",
     header: ({ column }) => {
       return (
         <Button
@@ -86,6 +87,7 @@ export const createColumns = (
             companies={companies}
             onDataUpdate={onDataUpdate}
           />
+          <PrintFicha data={row.original}/>
         </div>
       );
     },
