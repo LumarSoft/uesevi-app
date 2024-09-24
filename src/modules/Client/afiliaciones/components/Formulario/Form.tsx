@@ -242,6 +242,35 @@ export const Form = () => {
     try {
       const result = await postData("forms/create-request", formData);
       console.log(result);
+      if (result.data.message === "Formulario creado") {
+        setName("");
+        setLastName("");
+        setEmail("");
+        setPhone("");
+        setCuil("");
+        setDni("");
+        setBirthDate("");
+        setBirthPlace("");
+        setNationality("");
+        setProvince("");
+        setCity("");
+        setAddress("");
+        setPostalCode("");
+        setCivilStatus("");
+        setChildrenCount(0);
+        setCompany("");
+        setCategory("");
+        setEntryDate("");
+        setCompanyPhone("");
+        setCompanyAddress("");
+        setCompanyCity("");
+        setCompanyPostalCode("");
+        setCompanyProvince("");
+        setCompanyCuit("");
+        setAgencyNumber("");
+        setObjective("");
+        return toast.success("Formulario enviado correctamente");
+      }
     } catch (error) {}
   };
 
