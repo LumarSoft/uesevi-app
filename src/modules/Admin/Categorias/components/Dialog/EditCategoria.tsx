@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateData } from "@/services/mysql/functions";
-import { ICategory } from "@/shared/types/Querys/ICategory";
+import { ICategoria } from "@/shared/types/Querys/ICategory";
 
 import React from "react";
 import { toast } from "react-toastify";
@@ -23,8 +23,8 @@ export const EditCategory = ({
   data,
   onDateUpdate,
 }: {
-  data: ICategory;
-  onDateUpdate: (deleteItem: ICategory) => void;
+  data: ICategoria;
+  onDateUpdate: (deleteItem: ICategoria) => void;
 }) => {
   const [name, setName] = React.useState(data.nombre);
   const [salary, setSalary] = React.useState(data.sueldo_basico);

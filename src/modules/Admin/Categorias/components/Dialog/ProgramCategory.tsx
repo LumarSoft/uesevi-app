@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateData } from "@/services/mysql/functions";
-import { ICategory } from "@/shared/types/Querys/ICategory";
+import { ICategoria } from "@/shared/types/Querys/ICategory";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -21,8 +21,8 @@ export const ProgramCategory = ({
   data,
   onDataUpdate,
 }: {
-  data: ICategory;
-  onDataUpdate: (deleteItem: ICategory) => void;
+  data: ICategoria;
+  onDataUpdate: (deleteItem: ICategoria) => void;
 }) => {
   const [dateChange, setDateChange] = useState<string | null>(
     data.fecha_vigencia

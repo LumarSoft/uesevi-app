@@ -1,19 +1,19 @@
 "use client";
-import { ICategory } from "@/shared/types/Querys/ICategory";
+import { ICategoria } from "@/shared/types/Querys/ICategory";
 import { DataTable } from "./components/Table/Data-Table";
 import { createColumns } from "./components/Table/columns";
 import { useState } from "react";
 import { AddCategory } from "./components/Dialog/AddCategoria";
 
-export default function CategoryModule({ data }: { data: ICategory[] }) {
+export default function CategoryModule({ data }: { data: ICategoria[] }) {
   const [category, setCategory] = useState(data);
 
-  const handleDelete = (deleteItem: ICategory) => {
+  const handleDelete = (deleteItem: ICategoria) => {
     const newData = category.filter((item) => item.id !== deleteItem.id);
     setCategory(newData);
   };
 
-  const handleUpdate = (updateItem: ICategory) => {
+  const handleUpdate = (updateItem: ICategoria) => {
     const newData = data.map((item) => {
       if (item.id === updateItem.id) {
         return updateItem;

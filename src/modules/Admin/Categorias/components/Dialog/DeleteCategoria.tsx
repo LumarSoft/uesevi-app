@@ -11,15 +11,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { deleteData } from "@/services/mysql/functions";
-import { ICategory } from "@/shared/types/Querys/ICategory";
+import { ICategoria } from "@/shared/types/Querys/ICategory";
 import { toast } from "react-toastify";
 
 export const DeleteCategoria = ({
   data,
   onDataDelete,
 }: {
-  data: ICategory;
-  onDataDelete: (deleteItem: ICategory) => void;
+  data: ICategoria;
+  onDataDelete: (deleteItem: ICategoria) => void;
 }) => {
   const handleDelete = async () => {
     const result = await deleteData("category/delete-category", data.id);

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ICategory } from "@/shared/types/Querys/ICategory";
+import { ICategoria } from "@/shared/types/Querys/ICategory";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { DeleteCategoria } from "../Dialog/DeleteCategoria";
@@ -7,9 +7,9 @@ import { EditCategory } from "../Dialog/EditCategoria";
 import { ProgramCategory } from "../Dialog/ProgramCategory";
 
 export const createColumns = (
-  onDataDelete: (deleteItem: ICategory) => void,
-  onDataUpdate: (updateItem: ICategory) => void
-): ColumnDef<ICategory>[] => [
+  onDataDelete: (deleteItem: ICategoria) => void,
+  onDataUpdate: (updateItem: ICategoria) => void
+): ColumnDef<ICategoria>[] => [
   {
     accessorKey: "nombre",
     header: ({ column }) => {
