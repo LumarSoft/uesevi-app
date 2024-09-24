@@ -4,8 +4,15 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
+import { EditEmployee } from "../Dialogs/EditEmployee";
+import { ICategoria } from "@/shared/types/Querys/ICategory";
+import { CancelEmployee } from "../Dialogs/CancelEmployee";
 
-export const createColumns = (): ColumnDef<IEmpleado>[] => [
+export const createColumns = (
+  categories: ICategoria[],
+  updateEmployee: (employee: IEmpleado) => void,
+  cancelEmployee: (employee: IEmpleado) => void
+): ColumnDef<IEmpleado>[] => [
   {
     accessorKey: "nombre",
     header: ({ column }) => {
@@ -18,6 +25,9 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
+    },
+    cell: ({ row }) => {
+      return <span>{row.original.nombre + " " + row.original.apellido}</span>;
     },
   },
   {
@@ -47,6 +57,9 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      return <span>{row.original.telefono || "No especificado"}</span>;
+    },
   },
   {
     accessorKey: "email",
@@ -74,6 +87,9 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
+    },
+    cell: ({ row }) => {
+      return <span>{row.original.domicilio || "No especificado"}</span>;
     },
   },
   {
@@ -112,7 +128,16 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
   {
     id: "actions",
     cell: ({ row }) => {
-      return <>Acciones</>;
+      return (
+        <div className="flex gap-2">
+          <EditEmployee
+            employee={row.original}
+            categories={categories}
+            updateEmployee={updateEmployee}
+          />
+          <CancelEmployee employee={row.original} cancelEmployee={cancelEmployee}/>
+        </div>
+      );
     },
   },
 ];
