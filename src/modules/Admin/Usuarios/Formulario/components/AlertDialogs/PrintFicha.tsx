@@ -27,34 +27,54 @@ export const PrintFicha = ({ data }: { data: IFormulario }) => {
         ? new Date(data.fecha_nacimiento).toLocaleDateString("es-ES")
         : "";
 
+      // Formatear fecha_ingreso a string
+      const formattedFechaIngreso = data.fecha_ingreso
+      ? new Date(data.fecha_ingreso).toLocaleDateString("es-ES")
+      : "";
+
+      // Formatear codigo_postal_empresa a string
+      const formattedCodigoPostalEmpresa = data.codigo_postal_empresa
+        ? data.codigo_postal_empresa.toString()
+        : "0";
+
+      // Formatear codigo_postal_empresa a string
+      const formattedCantidadHijos = data.cantidad_hijos
+        ? data.cantidad_hijos.toString()
+        : "";
+
+      // Formatear codigo_postal_empresa a string
+      const formattedNumeroAgencia = data.numero_agencia
+        ? data.numero_agencia.toString()
+        : "0";
+
       // Datos empleado
-      page.drawText(data.apellido + " " + data.nombre, { x: 120, y: 600, size: 12, color: rgb(0, 0, 0) });
-      page.drawText(data.cuil, { x: 120, y: 580, size: 12, color: rgb(0, 0, 0) });
-      page.drawText(data.dni, { x: 120, y: 560, size: 12, color: rgb(0, 0, 0) });
-      page.drawText(data.nacionalidad, { x: 120, y: 540, size: 12, color: rgb(0, 0, 0) });
-      // page.drawText(data.lugar_nacimiento, { x: 120, y: 520, size: 12, color: rgb(0, 0, 0) });
-      page.drawText(formattedFechaNacimiento, { x: 120, y: 520, size: 12, color: rgb(0, 0, 0) });
-      page.drawText(data.domicilio, { x: 120, y: 500, size: 12, color: rgb(0, 0, 0) });
-      page.drawText(data.localidad, { x: 120, y: 480, size: 12, color: rgb(0, 0, 0) });
-      page.drawText(data.codigo_postal, { x: 120, y: 460, size: 12, color: rgb(0, 0, 0) });
-      page.drawText(data.provincia, { x: 120, y: 460, size: 12, color: rgb(0, 0, 0) });
-      page.drawText(data.telefono, { x: 120, y: 440, size: 12, color: rgb(0, 0, 0) });
-      // page.drawText(data.fecha_ingreso, { x: 120, y: 420, size: 12, color: rgb(0, 0, 0) });
-      page.drawText(data.correo_electronico, { x: 120, y: 420, size: 12, color: rgb(0, 0, 0) });
-      // page.drawText(data.estado_civil, { x: 120, y: 400, size: 12, color: rgb(0, 0, 0) });
-      // page.drawText(data.cantidad_hijos, { x: 120, y: 380, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.id.toString(), { x: 335, y: 762, size: 14, color: rgb(0, 0, 0) });
+      page.drawText(data.apellido + " " + data.nombre, { x: 210, y: 638, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.cuil, { x: 77, y: 618, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.dni, { x: 200, y: 618, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.nacionalidad, { x: 415, y: 618, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.lugar_nacimiento + " - " + formattedFechaNacimiento, { x: 280, y: 596, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.domicilio, { x: 119, y: 574, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.localidad, { x: 443, y: 574, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.codigo_postal, { x: 63, y: 552, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.provincia, { x: 235, y: 552, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.telefono, { x: 410, y: 552, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(formattedFechaIngreso, { x: 200, y: 532, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.correo_electronico, { x: 320, y: 532, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.estado_civil, { x: 138, y: 510, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(formattedCantidadHijos, { x: 443, y: 510, size: 12, color: rgb(0, 0, 0) });
 
-      // Datos empleador
-      page.drawText(data.empresa, { x: 120, y: 360, size: 12, color: rgb(0, 0, 0) });
-      // page.drawText(data.telefono_empresa, { x: 120, y: 340, size: 12, color: rgb(0, 0, 0) });
-      // page.drawText(data.domicilio_empresa, { x: 120, y: 340, size: 12, color: rgb(0, 0, 0) });
-      // page.drawText(data.localidad_empresa, { x: 120, y: 320, size: 12, color: rgb(0, 0, 0) });
-      // page.drawText(data.codigo_postal_empresa, { x: 120, y: 320, size: 12, color: rgb(0, 0, 0) });
-      // page.drawText(data.provincia_empresa, { x: 120, y: 300, size: 12, color: rgb(0, 0, 0) });
-      // page.drawText(data.cuit, { x: 120, y: 280, size: 12, color: rgb(0, 0, 0) });
-      // page.drawText(data.numero_agencia, { x: 120, y: 260, size: 12, color: rgb(0, 0, 0) });
+      // // Datos empleador
+      page.drawText(data.empresa, { x: 150, y: 407, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.telefono_empresa, { x: 415, y: 407, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.domicilio_empresa, { x: 132, y: 385, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.localidad_empresa, { x: 445, y: 385, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(formattedCodigoPostalEmpresa, { x: 63, y: 365, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.provincia_empresa, { x: 235, y: 365, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.cuit_empresa, { x: 363, y: 364, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(formattedNumeroAgencia, { x: 200, y: 345, size: 12, color: rgb(0, 0, 0) });
 
-      page.drawText(data.objetivo, { x: 120, y: 240, size: 12, color: rgb(0, 0, 0) });
+      page.drawText(data.objetivo, { x: 120, y: 95, size: 12, color: rgb(0, 0, 0) });
 
       // Generar el PDF actualizado
       const pdfBytes = await pdfDoc.save();
