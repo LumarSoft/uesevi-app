@@ -10,4 +10,6 @@ export interface IEmpleado {
   sindicato_activo: number;
   telefono?: string;
   domicilio?: string;
+  categoria_id?: number;
+  estado: string;
 }
