@@ -54,11 +54,11 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("titulo", headline);
-    formData.append("epigrafe", epigraph);
-    formData.append("cuerpo", body);
-    formData.append("cuerpo2", secondBody || "");
-    formData.append("destinatario", destinatario);
+    formData.append("headline", headline);
+    formData.append("epigraph", epigraph);
+    formData.append("body", body);
+    formData.append("body2", secondBody || "");
+    formData.append("addressee", destinatario);
 
     // Añade nuevas imágenes
     images.forEach((image) => {
@@ -70,7 +70,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
       formData.append("pdf", pdf);
     }
 
-    const res = await updateData("noticias/update-noticia", data.id, formData);
+    const res = await updateData("news/update-new", data.id, formData);
 
     console.log(res);
 
@@ -105,7 +105,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
           <Input
             id="headline"
             placeholder="Escriba el titulo"
-            value={headline}
+            defaultValue={headline}
             onChange={(e) => setHeadline(e.target.value)}
           />
         </div>
@@ -115,7 +115,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
           <Input
             id="epigraph"
             placeholder="Escriba el epigrafe"
-            value={epigraph || ""}
+            defaultValue={epigraph}
             onChange={(e) => setEpigraph(e.target.value)}
           />
         </div>
@@ -125,7 +125,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
           <Textarea
             id="body"
             placeholder="Cuerpo de la noticia"
-            value={body || ""}
+            defaultValue={body}
             onChange={(e) => setBody(e.target.value)}
             className="min-h-[200px]"
           />
@@ -157,7 +157,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
           <Textarea
             id="body"
             placeholder="Cuerpo de la noticia"
-            value={secondBody || ""}
+            defaultValue={secondBody}
             onChange={(e) => setSecondBody(e.target.value)}
             className="min-h-[200px]"
           />
@@ -189,7 +189,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
                 className="flex gap-2 border w-fit px-4 py-2 rounded-full"
                 href={
                   typeof pdf === "string"
-                    ? `${BASE_API_URL}/${pdf}`
+                    ? `${BASE_API_URL}/uploads/${pdf}`
                     : URL.createObjectURL(pdf)
                 }
                 target="_blank"
@@ -208,7 +208,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
                           src={
                             img.type
                               ? URL.createObjectURL(img)
-                              : `${BASE_API_URL}/${img.nombre}`
+                              : `${BASE_API_URL}/uploads/${img.nombre}`
                           }
                           alt={`News Image ${index + 1}`}
                           className="rounded-md object-cover aspect-[16/9]"
@@ -222,7 +222,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
                   src={
                     images[0].type
                       ? URL.createObjectURL(images[0])
-                      : `${BASE_API_URL}/${images[0].nombre}`
+                      : `${BASE_API_URL}/uploads/${images[0].nombre}`
                   }
                   alt="News Image"
                   className="rounded-md object-cover aspect-[16/9] mt-6"

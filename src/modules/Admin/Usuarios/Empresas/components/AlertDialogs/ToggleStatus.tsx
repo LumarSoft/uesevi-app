@@ -13,6 +13,14 @@ import { Button } from "@/components/ui/button";
 import { updateData } from "@/services/mysql/functions";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { RefreshCcw } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
 
 export const ToggleStatus = ({
   data,
@@ -21,17 +29,17 @@ export const ToggleStatus = ({
   data: IEmpresa;
   onDataUpdate: (updateItem: IEmpresa) => void;
 }) => {
+  const [newState, setNewState] = useState(data.estado);
+
   const handleChange = async () => {
-    const formData = new FormData();
-
-    formData.append("estado", data.estado === "Activo" ? "Inactivo" : "Activo");
-
-    const result = await updateData("empresas/change-state", data.id, formData);
+    const result = await updateData("empresas/change-state", data.id, {
+      estado: data.estado === "Activo" ? "Inactivo" : "Activo",
+    });
 
     if (result !== undefined && result !== null) {
       onDataUpdate({
         ...data,
-        estado: data.estado === "Activo" ? "Inactivo" : "Activo",
+        estado: newState,
       });
     } else {
       console.error("Failed to update status");
@@ -51,9 +59,16 @@ export const ToggleStatus = ({
             Estas seguro de cambiar el estado?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Esto cambiara el estado de la empresa {data.nombre} a{" "}
-            {data.estado === "Activo" ? "Inactivo" : "Activo"} dentro del
-            sistema.
+            <Select onValueChange={setNewState}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Inactivo">Inactivo</SelectItem>
+                <SelectItem value="Activo">Activo</SelectItem>
+                <SelectItem value="Pendiente">Pendiente</SelectItem>
+              </SelectContent>
+            </Select>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -6,12 +6,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export const AdminNoticiasModule = ({ data }: { data: INoticias[] }) => {
-  const [noticias, setNoticias] = useState(data);
+export const AdminNoticiasModule = ({ news }: { news: INoticias[] }) => {
+  const [newsData, setNewsData] = useState(news);
 
   const handleDelete = (deleteItem: INoticias) => {
-    const newData = noticias.filter((item) => item.id !== deleteItem.id);
-    setNoticias(newData);
+    const newData = newsData.filter((item) => item.id !== deleteItem.id);
+    setNewsData(newData);
   };
 
   const columns = createColumns(handleDelete);
@@ -26,7 +26,7 @@ export const AdminNoticiasModule = ({ data }: { data: INoticias[] }) => {
           </Link>
         </div>
 
-        <DataTable columns={columns} data={noticias} />
+        <DataTable columns={columns} data={newsData} />
       </div>
     </div>
   );

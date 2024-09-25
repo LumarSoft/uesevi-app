@@ -5,8 +5,16 @@ import { IFormulario } from "@/shared/types/Querys/IFormulario";
 import { useState } from "react";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 
-const AdminFormularioModule = ({ data, empresas }: { data: IFormulario[], empresas: IEmpresa[] }) => {
-  const [formulario, setFormulario] = useState(data);
+const AdminFormularioModule = ({
+  forms,
+  companies,
+}: {
+  forms: IFormulario[];
+  companies: IEmpresa[];
+}) => {
+
+  
+  const [formulario, setFormulario] = useState(forms);
 
   const handleUpdate = (updatedItem: IFormulario) => {
     const newData = formulario.map((item) =>
@@ -15,7 +23,7 @@ const AdminFormularioModule = ({ data, empresas }: { data: IFormulario[], empres
     setFormulario(newData);
   };
 
-  const columns = createColumns(handleUpdate, empresas);
+  const columns = createColumns(handleUpdate, companies);
 
   return (
     <div className="flex h-full flex-col">

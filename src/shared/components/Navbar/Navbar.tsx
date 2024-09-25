@@ -58,6 +58,14 @@ export const Navbar = () => {
         </Link>
 
         <nav className="lg:flex gap-2 md:gap-4 items-center font-semibold hidden">
+          <Link href={"/loginempresa"}>Ingreso empresa</Link>
+          <Link href={"/escalas"}>Escalas salariales</Link>
+          <Link
+            href={"/afiliacion-empresa"}
+            className="hover:text-primary transition duration-300"
+          >
+            Alta de empresa
+          </Link>
           <Link
             href={"/empresa"}
             className="hover:text-primary transition duration-300"

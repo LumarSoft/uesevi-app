@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { deleteData } from "@/services/mysql/functions";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 export const Delete = ({
   data,
@@ -22,7 +23,15 @@ export const Delete = ({
   onDataDelete: (updateItem: IEmpresa) => void;
 }) => {
   const handleDelete = async () => {
-    const result = await deleteData("empresas/delete", data.id);
+    try {
+      const result = await deleteData("companies/delete", data.id);
+      console.log(result);
+      if (result.message === "Empresa eliminada") {
+        toast.success("Empresa eliminada con exito");
+      }
+    } catch (error) {
+      console.error("Failed to delete data", error);
+    }
 
     onDataDelete(data);
   };

@@ -22,41 +22,37 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export const AddEscalaDialog = ({ id }: { id: number }) => {
-  const [nombre, setNombre] = useState("");
-  const [archivo, setArchivo] = useState<File | null>(null);
-  const [error, setError] = useState("");
+export const AddScaleDialog = ({ id }: { id: number }) => {
+  const [name, setName] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    if (!nombre) {
+  const handleSubmit = async () => {
+    
+    if (!name) {
       return toast.error("Por favor, ingrese un nombre.");
-    } else if (!archivo) {
+    } else if (!file) {
       return toast.error("Por favor, seleccione un archivo.");
     }
 
     const formData = new FormData();
     formData.append("id", id.toString());
-    formData.append("nombre", nombre);
-    formData.append("pdf", archivo);
+    formData.append("name", name);
+    formData.append("pdf", file);
 
     try {
-      const result = await postData("escalas/create", formData);
-      console.log(result);
+      const result = await postData("scales/create", formData);
       if (result.ok) {
         toast.success("Archivo subido correctamente.");
-      } else {
-        setError("Error al subir el archivo. Por favor, inténtelo de nuevo.");
       }
     } catch (error) {
       console.error("Error:", error);
-      setError("Ocurrió un error al procesar la solicitud.");
     }
   };
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button>Agregar categoria</Button>
+        <Button>Agregar escala</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <form onSubmit={handleSubmit}>
@@ -66,8 +62,8 @@ export const AddEscalaDialog = ({ id }: { id: number }) => {
               <Input
                 type="text"
                 id="nombre"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div className="grid w-full items-center gap-1.5">
@@ -76,7 +72,7 @@ export const AddEscalaDialog = ({ id }: { id: number }) => {
                 type="file"
                 id="archivo"
                 accept=".pdf"
-                onChange={(e) => setArchivo(e.target.files?.[0] || null)}
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
               />
             </div>
           </div>

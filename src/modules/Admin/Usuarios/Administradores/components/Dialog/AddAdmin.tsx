@@ -13,56 +13,48 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { postData } from "@/services/mysql/functions";
 
-// Define the type for the form data
-interface FormData {
-  email: string;
-  password: string;
-  nombre: string;
-  apellido: string;
-  telefono: string;
-  created: string;
-}
-
-export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: (newUser: any) => void }) => {
+export const AddAdmin = ({
+  onAdminAdded,
+}: {
+  onAdminAdded: (newUser: any) => void;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    email: "",
-    password: "",
-    nombre: "",
-    apellido: "",
-    telefono: "",
-    created: new Date().toISOString(),
-  });
-  const [error, setError] = useState("");
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
-    // Crear una nueva instancia de FormData
-    const formDataObj = new FormData();
-    for (const key in formData) {
-      formDataObj.append(key, formData[key as keyof FormData]);
-    }
-    formDataObj.append("rol", "admin");
+    const formData = new FormData();
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("email", email);
+    formData.append("phone", phone);
+    formData.append("password", password);
 
     try {
-      const result = await postData("administradores/add-admin", formDataObj);
+      const result = await postData("administrators/add-admin", formData);
+
       if (result.ok) {
-        onAdminAdded(result.data.newUser); 
-        setIsOpen(false);
-        setFormData({
-          email: "",
-          password: "",
-          nombre: "",
-          apellido: "",
-          telefono: "",
+        // Suponiendo que result.data contiene el nuevo administrador
+        const newAdmin = {
+          id: result.data.id, // Asegúrate de que esto coincida con lo que el backend devuelve
+          nombre: firstName,
+          apellido: lastName,
           created: new Date().toISOString(),
-        });
+          email: email,
+          telefono: phone,
+        };
+
+        // Pasamos el nuevo administrador al componente padre
+        onAdminAdded(newAdmin);
+        setIsOpen(false);
       } else {
         if (result.error) {
           setError(
@@ -85,59 +77,49 @@ export const AddAdmin = ({ onAdminAdded }: { onAdminAdded: (newUser: any) => voi
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Agregar Nuevo Administrador</DialogTitle>
+          <DialogTitle>Agregar nuevo Administrador</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <div className="text-red-500">{error}</div>}
           <div>
             <Label htmlFor="nombre">Nombre</Label>
             <Input
-              id="nombre"
-              name="nombre"
-              value={formData.nombre}
-              onChange={handleInputChange}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               required
             />
           </div>
           <div>
             <Label htmlFor="apellido">Apellido</Label>
             <Input
-              id="apellido"
-              name="apellido"
-              value={formData.apellido}
-              onChange={handleInputChange}
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               required
             />
           </div>
           <div>
             <Label htmlFor="email">Email</Label>
             <Input
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
           <div>
             <Label htmlFor="telefono">Teléfono</Label>
             <Input
-              type="number"
-              id="telefono"
-              name="telefono"
-              value={formData.telefono}
-              onChange={handleInputChange}
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               required
             />
           </div>
           <div>
             <Label htmlFor="password">Contraseña</Label>
             <Input
-              id="password"
-              name="password"
               type="password"
-              value={formData.password}
-              onChange={handleInputChange}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>

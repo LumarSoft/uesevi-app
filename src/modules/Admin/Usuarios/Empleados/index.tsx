@@ -6,15 +6,16 @@ import { useState } from "react";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 
 const AdminEmpleadosModule = ({
-  data,
-  empresas,
+  employees,
+  companies,
 }: {
-  data: IEmpleado[];
-  empresas: IEmpresa[];
+  employees: IEmpleado[];
+  companies: IEmpresa[];
 }) => {
-  const [empleado] = useState(data);
+  const [employeesData, setEmployeesData] = useState(employees);
 
   const columns = createColumns();
+
 
   return (
     <div className="flex h-full flex-col">
@@ -23,7 +24,11 @@ const AdminEmpleadosModule = ({
           <h2 className="text-3xl font-bold tracking-tight">Empleados</h2>
         </div>
 
-        <DataTable columns={columns} data={empleado} empresas={empresas}/>
+        <DataTable
+          columns={columns}
+          data={employeesData}
+          empresas={companies}
+        />
       </div>
     </div>
   );

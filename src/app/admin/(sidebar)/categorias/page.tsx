@@ -1,8 +1,8 @@
-import CategoriasModule from "@/modules/Admin/Categorias";
+import CategoryModule from "@/modules/Admin/Categorias";
 import { fetchData } from "@/services/mysql/functions";
 
-export default async function Categorias() {
-  const categorias = await fetchData("categorias");
+export default async function CategoriasPage() {
+  const category = await fetchData("category");
 
-  return <CategoriasModule data={categorias}/>;
+  return <CategoryModule data={category} />;
 }

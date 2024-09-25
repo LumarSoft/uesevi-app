@@ -2,11 +2,12 @@ import EscalasModule from "@/modules/Admin/Escalas";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function Escalas() {
-  const result = await fetchData("escalas");
+  const result = await fetchData("scales");
 
   if (result) {
     return <EscalasModule data={result} />;
   } else {
     console.error("Error fetching data");
+    return <div>Error interno en el servidor</div>;
   }
 }

@@ -10,7 +10,7 @@ import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 
 export const createColumns = (
   onDataUpdate: (updatedItem: IFormulario) => void,
-  empresas: IEmpresa[]
+  companies: IEmpresa[]
 ): ColumnDef<IFormulario>[] => [
   {
     accessorKey: "nombre",
@@ -81,7 +81,11 @@ export const createColumns = (
       return (
         <div className="flex gap-2">
           <DialogComponent data={row.original} />
-          <ToggleEmpresa data={row.original} empresas={empresas} onDataUpdate={onDataUpdate} />
+          <ToggleEmpresa
+            data={row.original}
+            companies={companies}
+            onDataUpdate={onDataUpdate}
+          />
         </div>
       );
     },
