@@ -1,27 +1,26 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { ICategoria } from "@/shared/types/Querys/ICategorias";
+import { ICategory } from "@/shared/types/Querys/ICategory";
 import { DataTable } from "./components/Table/Data-Table";
 import { createColumns } from "./components/Table/columns";
 import { useState } from "react";
-import { AddCategoria } from "./components/Dialog/AddCategoria";
+import { AddCategory } from "./components/Dialog/AddCategoria";
 
-export default function CategoriasModule({ data }: { data: ICategoria[] }) {
-  const [categoria, setCategoria] = useState(data);
+export default function CategoryModule({ data }: { data: ICategory[] }) {
+  const [category, setCategory] = useState(data);
 
-  const handleDelete = (deleteItem: ICategoria) => {
-    const newData = categoria.filter((item) => item.id !== deleteItem.id);
-    setCategoria(newData);
+  const handleDelete = (deleteItem: ICategory) => {
+    const newData = category.filter((item) => item.id !== deleteItem.id);
+    setCategory(newData);
   };
 
-  const handleUpdate = (updateItem: ICategoria) => {
+  const handleUpdate = (updateItem: ICategory) => {
     const newData = data.map((item) => {
       if (item.id === updateItem.id) {
         return updateItem;
       }
       return item;
     });
-    setCategoria(newData);
+    setCategory(newData);
   };
 
   const columns = createColumns(handleDelete, handleUpdate);
@@ -31,10 +30,10 @@ export default function CategoriasModule({ data }: { data: ICategoria[] }) {
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Categorias</h2>
-          <AddCategoria />
+          <AddCategory />
         </div>
 
-        <DataTable columns={columns} data={categoria} />
+        <DataTable columns={columns} data={category} />
       </div>
     </div>
   );

@@ -2,10 +2,10 @@ import AdminNoticiasModule from "@/modules/Admin/Noticias";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function AdminNoticias() {
-  const result = await fetchData("noticias");
+  const news = await fetchData("news");
 
-  if (result) {
-    return <AdminNoticiasModule data={result} />;
+  if (news) {
+    return <AdminNoticiasModule news={news} />;
   } else {
     return <div>Error al solicitar los datos</div>;
   }

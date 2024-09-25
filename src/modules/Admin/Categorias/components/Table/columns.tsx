@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { ICategoria } from "@/shared/types/Querys/ICategorias";
+import { ICategory } from "@/shared/types/Querys/ICategory";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { DeleteCategoria } from "../Dialog/DeleteCategoria";
-import EditCategoria from "../Dialog/EditCategoria";
+import { EditCategory } from "../Dialog/EditCategoria";
 import { ProgramCategory } from "../Dialog/ProgramCategory";
 
 export const createColumns = (
-  onDataDelete: (deleteItem: ICategoria) => void,
-  onDataUpdate: (updateItem: ICategoria) => void
-): ColumnDef<ICategoria>[] => [
+  onDataDelete: (deleteItem: ICategory) => void,
+  onDataUpdate: (updateItem: ICategory) => void
+): ColumnDef<ICategory>[] => [
   {
     accessorKey: "nombre",
     header: ({ column }) => {
@@ -116,7 +116,7 @@ export const createColumns = (
       return (
         <div className="flex gap-4">
           <ProgramCategory data={row.original} onDataUpdate={onDataUpdate} />
-          <EditCategoria data={row.original} onDateUpdate={onDataUpdate} />
+          <EditCategory data={row.original} onDateUpdate={onDataUpdate} />
           <DeleteCategoria data={row.original} onDataDelete={onDataDelete} />
         </div>
       );

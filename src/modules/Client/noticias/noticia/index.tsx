@@ -45,17 +45,17 @@ export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
             </p>
             <div className="mt-4 flex items-center justify-between">
               <div className="text-xs text-muted-foreground">
-                {noticia.created.toString()}
+                {/* {noticia.createdAt} - {noticia.modifiedAt} */}
               </div>
             </div>
           </CardContent>
-          {noticia.images?.length && noticia.images.length > 0 ? (
+          {noticia.images?.length && noticia.images.length > 1 ? (
             <Carousel>
               <CarouselContent>
                 {noticia.images.map((img, index) => (
                   <CarouselItem key={index}>
                     <img
-                      src={`http://localhost:3006/uploads/${img}`}
+                      src={`https://uesevi.org.ar/img/news/${img.url}`}
                       alt={`News Image ${index + 1}`}
                       className="rounded-md object-cover aspect-[16/9]"
                     />
@@ -65,7 +65,9 @@ export default function NoticiaModule({ noticia }: { noticia: INoticias }) {
             </Carousel>
           ) : (
             <img
-              src={`/logo_uesevi.png`}
+              src={`https://uesevi.org.ar/img/news/${
+                noticia.images?.[0] ?? ""
+              }`}
               alt="News Image"
               className="rounded-md object-cover aspect-[16/9] m-auto"
             />

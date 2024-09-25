@@ -29,6 +29,7 @@ export const LoginCard = () => {
       formData.append("rol", "admin");
 
       const response = await postData("login", formData);
+      console.log(response);
 
       if (response.ok && response.data) {
         const { token, user } = response.data;
@@ -36,13 +37,7 @@ export const LoginCard = () => {
         userStore.getState().setAuth(token, user as any);
         setCookie("auth-token", token);
 
-        if (user.rol === "admin") {
-          router.replace("/admin/dashboard");
-        } else if (user.rol === "empresa") {
-          router.replace("/admin/empresa/dashboard");
-        } else {
-          setError("Rol de usuario no reconocido");
-        }
+        router.replace("/admin/dashboard");
       } else {
         setError("Error al iniciar sesión. Por favor, intente de nuevo.");
       }

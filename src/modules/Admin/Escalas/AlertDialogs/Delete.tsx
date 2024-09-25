@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { deleteData } from "@/services/mysql/functions";
-import { IEscalas } from "@/shared/types/IEscalas";
+import { IEscalas } from "@/shared/types/Querys/IEscalas";
 import { Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 export const Delete = ({
   data,
@@ -22,9 +23,15 @@ export const Delete = ({
   onDataDelete: (deleteItem: IEscalas) => void;
 }) => {
   const handleDelete = async () => {
-    const result = await deleteData("escalas/delete", data.id);
+    const result = await deleteData("scales/delete", data.id);
 
-    onDataDelete(data);
+
+    if (result.message === "Archivo eliminado") {
+      onDataDelete(data);
+      toast.success("Archivo eliminado");
+    } else {
+      toast.error("Error al eliminar el archivo");
+    }
   };
 
   return (

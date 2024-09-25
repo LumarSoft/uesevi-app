@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateData } from "@/services/mysql/functions";
-import { ICategoria } from "@/shared/types/Querys/ICategorias";
+import { ICategory } from "@/shared/types/Querys/ICategory";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -21,28 +21,28 @@ export const ProgramCategory = ({
   data,
   onDataUpdate,
 }: {
-  data: ICategoria;
-  onDataUpdate: (deleteItem: ICategoria) => void;
+  data: ICategory;
+  onDataUpdate: (deleteItem: ICategory) => void;
 }) => {
-  const [fechaCambio, setFechaCambio] = useState<string | null>(
+  const [dateChange, setDateChange] = useState<string | null>(
     data.fecha_vigencia
   );
-  const [sueldoFuturo, setSueldoFuturo] = useState<string | null>(
+  const [futureSalary, setFutureSalary] = useState<string | null>(
     data.sueldo_futuro
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fechaCambio || !sueldoFuturo) {
+    if (!dateChange || !futureSalary) {
       return;
     }
 
     const formData = new FormData();
-    formData.append("sueldo_futuro", sueldoFuturo);
-    formData.append("fecha_futuro", fechaCambio);
+    formData.append("futureSalary", futureSalary);
+    formData.append("dateChange", dateChange);
 
     const result = await updateData(
-      "categorias/salario-futuro",
+      "category/future-salary",
       data.id,
       formData
     );
@@ -50,8 +50,8 @@ export const ProgramCategory = ({
     if (result.affectedRows > 0) {
       onDataUpdate({
         ...data,
-        sueldo_futuro: sueldoFuturo,
-        fecha_vigencia: fechaCambio,
+        sueldo_futuro: futureSalary,
+        fecha_vigencia: dateChange,
       });
       toast.success("Programado con exito");
     }
@@ -76,7 +76,7 @@ export const ProgramCategory = ({
               <Input
                 placeholder="Nombre"
                 type="date"
-                onChange={(e) => setFechaCambio(e.target.value)}
+                onChange={(e) => setDateChange(e.target.value)}
               />
             </div>
             <div className="grid w-full  items-center gap-1.5">
@@ -84,8 +84,8 @@ export const ProgramCategory = ({
               <Input
                 placeholder="Sueldo"
                 type="number"
-                value={sueldoFuturo || ""}
-                onChange={(e) => setSueldoFuturo(e.target.value.toString())}
+                value={futureSalary || ""}
+                onChange={(e) => setFutureSalary(e.target.value.toString())}
               />
             </div>
           </AlertDialogHeader>

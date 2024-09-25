@@ -24,13 +24,13 @@ import {
 import { toast } from "react-toastify";
 
 export default function AddNoticiaModule() {
-  const [epigraph, setEpigraph] = useState("");
   const [headline, setHeadline] = useState("");
+  const [epigraph, setEpigraph] = useState("");
   const [body, setBody] = useState("");
   const [secondBody, setSecondBody] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [pdf, setPdf] = useState<File | null>(null);
-  const [destinatario, setDestinatario] = useState("");
+  const [addressee, setAddressee] = useState("");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -51,16 +51,16 @@ export default function AddNoticiaModule() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!headline || !epigraph || !body || !destinatario) {
+    if (!headline || !epigraph || !body || !addressee) {
       toast.error("Por favor, rellene todos los campos");
     }
 
     const formData = new FormData();
-    formData.append("titulo", headline);
-    formData.append("epigrafe", epigraph);
-    formData.append("cuerpo", body);
-    formData.append("cuerpo2", secondBody);
-    formData.append("destinatario", destinatario);
+    formData.append("headline", headline);
+    formData.append("epigraph", epigraph);
+    formData.append("body", body);
+    formData.append("body2", secondBody);
+    formData.append("addressee", addressee);
     if (pdf) {
       formData.append("pdf", pdf);
     }
@@ -68,7 +68,7 @@ export default function AddNoticiaModule() {
       formData.append("images", image); // Usa el mismo nombre para el campo de las imágenes
     });
 
-    const response = await postData("noticias/add-noticia", formData);
+    const response = await postData("news/add-new", formData);
 
     if (response.ok === true) {
       toast.success("Noticia añadida correctamente");
@@ -83,7 +83,7 @@ export default function AddNoticiaModule() {
       >
         <div className="space-y-2">
           <Label>Destinatario (obligatorio)</Label>
-          <Select onValueChange={setDestinatario}>
+          <Select onValueChange={setAddressee}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Seleccionar" />
             </SelectTrigger>

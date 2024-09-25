@@ -1,23 +1,23 @@
 "use client";
 import { useState } from "react";
 import { createColumns } from "@/modules/Admin/Escalas/Table/Columns";
-import { DataTable } from "@/modules/Admin/Usuarios/Empresas/components/Table/Data-Table";
-import { IEscalas } from "@/shared/types/IEscalas";
-import { AddEscalaDialog } from "@/modules/Admin/Escalas/Dialog/AddEscalaDialog";
+import { IEscalas } from "@/shared/types/Querys/IEscalas";
+import { AddScaleDialog } from "@/modules/Admin/Escalas/Dialog/AddEscalaDialog";
+import { DataTable } from "./Table/Data-Table";
 
 const EscalasModule = ({ data }: { data: IEscalas[] }) => {
-  const [escalas, setEscalas] = useState(data);
+  const [scales, setScales] = useState(data);
 
   const handleUpdate = (updatedItem: IEscalas) => {
-    const newData = escalas.map((item) =>
+    const newData = scales.map((item) =>
       item.id === updatedItem.id ? updatedItem : item
     );
-    setEscalas(newData);
+    setScales(newData);
   };
 
   const handleDelete = (deleteItem: IEscalas) => {
-    const newData = escalas.filter((item) => item.id !== deleteItem.id);
-    setEscalas(newData);
+    const newData = scales.filter((item) => item.id !== deleteItem.id);
+    setScales(newData);
   };
 
   const columns = createColumns(handleUpdate, handleDelete);
@@ -31,8 +31,8 @@ const EscalasModule = ({ data }: { data: IEscalas[] }) => {
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Escalas</h2>
         </div>
-        <AddEscalaDialog id={lastId} />
-        <DataTable columns={columns} data={escalas} filterColumn="nombre" />
+        <AddScaleDialog id={lastId} />
+        <DataTable columns={columns} data={scales} filterColumn="nombre" />
       </div>
     </div>
   );
