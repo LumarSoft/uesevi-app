@@ -1,3 +1,4 @@
+import Footer from "@/shared/components/Footer/Footer";
 import { DropDownNav, Navbar } from "@/shared/components/Navbar/Navbar";
 
 export default function ClientLayout({
@@ -10,6 +11,7 @@ export default function ClientLayout({
       <Navbar />
       <DropDownNav />
       {children}
+      <Footer />
     </main>
   );
 }
