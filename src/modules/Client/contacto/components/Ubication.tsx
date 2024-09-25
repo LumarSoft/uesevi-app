@@ -1,15 +1,22 @@
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
-import { Building, MapPin, UserCog, Users } from "lucide-react";
+import {
+  Building,
+  MapPin,
+  MapPinIcon,
+  Phone,
+  UserCog,
+  Users,
+} from "lucide-react";
 import React from "react";
 
 const Ubication = () => {
   return (
     <FramerComponent
-      style="text-primary-foreground p-8  flex flex-col justify-center items-center"
+      style="text-primary-foreground p-8  flex flex-col justify-center items-center bg-gradient-to-br from-slate-800 to-slate-900"
       animationInitial={{ x: 200, opacity: 0, backgroundColor: "white" }}
       animationAnimate={{ x: 0, opacity: 1, backgroundColor: "#334155" }}
     >
-      <div className="w-full max-w-xl space-y-8 text-center lg:pt-16">
+      <div className="w-full max-w-xl space-y-8 text-center lg:pt-16 ">
         <div className="flex flex-col items-center space-y-4">
           <MapPin className="w-12 h-12" />
           <h2 className="text-3xl font-bold lg:text-4xl">¿Dónde estamos?</h2>
@@ -21,51 +28,18 @@ const Ubication = () => {
             loading="lazy"
           ></iframe>
         </div>
-        <div className="space-y-6 text-left">
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-semibold flex items-center">
-                <Building className="w-5 h-5 mr-2" /> Taller CASA CENTRAL:
-              </h4>
-              <p>
-                <b className="text-cyan-400"> (+54 911)</b> 4452-5240
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold flex items-center">
-                <Building className="w-5 h-5 mr-2" /> Taller Anexo (ARGENPROP
-                SRL):
-              </h4>
-              <p>
-                <b className="text-cyan-400">(+54 911)</b> 4741-2035
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold flex items-center">
-                <Users className="w-5 h-5 mr-2" /> En Campaña
-              </h4>
-              <p>
-                Juan Carlos: <b className="text-cyan-400">(+54 911)</b>{" "}
-                15-5327-3431
-              </p>
-              <p>
-                Pablo: <b className="text-cyan-400">(+54 911)</b> 15-3422-0562
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold flex items-center">
-                <UserCog className="w-5 h-5 mr-2" /> Oficina Técnica /
-                Administración
-              </h4>
-              <p>
-                Oficina Técnica (Yanina):{" "}
-                <b className="text-cyan-400">(+54 911)</b> 15-5384-4610
-              </p>
-              <p>
-                Administración: <b className="text-cyan-400">(+54 911)</b>{" "}
-                15-5036-4651
-              </p>
-            </div>
+        <div className="space-y-6 text-left text-lg">
+          <h1 className="text-xl text-center font-bold uppercase">
+            Union de Empleados de Seguridad y Vigilancia
+          </h1>
+          <div className="space-y-4 ">
+            <span className="font-semibold flex items-center ">
+              <MapPinIcon className="w-5 h-5 mr-2" />
+              Mariano Moreno 58, CP 2000, Rosario, Santa Fe.
+            </span>
+            <span className="font-semibold flex items-center ">
+              <Phone className="w-5 h-5 mr-2" /> 0341 2974615
+            </span>
           </div>
         </div>
       </div>
