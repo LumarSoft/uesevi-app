@@ -26,16 +26,16 @@ export const ToggleEmpresa = ({
   companies: IEmpresa[];
   onDataUpdate: (updateItem: IFormulario) => void;
 }) => {
-  const [newCompany, setNewCompany] = useState(data.empresa_provisoria_nombre);
+  const [newCompany, setNewCompany] = useState(data.empresa);
 
   const handleChange = () => {
     const formData = new FormData();
-    formData.append("company_provisory_name", newCompany);
+    formData.append("empresa", newCompany);
 
-    updateData("forms/change-company", data.numero_socio, formData);
+    updateData("forms/change-company", Number(data.cuil), formData);
     onDataUpdate({
       ...data,
-      empresa_provisoria_nombre: newCompany,
+      empresa: newCompany,
     });
   };
 

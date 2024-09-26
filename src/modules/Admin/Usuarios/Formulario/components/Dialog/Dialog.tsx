@@ -14,7 +14,15 @@ import { Eye } from "lucide-react";
 
 import React from "react";
 
+
 export const DialogComponent = ({ data }: { data: IFormulario }) => {
+
+  const formattedFechaNacimiento = data.fecha_nacimiento
+  ? new Date(data.fecha_nacimiento).toLocaleDateString("es-ES")
+  : "";
+
+  console.log(data);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -37,24 +45,25 @@ export const DialogComponent = ({ data }: { data: IFormulario }) => {
               <Input type="text" id="name" disabled value={data.nombre} />
             </div>
             <div className="grid w-full  items-center gap-0.5">
-              <Label htmlFor="apellido">Apellido</Label>
-              <Input type="text" id="apellido" disabled value={data.apellido} />
-            </div>
-            <div className="grid w-full  items-center gap-0.5">
               <Label htmlFor="cuil">CUIL</Label>
               <Input type="text" id="cuil" disabled value={data.cuil} />
             </div>
             <div className="grid w-full  items-center gap-0.5">
               <Label htmlFor="nacionalidad">Email</Label>
-              <Input type="text" id="email" disabled value={data.email} />
+              <Input
+                type="text"
+                id="email"
+                disabled
+                value={data.correo_electronico}
+              />
             </div>
             <div className="grid w-full  items-center gap-0.5">
               <Label htmlFor="provincia">Numero de socio (DNI)</Label>
-              <Input type="text" id="dni" disabled value={data.numero_socio} />
+              <Input type="text" id="dni" disabled value={data.dni} />
             </div>
             <div className="grid w-full  items-center gap-0.5">
-              <Label htmlFor="estado">Estado</Label>
-              <Input type="text" id="estado" disabled value={data.estado} />
+              <Label htmlFor="telefono">Telefono</Label>
+              <Input type="text" id="telefono" disabled value={data.telefono} />
             </div>
           </div>
 
@@ -67,7 +76,7 @@ export const DialogComponent = ({ data }: { data: IFormulario }) => {
                     type="text"
                     id="empresa"
                     disabled
-                    value={data.empresa_provisoria_nombre}
+                    value={data.empresa}
                   />
                 </div>
                 <div className="grid w-full  items-center gap-0.5">
@@ -98,21 +107,12 @@ export const DialogComponent = ({ data }: { data: IFormulario }) => {
                   />
                 </div>
                 <div className="grid w-full  items-center gap-0.5">
-                  <Label htmlFor="telefono">Telefono</Label>
-                  <Input
-                    type="text"
-                    id="telefono"
-                    disabled
-                    value={data.telefono}
-                  />
-                </div>
-                <div className="grid w-full  items-center gap-0.5">
                   <Label htmlFor="fechanac">Fecha de nacimiento</Label>
                   <Input
                     type="text"
                     id="fechanac"
                     disabled
-                    value={data.fecha_nacimiento}
+                    value={formattedFechaNacimiento}
                   />
                 </div>
               </div>
