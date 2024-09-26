@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { postData } from "@/services/mysql/functions";
+import { toast } from "react-toastify";
 
 export const AddAdmin = ({
   onAdminAdded,
@@ -39,29 +40,16 @@ export const AddAdmin = ({
     formData.append("password", password);
 
     try {
-      const result = await postData("administrators/add-admin", formData);
+      const result = await postData("administrators", formData);
 
-      if (result.ok) {
-        // Suponiendo que result.data contiene el nuevo administrador
-        const newAdmin = {
-          id: result.data.id, // Asegúrate de que esto coincida con lo que el backend devuelve
-          nombre: firstName,
-          apellido: lastName,
-          created: new Date().toISOString(),
-          email: email,
-          telefono: phone,
-        };
-
-        // Pasamos el nuevo administrador al componente padre
-        onAdminAdded(newAdmin);
-        setIsOpen(false);
-      } else {
-        if (result.error) {
-          setError(
-            "Error al añadir administrador. El correo electrónico ya está en uso."
-          );
-        }
+      if (!result.ok) {
+        setError("Error al agregar el administrador.");
+        return;
       }
+
+      onAdminAdded({ id: result.data.id, firstName, lastName, email, phone });
+      setIsOpen(false);
+      toast.success("Administrador agregado correctamente.");
     } catch (error: any) {
       console.error("Error:", error);
     }

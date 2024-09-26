@@ -30,7 +30,7 @@ export const AddCategory = () => {
     formData.append("name", name);
     formData.append("salary", salary.toString());
 
-    const result = await postData("category/add-category", formData);
+    const result = await postData("category", formData);
 
     if (result.ok === true) {
       toast.success("Categoria agregada correctamente");

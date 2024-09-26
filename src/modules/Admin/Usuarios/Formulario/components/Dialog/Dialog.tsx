@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -11,17 +10,18 @@ import { Input } from "@/components/ui/input";
 import { IFormulario } from "@/shared/types/Querys/IFormulario";
 import { Label } from "@radix-ui/react-label";
 import { Eye } from "lucide-react";
-
 import React from "react";
 
 
 export const DialogComponent = ({ data }: { data: IFormulario }) => {
-
-  const formattedFechaNacimiento = data.fecha_nacimiento
-  ? new Date(data.fecha_nacimiento).toLocaleDateString("es-ES")
-  : "";
-
-  console.log(data);
+  // Función para formatear la fecha en dd/mm/yy
+  const formatFecha = (fechaString: string) => {
+    const fecha = new Date(fechaString);
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0"); // Los meses empiezan desde 0
+    const anio = String(fecha.getFullYear()).slice(2); // Tomar los últimos 2 dígitos del año
+    return `${dia}/${mes}/${anio}`;
+  };
 
   return (
     <Dialog>
@@ -34,89 +34,78 @@ export const DialogComponent = ({ data }: { data: IFormulario }) => {
         <div>
           <DialogHeader>
             <DialogTitle className="text-center text-2xl font-semibold">
-              INFORMACION del socio
+              INFORMACIÓN DEL EMPLEADO
             </DialogTitle>
           </DialogHeader>
         </div>
-        <div className="w-full flex gap-6">
-          <div className="w-full flex flex-col gap-4">
-            <div className="grid w-full  items-center gap-0.5">
-              <Label htmlFor="name">Nombre</Label>
-              <Input type="text" id="name" disabled value={data.nombre} />
-            </div>
-            <div className="grid w-full  items-center gap-0.5">
-              <Label htmlFor="cuil">CUIL</Label>
-              <Input type="text" id="cuil" disabled value={data.cuil} />
-            </div>
-            <div className="grid w-full  items-center gap-0.5">
-              <Label htmlFor="nacionalidad">Email</Label>
-              <Input
-                type="text"
-                id="email"
-                disabled
-                value={data.correo_electronico}
-              />
-            </div>
-            <div className="grid w-full  items-center gap-0.5">
-              <Label htmlFor="provincia">Numero de socio (DNI)</Label>
-              <Input type="text" id="dni" disabled value={data.dni} />
-            </div>
-            <div className="grid w-full  items-center gap-0.5">
-              <Label htmlFor="telefono">Telefono</Label>
-              <Input type="text" id="telefono" disabled value={data.telefono} />
-            </div>
+        <div className="w-full grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Nombre</Label>
+            <Input value={data.nombre} disabled />
           </div>
 
-          <div className="w-full flex flex-col justify-between">
-            <div>
-              <div className="flex flex-col gap-4">
-                <div className="grid w-full  items-center gap-0.5">
-                  <Label htmlFor="empresa">Empresa</Label>
-                  <Input
-                    type="text"
-                    id="empresa"
-                    disabled
-                    value={data.empresa}
-                  />
-                </div>
-                <div className="grid w-full  items-center gap-0.5">
-                  <Label htmlFor="nacionalidad">Nacionalidad</Label>
-                  <Input
-                    type="text"
-                    id="nacionalidad"
-                    disabled
-                    value={data.nacionalidad}
-                  />
-                </div>
-                <div className="grid w-full  items-center gap-0.5">
-                  <Label htmlFor="codigopostal">Código postal</Label>
-                  <Input
-                    type="text"
-                    id="codigopostal"
-                    disabled
-                    value={data.codigo_postal}
-                  />
-                </div>
-                <div className="grid w-full  items-center gap-0.5">
-                  <Label htmlFor="domicilio">Domicilio</Label>
-                  <Input
-                    type="text"
-                    id="domicilio"
-                    disabled
-                    value={data.domicilio}
-                  />
-                </div>
-                <div className="grid w-full  items-center gap-0.5">
-                  <Label htmlFor="fechanac">Fecha de nacimiento</Label>
-                  <Input
-                    type="text"
-                    id="fechanac"
-                    disabled
-                    value={formattedFechaNacimiento}
-                  />
-                </div>
-              </div>
-            </div>
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Apellido</Label>
+            <Input value={data.apellido} disabled />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">DNI</Label>
+            <Input value={data.dni} disabled />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Correo Electrónico</Label>
+            <Input value={data.correo_electronico} disabled />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Fecha de Nacimiento</Label>
+            <Input value={formatFecha(data.fecha_nacimiento)} disabled />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">CUIL</Label>
+            <Input value={data.cuil} disabled />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Fecha de Ingreso</Label>
+            <Input value={formatFecha(data.fecha_ingreso)} disabled />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Estado Civil</Label>
+            <Input value={data.estado_civil} disabled />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Nacionalidad</Label>
+            <Input value={data.nacionalidad} disabled />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Domicilio</Label>
+            <Input value={data.domicilio} disabled />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Localidad</Label>
+            <Input value={data.localidad} disabled />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Provincia</Label>
+            <Input value={data.provincia} disabled />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Teléfono</Label>
+            <Input value={data.telefono} disabled />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-sm font-semibold">Empresa</Label>
+            <Input value={data.empresa} disabled />
           </div>
         </div>
       </DialogContent>

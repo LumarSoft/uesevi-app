@@ -6,11 +6,14 @@ export default async function EditNoticia({
 }: {
   params: { id: number };
 }) {
-  const data = await fetchData(`news/${id}`);
+  const NewsIdResult = await fetchData(`news/${id}`);
 
-  if (!data) {
+
+  if (!NewsIdResult.ok || NewsIdResult.error) {
     return <div>Error al solicitar los datos</div>;
   }
+
+  const data = NewsIdResult.data;
 
   return <EditNoticiaModule data={data} />;
 }

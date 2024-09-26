@@ -68,7 +68,7 @@ export default function AddNoticiaModule() {
       formData.append("images", image); // Usa el mismo nombre para el campo de las imágenes
     });
 
-    const response = await postData("news/add-new", formData);
+    const response = await postData("news", formData);
 
     if (response.ok === true) {
       toast.success("Noticia añadida correctamente");

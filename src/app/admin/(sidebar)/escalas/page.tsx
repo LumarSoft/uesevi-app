@@ -4,10 +4,11 @@ import { fetchData } from "@/services/mysql/functions";
 export default async function Escalas() {
   const result = await fetchData("scales");
 
-  if (result) {
-    return <EscalasModule data={result} />;
-  } else {
-    console.error("Error fetching data");
-    return <div>Error interno en el servidor</div>;
+  if (!result.ok || result.error) {
+    return <div>Error al solicitar los datos</div>;
   }
+  
+  const data = result.data;
+
+  return <EscalasModule data={data} />;
 }

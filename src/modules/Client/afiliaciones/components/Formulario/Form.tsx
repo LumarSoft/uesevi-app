@@ -240,7 +240,37 @@ export const Form = () => {
     formData.append("objective", objective);
 
     try {
-      const result = await postData("", formData);
+      const result = await postData("forms", formData);
+      console.log(result);
+      if (result.data.message === "Formulario creado") {
+        setName("");
+        setLastName("");
+        setEmail("");
+        setPhone("");
+        setCuil("");
+        setDni("");
+        setBirthDate("");
+        setBirthPlace("");
+        setNationality("");
+        setProvince("");
+        setCity("");
+        setAddress("");
+        setPostalCode("");
+        setCivilStatus("");
+        setChildrenCount(0);
+        setCompany("");
+        setCategory("");
+        setEntryDate("");
+        setCompanyPhone("");
+        setCompanyAddress("");
+        setCompanyCity("");
+        setCompanyPostalCode("");
+        setCompanyProvince("");
+        setCompanyCuit("");
+        setAgencyNumber("");
+        setObjective("");
+        return toast.success("Formulario enviado correctamente");
+      }
     } catch (error) {}
   };
 
@@ -387,10 +417,10 @@ export const Form = () => {
                     <SelectValue>{civilStatus || "Seleccionar"}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="single">Soltero</SelectItem>
-                    <SelectItem value="married">Casado</SelectItem>
-                    <SelectItem value="divorced">Divorciado</SelectItem>
-                    <SelectItem value="widowed">Viudo</SelectItem>
+                    <SelectItem value="Soltero">Soltero</SelectItem>
+                    <SelectItem value="Casado">Casado</SelectItem>
+                    <SelectItem value="Divocriado">Divorciado</SelectItem>
+                    <SelectItem value="Viudo">Viudo</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

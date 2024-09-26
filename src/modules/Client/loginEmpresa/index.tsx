@@ -29,7 +29,7 @@ export function LoginEmpresaModule() {
     formData.append("password", password);
 
     try {
-      const result = await postData("login/loginEmpresa", formData);
+      const result = await postData("login/company", formData);
       const { data } = result;
       if (data.error) {
         toast.error(result.data.details.message);

@@ -2,7 +2,11 @@ import HomeModule from "@/modules/Client/Home";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function Home() {
-  const latestNews = await fetchData("news/getLastThree");
+  const latestNewsResponse = await fetchData("news/last-three");
 
-  return <HomeModule noticias={latestNews}/>;
+
+  const latestNews = latestNewsResponse.data;
+
+  return <HomeModule noticias={latestNews} />;
 }
+

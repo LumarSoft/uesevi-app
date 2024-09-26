@@ -55,7 +55,7 @@ export const StateDialog = ({
 
     try {
       const result: any = await updateData(
-        "statements/changeState",
+        "statements/:id/state",
         statement.id,
         formData
       );

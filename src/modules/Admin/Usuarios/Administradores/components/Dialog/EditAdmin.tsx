@@ -38,14 +38,11 @@ export const EditAdminDialog = ({
 
     try {
       // Llamamos a la función que realiza la actualización en el backend
-      const result = await updateData(
-        "administrators/update-admin",
-        data.id,
-        formData
-      );
+      const result = await updateData("administrators/:id", data.id, formData);
 
-      if (result) {
-        // Creamos el objeto actualizado para reflejar los cambios localmente
+      console.log("result", result);
+
+      if (result.ok) {
         const updatedAdmin: IAdmin = {
           ...data,
           nombre: firstName,
@@ -57,7 +54,9 @@ export const EditAdminDialog = ({
         // Llamamos a onDataUpdate con el objeto actualizado
         onDataUpdate(updatedAdmin);
       } else {
-        console.error("Failed to update user: No result returned from updateData");
+        console.error(
+          "Failed to update user: No result returned from updateData"
+        );
       }
     } catch (error) {
       console.error("Error updating user:", error);

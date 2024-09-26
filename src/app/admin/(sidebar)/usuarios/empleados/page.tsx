@@ -6,9 +6,20 @@ export default async function AdminEmpleados() {
 
   const companies = await fetchData("companies");
 
-  if (employees && companies) {
-    return <AdminEmpleadosModule employees={employees} companies={companies} />;
-  } else {
-    return <div>Error: Error al consultar los datos</div>;
+  if (!employees.ok || employees.error || !employees.data.length) {
+    console.error("Error al obtener los empleados:", employees.error);
+    return <div>Error al cargar los empleados.</div>;
   }
+
+  if (!companies.ok || companies.error || !companies.data.length) {
+    console.error("Error al obtener las empresas:", companies.error);
+    return <div>Error al cargar las empresas.</div>;
+  }
+
+  return (
+    <AdminEmpleadosModule
+      employees={employees.data}
+      companies={companies.data}
+    />
+  );
 }

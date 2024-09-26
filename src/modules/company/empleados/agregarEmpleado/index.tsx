@@ -1,8 +1,5 @@
-"use client";
 
 import { AddEmployee } from "./components/AddEmployee";
-
-
 
 export default function AgregarEmpleadosModule() {
   return (
