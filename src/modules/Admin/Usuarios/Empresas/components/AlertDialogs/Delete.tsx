@@ -24,16 +24,17 @@ export const Delete = ({
 }) => {
   const handleDelete = async () => {
     try {
-      const result = await deleteData("companies/delete", data.id);
-      console.log(result);
-      if (result.message === "Empresa eliminada") {
-        toast.success("Empresa eliminada con exito");
+      const result = await deleteData("companies/:id", data.id);
+      if (result.ok) {
+        toast.success("Empresa eliminada exitosamente");
+        onDataDelete(data);
+      } else {
+        toast.error("Error al eliminar la empresa");
       }
     } catch (error) {
-      console.error("Failed to delete data", error);
+      console.error("Failed to delete company:", error);
+      toast.error("Error al eliminar la empresa");
     }
-
-    onDataDelete(data);
   };
 
   return (

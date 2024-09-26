@@ -2,12 +2,22 @@ import AdminFormularioModule from "@/modules/Admin/Usuarios/Formulario";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function AdminFormulario() {
-  const forms = await fetchData("forms");
-  const companies = await fetchData("companies");
+  const formsResponse = await fetchData("forms");
+  const companiesResponse = await fetchData("companies");
 
-  if (forms && companies) {
-    return <AdminFormularioModule forms={forms} companies={companies} />;
-  } else {
-    return <div>Error: Error al solicitar los datos</div>;
+  if (!formsResponse.ok || formsResponse.error) {
+    console.error("Error al obtener los formularios:", formsResponse.error);
+    return <div>Error al cargar los formularios.</div>;
   }
+
+  if (!companiesResponse.ok || companiesResponse.error) {
+    console.error("Error al obtener las empresas:", companiesResponse.werror);
+    return <div>Error al cargar las empresas.</div>;
+  }
+
+
+  const forms = formsResponse.data;
+  const companies = companiesResponse.data;
+
+  return <AdminFormularioModule forms={forms} companies={companies} />;
 }

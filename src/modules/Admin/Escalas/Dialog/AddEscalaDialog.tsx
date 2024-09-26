@@ -1,16 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { File } from "lucide-react";
 import { postData } from "@/services/mysql/functions";
 import { toast } from "react-toastify";
 import {
@@ -27,7 +18,6 @@ export const AddScaleDialog = ({ id }: { id: number }) => {
   const [file, setFile] = useState<File | null>(null);
 
   const handleSubmit = async () => {
-    
     if (!name) {
       return toast.error("Por favor, ingrese un nombre.");
     } else if (!file) {
@@ -40,7 +30,7 @@ export const AddScaleDialog = ({ id }: { id: number }) => {
     formData.append("pdf", file);
 
     try {
-      const result = await postData("scales/create", formData);
+      const result = await postData("scales", formData);
       if (result.ok) {
         toast.success("Archivo subido correctamente.");
       }

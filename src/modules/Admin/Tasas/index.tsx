@@ -18,9 +18,9 @@ const TasasModule = ({ data }: { data: ITasas[] }) => {
     const formData = new FormData();
     formData.append("percentage", percentage);
 
-    const result = await updateData("rates/update-rate", data[0].id, formData);
+    const result = await updateData("rates/:id", data[0].id, formData);
 
-    if (result) {
+    if (result.ok) {
       toast.success("Tasa actualizada");
     } else {
       toast.error("Error al actualizar la tasa");

@@ -42,12 +42,12 @@ export const ProgramCategory = ({
     formData.append("dateChange", dateChange);
 
     const result = await updateData(
-      "category/future-salary",
+      "category/:id/future-salary",
       data.id,
       formData
     );
 
-    if (result.affectedRows > 0) {
+    if (result.ok) {
       onDataUpdate({
         ...data,
         sueldo_futuro: futureSalary,

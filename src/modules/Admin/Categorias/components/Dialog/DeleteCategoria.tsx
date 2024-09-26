@@ -22,9 +22,9 @@ export const DeleteCategoria = ({
   onDataDelete: (deleteItem: ICategoria) => void;
 }) => {
   const handleDelete = async () => {
-    const result = await deleteData("category/delete-category", data.id);
+    const result = await deleteData("category/:id", data.id);
 
-    if (result && result.warningStatus > 0) {
+    if (!result.ok) {
       return toast.error("Error al eliminar datos:", result);
     }
 
