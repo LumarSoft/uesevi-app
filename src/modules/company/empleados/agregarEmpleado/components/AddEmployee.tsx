@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "react-toastify";
 import { postData } from "@/services/mysql/functions";
+import { userStore } from "@/shared/stores/userStore";
 
 export const AddEmployee = () => {
   const [firstName, setfirstName] = useState("");
@@ -20,9 +21,13 @@ export const AddEmployee = () => {
   const [category, setCategory] = useState("");
   const [employmentStatus, setEmploymentStatus] = useState("");
   const [unionAdhesion, setUnionAdhesion] = useState("");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const { user } = userStore();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
 
     // Validamos que haya un valor
     if (
@@ -31,7 +36,8 @@ export const AddEmployee = () => {
       !cuil ||
       !category ||
       !employmentStatus ||
-      !unionAdhesion
+      !unionAdhesion ||
+      !email
     ) {
       return toast.error("Todos los campos son obligatorios");
     }
@@ -66,6 +72,7 @@ export const AddEmployee = () => {
       return toast.error("La adhesion al sindicato debe ser un número");
     }
 
+
     const formData = new FormData();
     formData.append("firstName", firstName);
     formData.append("lastName", lastName);
@@ -73,9 +80,15 @@ export const AddEmployee = () => {
     formData.append("category", category);
     formData.append("employmentStatus", employmentStatus);
     formData.append("unionAdhesion", unionAdhesion);
+    formData.append("email", email);
+    formData.append("companyId", user.empresa.id);
 
     try {
       const result = await postData("employees", formData);
+
+      if (result.ok) {
+        toast.success("Empleado agregado correctamente");
+      }
     } catch (error) {
       toast.error("Error al agregar el empleado");
       console.log(error);
@@ -84,6 +97,7 @@ export const AddEmployee = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {error && <div className="text-red-500">{error}</div>}
       <Label>
         Nombre
         <Input onChange={(e) => setfirstName(e.target.value)} />
@@ -91,6 +105,10 @@ export const AddEmployee = () => {
       <Label>
         Apellido
         <Input onChange={(e) => setLastName(e.target.value)} />
+      </Label>
+      <Label>
+        Email
+        <Input onChange={(e) => setEmail(e.target.value)} />
       </Label>
       <Label>
         CUIL{" "}
