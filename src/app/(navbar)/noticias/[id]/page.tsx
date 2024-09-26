@@ -8,9 +8,7 @@ export default async function NoticiaPage({
 }) {
   const newResponse = await fetchOneRow("news/:id", id);
 
-
-  if (!newResponse.ok || newResponse.error) {
-    console.error("Error al obtener la noticia:", newResponse.error);
+  if (!newResponse.ok) {
     return <div>Error al cargar la noticia.</div>;
   }
 

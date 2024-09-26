@@ -6,12 +6,13 @@ export default async function ViewNoticia({
 }: {
   params: { id: number };
 }) {
-  const result = await fetchOneRow("noticias", id);
+  const newByIdResult = await fetchOneRow("noticias", id);
 
-  if (result) {
-    return <ViewNoticiaModule data={result[0]} />;
-  } else {
-    console.error(result.error);
-    return <div>Error: {result.error}</div>;
+  if (!newByIdResult.ok) {
+    return <div>Error al cargar la noticia.</div>;
   }
+
+  const newByIdData = newByIdResult.data;
+
+  return <ViewNoticiaModule data={newByIdData} />;
 }
