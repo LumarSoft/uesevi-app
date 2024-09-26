@@ -75,13 +75,12 @@ export const AddEmployee = () => {
     formData.append("unionAdhesion", unionAdhesion);
 
     try {
-      const result = await postData("employees/addEmployee", formData);
+      const result = await postData("employees", formData);
     } catch (error) {
       toast.error("Error al agregar el empleado");
       console.log(error);
     }
   };
-
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

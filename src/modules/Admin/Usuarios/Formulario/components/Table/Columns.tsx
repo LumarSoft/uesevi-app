@@ -62,7 +62,7 @@ export const createColumns = (
     },
   },
   {
-    accessorKey: "empresa_provisoria_nombre",
+    accessorKey: "empresa",
     header: ({ column }) => {
       return (
         <Button
@@ -86,6 +86,7 @@ export const createColumns = (
             companies={companies}
             onDataUpdate={onDataUpdate}
           />
+          <Button>Imprimir</Button>
         </div>
       );
     },

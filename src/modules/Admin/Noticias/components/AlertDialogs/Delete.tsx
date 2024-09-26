@@ -23,10 +23,13 @@ export const Delete = ({
   onDataDelete: (deleteItem: INoticias) => void;
 }) => {
   const handleDelete = async () => {
-    const result = await deleteData("news/delete-new", data.id);
+    const result = await deleteData("news/:id", data.id);
 
-    if (result && result.warningStatus > 0) {
-      return toast.error("Error al eliminar datos:", result);
+    console.log(result);
+
+    if (!result.ok) {
+      console.error("Failed to delete news");
+      return;
     }
 
     onDataDelete(data);

@@ -26,7 +26,7 @@ export default function ContactCard() {
     formData.append("message", message);
 
     try {
-      const result = await postData("inquiries/addInquiry", formData);
+      const result = await postData("inquiries", formData);
       console.log(result);
       if (!result) {
         return toast.error("Error al enviar el mensaje");

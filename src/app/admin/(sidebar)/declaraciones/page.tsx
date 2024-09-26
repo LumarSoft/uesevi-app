@@ -2,11 +2,19 @@ import DeclaracionesModule from "@/modules/Admin/DeclaracionJurada";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function Declaraciones() {
-  const companies = await fetchData("companies");
+  const companiesResult = await fetchData("companies");
 
-  const statements = await fetchData("statements");
+  const statementsResult = await fetchData("statements");
 
-  const contracts = await fetchData("contracts");
+  const contractsResult = await fetchData("contracts");
+
+  if (!companiesResult.ok || !statementsResult.ok || !contractsResult.ok) {
+    return <div>Error al cargar los datos</div>;
+  }
+
+  const companies = companiesResult.data;
+  const statements = statementsResult.data;
+  const contracts = contractsResult.data;
 
   return (
     <DeclaracionesModule
@@ -15,4 +23,4 @@ export default async function Declaraciones() {
       contracts={contracts}
     />
   );
-} 
+}

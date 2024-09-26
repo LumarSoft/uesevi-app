@@ -8,10 +8,15 @@ export default async function Declaracion({
 }: {
   params: { idEmpresa: number; idDeclaracion: number };
 }) {
-  const statement = await fetchData(
-    `statements/getInfo/${idEmpresa}/${idDeclaracion}`
+  const statementResult = await fetchData(
+    `statements/info/${idEmpresa}/${idDeclaracion}`
   );
 
+  if (!statementResult.ok) {
+    return <div>Error al cargar los datos</div>;
+  }
+
+  const statement = statementResult.data;
 
   return <DeclaracionModule statement={statement} />;
 }

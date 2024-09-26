@@ -13,8 +13,8 @@ export default function MisEmpleadosPage() {
 
   useEffect(() => {
     const fetchEmployees = async () => {
-      const data = await fetchOneRow("employees/getBycompany", idCompany);
-      setEmployees(data);
+      const result = await fetchOneRow("employees/company/:id", idCompany);
+      setEmployees(result.data);
     };
 
     const fetchCategories = async () => {

@@ -240,7 +240,7 @@ export const Form = () => {
     formData.append("objective", objective);
 
     try {
-      const result = await postData("forms/create-request", formData);
+      const result = await postData("forms", formData);
       console.log(result);
       if (result.data.message === "Formulario creado") {
         setName("");

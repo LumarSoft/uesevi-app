@@ -2,7 +2,14 @@ import CategoryModule from "@/modules/Admin/Categorias";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function CategoriasPage() {
-  const category = await fetchData("category");
+  const categoriesResult = await fetchData("category");
 
-  return <CategoryModule data={category} />;
+
+  if (!categoriesResult.ok || categoriesResult.error) {
+    return <div>Error</div>;
+  }
+
+  const data = categoriesResult.data;
+
+  return <CategoryModule data={data} />;
 }

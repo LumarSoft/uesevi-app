@@ -24,7 +24,6 @@ export const EditScalesDialog = ({
   const [newName, setNewName] = useState(data.nombre);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-
     if (newName === data.nombre) {
       return;
     }
@@ -32,7 +31,7 @@ export const EditScalesDialog = ({
     const formData = new FormData();
     formData.append("name", newName);
 
-    const result = await updateData("scales/update-escala", data.id, formData);
+    const result = await updateData("scales/:id", data.id, formData);
 
     if (result.ok) {
       onDataUpdate({ ...data, nombre: newName });

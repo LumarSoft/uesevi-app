@@ -23,10 +23,9 @@ export const Delete = ({
   onDataDelete: (deleteItem: IEscalas) => void;
 }) => {
   const handleDelete = async () => {
-    const result = await deleteData("scales/delete", data.id);
+    const result = await deleteData("scales/:id", data.id);
 
-
-    if (result.message === "Archivo eliminado") {
+    if (result.ok) {
       onDataDelete(data);
       toast.success("Archivo eliminado");
     } else {

@@ -2,11 +2,19 @@ import DeclaracionesModule from "@/modules/Admin/Antiguas";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function AntiguasPage() {
-  const companies = await fetchData("old-companies");
+  const companiesResult = await fetchData("old-companies");
 
-  const statements = await fetchData("old-statements");
+  const statementsResult = await fetchData("old-statements");
 
-  const contracts = await fetchData("old-contracts");
+  const contractsResult = await fetchData("old-contracts");
+
+  if (!companiesResult.ok || !statementsResult.ok || !contractsResult.ok) {
+    return <div>Error al cargar los datos</div>;
+  }
+
+  const companies = companiesResult.data;
+  const statements = statementsResult.data;
+  const contracts = contractsResult.data;
 
   return (
     <DeclaracionesModule

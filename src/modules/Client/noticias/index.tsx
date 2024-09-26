@@ -6,7 +6,6 @@ import { INoticias } from "@/shared/types/Querys/INoticias";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -15,11 +14,11 @@ import {
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
 
 const NoticiasPageModule = ({
-  noticias,
+  news,
   totalPages,
   currentPage,
 }: {
-  noticias: INoticias[];
+  news: INoticias[];
   totalPages: number;
   currentPage: number;
 }) => {
@@ -52,8 +51,8 @@ const NoticiasPageModule = ({
   const [selectedType, setSelectedType] = useState("all");
   const filteredNews =
     selectedType === "all"
-      ? noticias
-      : noticias.filter((news) => news.destinatario === selectedType);
+      ? news
+      : news.filter((news) => news.destinatario === selectedType);
 
   return (
     <div className="container mx-auto px-4 pt-12 lg:pt-28 pb-16">
