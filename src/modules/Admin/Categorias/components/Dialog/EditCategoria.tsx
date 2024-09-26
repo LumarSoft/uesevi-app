@@ -39,13 +39,9 @@ export const EditCategory = ({
     formData.append("name", name);
     formData.append("salary", salary);
 
-    const result = await updateData(
-      "category/update-category",
-      data.id,
-      formData
-    );
+    const result = await updateData("category/:id", data.id, formData);
 
-    if (result.affectedRows > 0) {
+    if (result.ok) {
       toast.success("Categoria actualizada");
       onDateUpdate({
         ...data,

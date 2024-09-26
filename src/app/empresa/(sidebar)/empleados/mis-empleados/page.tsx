@@ -9,12 +9,12 @@ export default function MisEmpleadosPage() {
   const [categories, setCategories] = useState([]);
   const { user } = userStore();
 
-  const idCompany = 125;
+  const idCompany = user.empresa.id;
 
   useEffect(() => {
     const fetchEmployees = async () => {
-      const data = await fetchOneRow("employees/getBycompany", idCompany);
-      setEmployees(data);
+      const result = await fetchOneRow("employees/company/:id", idCompany);
+      setEmployees(result.data);
     };
 
     const fetchCategories = async () => {
@@ -31,6 +31,6 @@ export default function MisEmpleadosPage() {
   if (employees.length > 0) {
     return <MisEmpleadosModule employees={employees} categories={categories} />;
   } else {
-    return null;
+    return <div>No posee empleados</div>;
   }
 }

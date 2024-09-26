@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,7 +32,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
   const [secondBody, setSecondBody] = useState(data.cuerpo_secundario);
   const [images, setImages] = useState<any[]>(data.images || []);
   const [pdf, setPdf] = useState<string | File | null>(data.archivo || null);
-  const [destinatario, setDestinatario] = useState(data.destinatario || "");
+  const [addressee, setAddressee] = useState(data.destinatario || "");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -53,12 +53,18 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Primero validamos que esten los campos obligatorios
+    if (!headline || !epigraph || !body || !addressee) {
+      toast.error("Debe llenar los campos obligatorios");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("headline", headline);
     formData.append("epigraph", epigraph);
     formData.append("body", body);
     formData.append("body2", secondBody || "");
-    formData.append("addressee", destinatario);
+    formData.append("addressee", addressee);
 
     // Añade nuevas imágenes
     images.forEach((image) => {
@@ -70,15 +76,14 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
       formData.append("pdf", pdf);
     }
 
-    const res = await updateData("news/update-new", data.id, formData);
+    const result = await updateData("news/:id", data.id, formData);
 
-    console.log(res);
-
-    if (res.affectedRows > 0) {
-      toast.success("Noticia actualizada correctamente");
-    } else {
-      toast.error("Ocurrió un error al actualizar la noticia");
+    if (!result.ok) {
+      console.error("Failed to update news");
+      return;
     }
+
+    toast.success("Noticia actualizada correctamente");
   };
 
   return (
@@ -89,7 +94,7 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
       >
         <div className="space-y-2">
           <Label>Destinatario (obligatorio)</Label>
-          <Select onValueChange={setDestinatario}>
+          <Select onValueChange={setAddressee} value={addressee}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Seleccionar" />
             </SelectTrigger>

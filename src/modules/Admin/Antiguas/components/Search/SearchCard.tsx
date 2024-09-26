@@ -45,7 +45,7 @@ export default function SearchCard({
 
   const fetchEmpleadosByEmpresa = async (company: number) => {
     try {
-      const result = await fetchData(`empleados/getByEmpresa/${company}`);
+      const result = await fetchData(`employees/company/${company}`);
       setEmployees(result);
       console.log(result);
     } catch (error) {

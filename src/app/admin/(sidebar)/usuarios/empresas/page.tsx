@@ -4,9 +4,13 @@ import { fetchData } from "@/services/mysql/functions";
 export default async function AdminEmpresas() {
   const result = await fetchData("companies");
 
-  if (result) {
-    return <AdminEmpresasModule data={result} />;
-  } else {
-    return <div>Error: Error al solicitar los datos</div>;
+
+  if (!result.ok || result.error) {
+    console.error("Error al obtener los datos de las empresas:", result.error);
+    return <div>Error al cargar los datos de las empresas.</div>;
   }
+
+  const data = result.data;
+
+  return <AdminEmpresasModule data={data} />;
 }

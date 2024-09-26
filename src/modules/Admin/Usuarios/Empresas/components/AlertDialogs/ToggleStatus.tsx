@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export const ToggleStatus = ({
   data,
@@ -36,17 +37,16 @@ export const ToggleStatus = ({
 
     formData.append("state", newState);
 
-    const result = await updateData(
-      "companies/change-state",
-      data.id,
-      formData
-    );
+    const result = await updateData("companies/:id/state", data.id, formData);
 
-    if (result !== undefined && result !== null) {
+    console.log(result);
+
+    if (result.ok) {
       onDataUpdate({
         ...data,
         estado: newState,
       });
+      toast.success("Estado actualizado correctamente");
     } else {
       console.error("Failed to update status");
     }

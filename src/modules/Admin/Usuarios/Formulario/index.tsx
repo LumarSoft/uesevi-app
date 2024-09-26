@@ -13,7 +13,6 @@ const AdminFormularioModule = ({
   companies: IEmpresa[];
 }) => {
 
-  
   const [formulario, setFormulario] = useState(forms);
 
   const handleUpdate = (updatedItem: IFormulario) => {

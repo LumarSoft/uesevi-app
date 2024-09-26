@@ -16,6 +16,7 @@ import { RefreshCcw } from "lucide-react";
 import { ComboboxEmpresas } from "./ComboBox";
 import { useState } from "react";
 import { updateData } from "@/services/mysql/functions";
+import { toast } from "react-toastify";
 
 export const ToggleEmpresa = ({
   data,
@@ -28,15 +29,23 @@ export const ToggleEmpresa = ({
 }) => {
   const [newCompany, setNewCompany] = useState(data.empresa);
 
-  const handleChange = () => {
+  const handleChange = async () => {
     const formData = new FormData();
-    formData.append("empresa", newCompany);
+    formData.append("company", newCompany);
 
-    updateData("forms/change-company", Number(data.cuil), formData);
+    const result = await updateData("forms/:id/company", data.id, formData);
+    console.log(result);
+
+    if (!result.ok) {
+      console.error("Failed to update company");
+      return;
+    }
+
     onDataUpdate({
       ...data,
       empresa: newCompany,
     });
+    toast.success("Actualizado correctamente");
   };
 
   return (

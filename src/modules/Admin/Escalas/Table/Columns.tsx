@@ -69,7 +69,6 @@ export const createColumns = (
       return (
         <div className="flex gap-2">
           <EditScalesDialog data={row.original} onDataUpdate={onDataUpdate} />
-
           <Delete data={row.original} onDataDelete={onDataDelete} />
         </div>
       );
