@@ -1,5 +1,6 @@
 import Footer from "@/shared/components/Footer/Footer";
 import { DropDownNav, Navbar } from "@/shared/components/Navbar/Navbar";
+import { ThemeProvider } from "next-themes";
 
 export default function ClientLayout({
   children,
@@ -7,11 +8,13 @@ export default function ClientLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="overflow-x-hidden">
-      <Navbar />
-      <DropDownNav />
-      {children}
-      <Footer />
-    </main>
+    <ThemeProvider forcedTheme="light">
+      <main className="overflow-x-hidden">
+        <Navbar />
+        <DropDownNav />
+        {children}
+        <Footer />
+      </main>
+    </ThemeProvider>
   );
 }
