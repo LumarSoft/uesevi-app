@@ -43,7 +43,7 @@ const LatestNews = ({ noticias }: { noticias: INoticias[] }) => {
       animationViewPort={{ once: true, offset: 0.4 }}
     >
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-8 text-center">
+        <h2 className="text-3xl font-bold mb-8 text-center text-primary">
           Ultimas noticias
         </h2>
         <FramerComponent
@@ -59,7 +59,7 @@ const LatestNews = ({ noticias }: { noticias: INoticias[] }) => {
               animationInitial={{ opacity: 0, y: 50 }}
               animationVariants={itemAnimado}
             >
-              <CardNoticias noticia={noticia}/>
+              <CardNoticias noticia={noticia} />
             </FramerComponent>
           ))}
         </FramerComponent>

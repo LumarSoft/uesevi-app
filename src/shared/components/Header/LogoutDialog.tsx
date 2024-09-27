@@ -11,7 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useStore } from "zustand";
 import { deleteCookie } from "cookies-next";
 
 export const LogoutDialog = () => {

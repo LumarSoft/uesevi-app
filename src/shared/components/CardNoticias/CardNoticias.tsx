@@ -13,7 +13,7 @@ import Link from "next/link";
 
 const CardNoticias = ({ noticia }: { noticia: INoticias }) => {
   return (
-    <Card className="flex flex-col h-full bg-muted">
+    <Card className="flex flex-col h-full bg-white shadow-md">
       <CardHeader>
         <CardTitle className="text-xl line-clamp-2">{noticia.titulo}</CardTitle>
       </CardHeader>

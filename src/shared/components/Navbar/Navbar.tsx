@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
