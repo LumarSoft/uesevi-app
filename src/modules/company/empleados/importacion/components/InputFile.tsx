@@ -13,10 +13,12 @@ import { Button } from "@/components/ui/button";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import { postData } from "@/services/mysql/functions";
+import { userStore } from "@/shared/stores/userStore";
 
 export const InputFile: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const { user } = userStore();
 
   // funcion para enviar el JSON a la api e insertarlo en la base de datos
   const sendJson = async (data: any[]) => {
@@ -27,9 +29,10 @@ export const InputFile: React.FC = () => {
         formData.append(`employees[${index}][${key}]`, value as any);
       });
     });
+    formData.append("companyId", user.empresa.id);
 
     try {
-      const result = await postData("employees/importEmployees", formData);
+      const result = await postData("employees/import", formData);
       console.log(result);
     } catch (error) {
       console.error("Error al enviar el formulario:", error);
