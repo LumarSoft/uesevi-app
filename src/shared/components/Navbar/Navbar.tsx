@@ -42,6 +42,12 @@ export const Navbar = () => {
   // Mostrar la navbar condicionalmente en la página de inicio
   const shouldShowNavbar = isHomePage ? scrolled : true;
 
+  const isActive = (path: string) => pathname === path;
+
+  const linkStyle = (path: any) =>
+    `hover:text-primary transition duration-300 ${
+      isActive(path) ? "text-primary font-bold" : ""
+    }`;
   return (
     shouldShowNavbar && (
       <FramerComponent
@@ -57,30 +63,25 @@ export const Navbar = () => {
         </Link>
 
         <nav className="lg:flex gap-2 md:gap-4 items-center font-semibold hidden">
-          <Link href={"/loginempresa"}>Ingreso empresa</Link>
-          <Link href={"/escalas"}>Escalas salariales</Link>
-          <Link
-            href={"/alta-empresa"}
-            className="hover:text-primary transition duration-300"
-          >
+          <Link href={"/loginempresa"} className={linkStyle("/loginempresa")}>
+            Ingreso empresa
+          </Link>
+          <Link href={"/escalas"} className={linkStyle("/escalas")}>
+            Escalas salariales
+          </Link>
+          <Link href={"/alta-empresa"} className={linkStyle("/alta-empresa")}>
             Alta de empresa
           </Link>
-          <Link
-            href={"/afiliaciones"}
-            className="hover:text-primary transition duration-300"
-          >
+          <Link href={"/afiliaciones"} className={linkStyle("/afiliaciones")}>
             Afiliaciones
           </Link>
           <Link
             href={"/noticias/page/1"}
-            className="hover:text-primary transition duration-300"
+            className={linkStyle("/noticias/page/1")}
           >
             Noticias
           </Link>
-          <Link
-            href={"/contacto"}
-            className="hover:text-primary transition duration-300"
-          >
+          <Link href={"/contacto"} className={linkStyle("/contacto")}>
             Contacto
           </Link>
           <Link href={"/wsp"} className="hidden lg:block">

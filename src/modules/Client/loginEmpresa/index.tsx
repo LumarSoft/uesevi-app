@@ -18,13 +18,16 @@ import { userStore } from "@/shared/stores/userStore";
 import { setCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
+import LoadingSpinner from "@/modules/Login/components/LoadingSpinner";
 
 export function LoginEmpresaModule() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async () => {
+    setLoading(true);
     const formData = new FormData();
     formData.append("email", email);
     formData.append("password", password);
@@ -44,6 +47,7 @@ export function LoginEmpresaModule() {
     } catch (error) {
       console.log(error);
       toast.error("Ocurrió un error al iniciar sesión");
+      setLoading(false);
     }
   };
 
