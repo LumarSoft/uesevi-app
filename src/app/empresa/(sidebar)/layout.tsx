@@ -1,4 +1,4 @@
-import Header from "@/shared/components/Header/Header";
+import HeaderCompany from "@/shared/components/Header/HeaderCompany";
 import Sidebar from "@/shared/components/SidebarCompany/Sidebar";
 import { ThemeProvider } from "next-themes";
 
@@ -9,7 +9,7 @@ export default function SidebarLayout({
 }>) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system">
-      <Header />
+      <HeaderCompany />
       <div className="flex h-screen border-collapse overflow-hidden">
         <Sidebar />
         <main className="flex-1 overflow-x-hidden pt-16 bg-secondary/10 pb-1">
