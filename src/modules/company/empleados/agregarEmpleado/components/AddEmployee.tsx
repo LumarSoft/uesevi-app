@@ -13,6 +13,7 @@ import {
 import { toast } from "react-toastify";
 import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
+import { TriangleAlert } from "lucide-react";
 
 export const AddEmployee = () => {
   const [firstName, setfirstName] = useState("");
@@ -72,7 +73,6 @@ export const AddEmployee = () => {
       return toast.error("La adhesion al sindicato debe ser un número");
     }
 
-
     const formData = new FormData();
     formData.append("firstName", firstName);
     formData.append("lastName", lastName);
@@ -111,10 +111,15 @@ export const AddEmployee = () => {
         <Input onChange={(e) => setEmail(e.target.value)} />
       </Label>
       <Label>
-        CUIL{" "}
-        <span className="text-muted-foreground">
-          (no debe contener guiones ni puntos)
-        </span>
+        <div className="flex items-center space-x-2 mb-2">
+          <span>CUIL</span>
+          <div className="flex items-center text-yellow-600 text-sm">
+            <TriangleAlert className="w-4 h-4 mr-1" />
+            <span>
+              (no debe contener <b>guiones ni puntos</b>)
+            </span>
+          </div>
+        </div>
         <Input onChange={(e) => setCuil(e.target.value)} />
       </Label>
       <Label>
