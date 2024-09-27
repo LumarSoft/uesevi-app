@@ -10,7 +10,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { updateData } from "@/services/mysql/functions";
+import { deleteData } from "@/services/mysql/functions";
 import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
 import { toast } from "react-toastify";
 
@@ -22,15 +22,10 @@ export const CancelEmployee = ({
   cancelEmployee: (employee: IEmpleado) => void;
 }) => {
   const handleCancel = async () => {
-    const formData = new FormData();
     try {
-      const result = await updateData(
-        "employees/deleteEmployee",
-        employee.id,
-        formData
-      );
+      const result = await deleteData("employees/:id", employee.id);
       console.log(result);
-      if (result.message === "Employee deleted") {
+      if (result.ok) {
         cancelEmployee(employee);
         return toast.success("Empleado dado de baja");
       }
