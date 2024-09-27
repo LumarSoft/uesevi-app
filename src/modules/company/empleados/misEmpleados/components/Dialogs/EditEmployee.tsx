@@ -68,13 +68,9 @@ export const EditEmployee = ({
     formData.append("unionMembership", unionMembership); // Este ahora será "0" o "1"
 
     try {
-      const result = await updateData(
-        "employees/editEmployee",
-        employee.id,
-        formData
-      );
+      const result = await updateData("employees/:id", employee.id, formData);
       console.log(result);
-      if (result.message === "Employee updated") {
+      if (result.ok) {
         updateEmployee({
           ...employee,
           nombre: firstName,
