@@ -3,7 +3,7 @@
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation"; // Importa usePathname
+import { usePathname } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,19 +14,13 @@ import { Menu } from "lucide-react";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname(); // Obtener la ruta actual
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
-      // Verifica si el usuario ha scrolleado más allá de 100vh
-      if (window.pageYOffset > window.innerHeight * 0.6) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 0);
     };
 
-    // Llama a handleScroll al montar el componente para verificar el estado inicial
     handleScroll();
 
     window.addEventListener("scroll", handleScroll);
@@ -36,11 +30,8 @@ export const Navbar = () => {
     };
   }, []);
 
-  // Verificar si la ruta actual es "/"
   const isHomePage = pathname === "/";
-
-  // Mostrar la navbar condicionalmente en la página de inicio
-  // const shouldShowNavbar = isHomePage ? scrolled : true;
+  const shouldShowNavbar = isHomePage ? scrolled : true;
 
   const isActive = (path: string) => pathname === path;
 
@@ -48,20 +39,16 @@ export const Navbar = () => {
     `hover:text-primary transition duration-300 ${
       isActive(path) ? "text-primary font-bold" : ""
     }`;
+
   return (
-    // shouldShowNavbar && (
     <FramerComponent
-      style={`w-full top-0 hidden md:flex justify-between items-center px-4  md:px-28 2xl:px-80 2xl:h-20 fixed z-20 transition-shadow duration-500 bg-white ${
-        scrolled ? "shadow-xl" : ""
+      style={`w-full top-0 hidden md:flex justify-between items-center px-4 md:px-28 2xl:px-80 2xl:h-20 fixed z-20 transition-shadow duration-500 ${
+        scrolled ? "shadow-xl bg-white" : ""
       }`}
       animationInitial={{ y: -100, opacity: 0 }}
       animationAnimate={{ y: 0, opacity: 1 }}
       animationExit={{ y: -100, opacity: 0 }}
     >
-      <Link href={"/"}>
-        <img src="/logo_chico.png" className="h-16" alt="Logo END" />
-      </Link>
-
       <nav className="lg:flex gap-2 md:gap-4 items-center font-semibold hidden">
         <Link href={"/loginempresa"} className={linkStyle("/loginempresa")}>
           Ingreso empresa
@@ -85,8 +72,12 @@ export const Navbar = () => {
           Contacto
         </Link>
       </nav>
+      <div className={`transition-opacity duration-500 ease-in-out ${shouldShowNavbar ? 'opacity-100' : 'opacity-0'}`}>
+        <Link href={"/"}>
+          <img src="/logo_chico.png" className="h-16" alt="Logo END" />
+        </Link>
+      </div>
     </FramerComponent>
-    // )
   );
 };
 
