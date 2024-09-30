@@ -20,20 +20,21 @@ export const InputFile: React.FC = () => {
 
   // funcion para enviar el JSON a la api e insertarlo en la base de datos
   const sendJson = async (data: any[]) => {
-    const formData = new FormData();
+    console.log(data);
+    // const formData = new FormData();
 
-    data.forEach((item, index) => {
-      Object.entries(item).forEach(([key, value]) => {
-        formData.append(`employees[${index}][${key}]`, value as any);
-      });
-    });
+    // data.forEach((item, index) => {
+    //   Object.entries(item).forEach(([key, value]) => {
+    //     formData.append(`employees[${index}][${key}]`, value as any);
+    //   });
+    // });
 
-    try {
-      const result = await postData("employees/importEmployees", formData);
-      console.log(result);
-    } catch (error) {
-      console.error("Error al enviar el formulario:", error);
-    }
+    // try {
+    //   const result = await postData("employees/importEmployees", formData);
+    //   console.log(result);
+    // } catch (error) {
+    //   console.error("Error al enviar el formulario:", error);
+    // }
   };
 
   // Función para cambiar el archivo seleccionado

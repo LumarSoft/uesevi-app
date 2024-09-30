@@ -4,7 +4,7 @@ import { Form } from "./components/Form";
 export const EmpresaAltaModule = () => {
   return (
     <FramerComponent
-      style="container mx-auto px-4 py-20"
+      style="container mx-auto px-4 py-28"
       animationInitial={{ x: 100, opacity: 0 }}
       animationAnimate={{ x: 0, opacity: 1 }}
     >
