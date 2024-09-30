@@ -49,7 +49,7 @@ export const Navbar = () => {
       animationAnimate={{ y: 0, opacity: 1 }}
       animationExit={{ y: -100, opacity: 0 }}
     >
-      <nav className="lg:flex gap-2 md:gap-4 items-center font-semibold hidden ">
+      <nav className="lg:flex gap-2 md:gap-4 items-center font-semibold hidden text-lg">
         <Link href={"/loginempresa"} className={linkStyle("/loginempresa")}>
           Ingreso empresa
         </Link>
