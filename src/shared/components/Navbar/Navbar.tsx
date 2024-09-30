@@ -31,7 +31,7 @@ export const Navbar = () => {
   }, []);
 
   const isHomePage = pathname === "/";
-  const shouldShowNavbar = isHomePage ? scrolled : true;
+  const isContactPage = pathname === "/contacto";
 
   const isActive = (path: string) => pathname === path;
 
@@ -42,14 +42,14 @@ export const Navbar = () => {
 
   return (
     <FramerComponent
-      style={`w-full top-0 hidden md:flex justify-between items-center px-4 md:px-28 2xl:px-80 2xl:h-20 fixed z-20 transition-shadow duration-500 ${
-        scrolled ? "shadow-xl bg-white" : ""
+      style={`w-full top-0 hidden md:flex justify-between items-center px-4 md:px-28 2xl:px-80 2xl:h-20 fixed z-20 transition-all duration-500 ${
+        scrolled || !isHomePage ? "shadow-lg bg-white" : "bg-transparent"
       }`}
       animationInitial={{ y: -100, opacity: 0 }}
       animationAnimate={{ y: 0, opacity: 1 }}
       animationExit={{ y: -100, opacity: 0 }}
     >
-      <nav className="lg:flex gap-2 md:gap-4 items-center font-semibold hidden">
+      <nav className="lg:flex gap-2 md:gap-4 items-center font-semibold hidden ">
         <Link href={"/loginempresa"} className={linkStyle("/loginempresa")}>
           Ingreso empresa
         </Link>
@@ -72,7 +72,7 @@ export const Navbar = () => {
           Contacto
         </Link>
       </nav>
-      <div className={`transition-opacity duration-500 ease-in-out ${shouldShowNavbar ? 'opacity-100' : 'opacity-0'}`}>
+      <div>
         <Link href={"/"}>
           <img src="/logo_chico.png" className="h-16" alt="Logo END" />
         </Link>
