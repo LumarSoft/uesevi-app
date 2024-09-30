@@ -1,5 +1,6 @@
 import Footer from "@/shared/components/Footer/Footer";
 import { DropDownNav, Navbar } from "@/shared/components/Navbar/Navbar";
+import WspLogo from "@/shared/components/WspLogo/WspLogo";
 import { ThemeProvider } from "next-themes";
 
 export default function ClientLayout({
@@ -13,6 +14,7 @@ export default function ClientLayout({
         <Navbar />
         <DropDownNav />
         {children}
+        <WspLogo />
         <Footer />
       </main>
     </ThemeProvider>

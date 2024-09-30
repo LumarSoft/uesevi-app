@@ -1,4 +1,3 @@
-import { Facebook, Twitter, Instagram, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
@@ -8,16 +7,7 @@ export default function Footer() {
     <footer className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-12 px-4">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          <div className="space-y-4">
-            <h3 className="font-bold text-2xl mb-4 text-blue-300">
-              Sobre nosotros
-            </h3>
-            <p className="text-gray-300 leading-relaxed">
-              Representamos a los trabajadores que prestan servicios en todas
-              las empresas y/o agencias privadas de seguridad y/o vigilancia y
-              empresas de investigación privada
-            </p>
-          </div>
+
           <div>
             <h3 className="font-bold text-2xl mb-6 text-blue-300">
               Enlaces rápidos
@@ -81,6 +71,18 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+
+          <div className="space-y-4">
+            <h3 className="font-bold text-2xl mb-4 text-blue-300">
+              Sobre nosotros
+            </h3>
+            <p className="text-gray-300 leading-relaxed">
+              Representamos a los trabajadores que prestan servicios en todas
+              las empresas y/o agencias privadas de seguridad y/o vigilancia y
+              empresas de investigación privada
+            </p>
+          </div>
+
           <div>
             <h3 className="font-bold text-2xl mb-6 text-blue-300">
               Contáctenos
@@ -96,6 +98,7 @@ export default function Footer() {
               </Button>
             </Link>
           </div>
+
         </div>
         <Separator className="my-8 bg-gray-700" />
         <div className="text-center text-sm text-gray-400">
