@@ -285,7 +285,7 @@ export const Form = () => {
             <CardHeader>
               <CardTitle>Información Personal</CardTitle>
             </CardHeader>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Nombre</Label>
                 <Input value={name} onChange={(e) => setName(e.target.value)} />
@@ -433,12 +433,9 @@ export const Form = () => {
                   onChange={(e) => setChildrenCount(Number(e.target.value))}
                 />
               </div>
-            </div>
 
-            <CardHeader>
-              <CardTitle>Información de la Empresa</CardTitle>
-            </CardHeader>
-            <div className="grid grid-cols-3 gap-4">
+              <CardTitle className="lg:col-span-3">Información de la Empresa</CardTitle>
+
               <div className="space-y-2">
                 <Label>Empresa</Label>
                 <Input
@@ -553,7 +550,7 @@ export const Form = () => {
                 />
               </div>
 
-              <div className="space-y-2 col-span-2">
+              <div className="space-y-2 lg:col-span-2">
                 <Label>Objetivo</Label>
                 <Textarea
                   value={objective}
@@ -562,7 +559,7 @@ export const Form = () => {
               </div>
             </div>
 
-            <Button type="submit" className="mt-4">
+            <Button type="submit" className="mt-4 w-full">
               Enviar
             </Button>
           </CardContent>
