@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Empleado } from "@/shared/types/Querys/IInfoDeclaracion";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -27,19 +28,31 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
   {
     header: "Sueldo basico",
     cell: ({ row }) => {
-      return <>{formatCurrency(Number(row.original.sueldo_basico))}</>;
+      return (
+        <React.Fragment>
+          {formatCurrency(Number(row.original.sueldo_basico))}
+        </React.Fragment>
+      );
     },
   },
   {
     header: "Remunerativo adicional",
     cell: ({ row }) => {
-      return <>{formatCurrency(Number(row.original.remunerativo_adicional))}</>;
+      return (
+        <React.Fragment>
+          {formatCurrency(Number(row.original.remunerativo_adicional))}
+        </React.Fragment>
+      );
     },
   },
   {
     header: "Suma no remunerativa",
     cell: ({ row }) => {
-      return <>{formatCurrency(Number(row.original.suma_no_remunerativa))}</>;
+      return (
+        <React.Fragment>
+          {formatCurrency(Number(row.original.suma_no_remunerativa))}
+        </React.Fragment>
+      );
     },
   },
   {
@@ -49,19 +62,27 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
   {
     header: "Adicional",
     cell: ({ row }) => {
-      return <>{formatCurrency(Number(row.original.adicional))}</>;
+      return (
+        <React.Fragment>
+          {formatCurrency(Number(row.original.adicional))}
+        </React.Fragment>
+      );
     },
   },
   {
     header: "Total bruto",
     cell: ({ row }) => {
-      return <>{formatCurrency(Number(row.original.total_bruto))}</>;
+      return (
+        <React.Fragment>
+          {formatCurrency(Number(row.original.total_bruto))}
+        </React.Fragment>
+      );
     },
   },
   {
     header: "Aporte extraordinario",
-    cell: ({ row }) => {
-      return <>{0}</>;
+    cell: () => {
+      return <React.Fragment>{0}</React.Fragment>;
     },
     // ??
   },
@@ -69,25 +90,23 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
     header: "FAS",
     cell: ({ row }) => {
       const fas = row.original.total_bruto * 0.01;
-      return <>{formatCurrency(fas)}</>;
+      return <React.Fragment>{formatCurrency(fas)}</React.Fragment>;
     },
   },
   {
     header: "Aporte solidario",
     cell: ({ row }) => {
-      const aporteSolidario = row.original.afiliado === "No"
-        ? row.original.total_bruto * 0.02
-        : 0;
-      return <>{formatCurrency(aporteSolidario)}</>;
+      const aporteSolidario =
+        row.original.afiliado === "No" ? row.original.total_bruto * 0.02 : 0;
+      return <React.Fragment>{formatCurrency(aporteSolidario)}</React.Fragment>;
     },
   },
   {
     header: "Sindicato",
     cell: ({ row }) => {
-      const sindicato = row.original.afiliado === "Sí"
-        ? row.original.total_bruto * 0.03
-        : 0;
-      return <>{formatCurrency(sindicato)}</>;
+      const sindicato =
+        row.original.afiliado === "Sí" ? row.original.total_bruto * 0.03 : 0;
+      return <React.Fragment>{formatCurrency(sindicato)}</React.Fragment>;
     },
   },
   {
@@ -95,15 +114,13 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
     cell: ({ row }) => {
       //aporte extraordinario?
       const fas = row.original.total_bruto * 0.01;
-      const aporteSolidario = row.original.afiliado === "No"
-        ? row.original.total_bruto * 0.02
-        : 0;
-      const sindicato = row.original.afiliado === "Sí"
-        ? row.original.total_bruto * 0.03
-        : 0;
+      const aporteSolidario =
+        row.original.afiliado === "No" ? row.original.total_bruto * 0.02 : 0;
+      const sindicato =
+        row.original.afiliado === "Sí" ? row.original.total_bruto * 0.03 : 0;
 
       const total = fas + aporteSolidario + sindicato;
-      return <>{formatCurrency(total)}</>;
+      return <React.Fragment>{formatCurrency(total)}</React.Fragment>;
     },
   },
 ];

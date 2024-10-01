@@ -11,10 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
+import { userStore } from "@/shared/stores/userStore";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { user } = userStore();
 
   useEffect(() => {
     const handleScroll = () => {

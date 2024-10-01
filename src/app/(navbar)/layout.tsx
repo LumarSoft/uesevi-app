@@ -9,7 +9,7 @@ export default function ClientLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ThemeProvider forcedTheme="light">
+    <ThemeProvider forcedTheme="light" attribute="class">
       <main className="overflow-x-hidden">
         <Navbar />
         <DropDownNav />

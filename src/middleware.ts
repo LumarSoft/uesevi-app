@@ -15,6 +15,33 @@ export async function middleware(req: NextRequest) {
   // Obtener el token de cookies
   const token = getCookie("auth-token", { req });
 
+  // Verificar si se está accediendo a la ruta "/loginempresa"
+  if (pathname === "/loginempresa") {
+    // Si hay un token, verificamos si es una cuenta de empresa
+    if (token) {
+      try {
+        const { payload } = await jwtVerify(
+          token,
+          new TextEncoder().encode(JWT_SECRET)
+        );
+        const { rol } = payload;
+
+        // Si el rol es "empresa", redirigimos a la página de agregar empleado
+        if (rol === "empresa") {
+          return NextResponse.redirect(new URL("/empresa/empleados/agregar-empleado", req.url));
+        }
+      } catch (error) {
+        console.error(
+          "Error al verificar el token en /loginempresa:",
+          (error as Error).message || error
+        );
+        // Si hay un error en la verificación, permitimos el acceso a /loginempresa
+      }
+    }
+    // Si no hay token o no es una cuenta de empresa, permitimos el acceso a /loginempresa
+    return NextResponse.next();
+  }
+
   // Verificar si se está accediendo a una ruta de "empresa"
   if (pathname.startsWith("/empresa")) {
     // Si no hay token, redirigir a la página de login de empresa
@@ -95,5 +122,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/empresa/:path*"], // Rutas a proteger
+  matcher: ["/admin/:path*", "/empresa/:path*", "/loginempresa"], // Rutas a proteger
 };

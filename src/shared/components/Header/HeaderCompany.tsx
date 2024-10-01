@@ -11,6 +11,7 @@ export default function HeaderCompany() {
   const { user } = userStore();
 
   const companyName = user?.empresa?.nombre;
+  const companyId = user?.empresa?.id;
 
   return (
     <div className="supports-backdrop-blur:bg-background/60 fixed left-0 right-0 top-0 z-20 border-b bg-background/95 backdrop-blur">
@@ -21,7 +22,7 @@ export default function HeaderCompany() {
         >
           <Boxes className="h-6 w-6" />
           <h1 className="text-lg font-semibold">
-            {companyName ? companyName : ""}
+            {companyName ? `${companyName} | ${companyId}` : ""}
           </h1>
         </Link>
         <div className={cn("block md:!hidden")}>

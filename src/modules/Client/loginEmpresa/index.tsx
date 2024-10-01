@@ -37,15 +37,13 @@ export function LoginEmpresaModule() {
       if (data.error) {
         toast.error(result.data.details.message);
       }
-      console.log(data);
       const { user, token } = data;
 
       userStore.getState().setAuth(token, user);
       setCookie("auth-token", token);
 
-      console.log("Usuario autenticado", user);
 
-      router.replace("/empresa/dashboard");
+      router.replace("/empresa/empleados/agregar-empleado");
     } catch (error) {
       console.error(error);
       toast.error("Ocurrió un error al iniciar sesión");
