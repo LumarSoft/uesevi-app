@@ -12,6 +12,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
+import { Card, CardContent } from "@/components/ui/card";
+import { AlertCircle, Search } from "lucide-react";
 
 const NoticiasPageModule = ({
   news,
@@ -55,7 +57,7 @@ const NoticiasPageModule = ({
       : news.filter((news) => news.destinatario === selectedType);
 
   return (
-    <div className="container mx-auto px-4 pt-12 lg:pt-28 pb-16">
+    <div className="container mx-auto px-4 pt-12 lg:pt-28 pb-16 ">
       <h1 className="text-3xl font-bold mb-6">Noticias</h1>
 
       <Tabs defaultValue="all" onValueChange={setSelectedType} className="mb-6">
@@ -67,10 +69,11 @@ const NoticiasPageModule = ({
       </Tabs>
 
       <FramerComponent
+        key={selectedType}
         style="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         animationVariants={container}
-        animationInitial="hidden"
         animationWhileInView="show"
+        animationInitial="hidden"
         animationViewPort={{ once: true, offset: 0.4 }}
       >
         {filteredNews.map((news) => (
@@ -84,31 +87,49 @@ const NoticiasPageModule = ({
         ))}
       </FramerComponent>
 
-      <Pagination className="mt-10">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious href={`/noticias/page/${currentPage - 1}`} />
-          </PaginationItem>
+      {filteredNews.length === 0 && (
+        <div className="flex flex-col items-center justify-center mt-8">
+          <Card className="w-full max-w-md mx-auto animate-fadeIn">
+            <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+              <Search className="w-12 h-12 text-blue-500 mb-4" />
+              <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                No se encontraron noticias
+              </h2>
+              <p className="text-gray-500 mb-4">
+                Actualmente no hay noticias disponibles para{" "}
+                <b className="text-black">{selectedType}</b>.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+      {filteredNews.length > 10 && (
+        <Pagination className="mt-10">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious href={`/noticias/page/${currentPage - 1}`} />
+            </PaginationItem>
 
-          {Array.from({ length: totalPages }, (_, i) => {
-            const page = i + 1;
-            return (
-              <PaginationItem key={page}>
-                <PaginationLink
-                  href={`/noticias/page/${page}`}
-                  isActive={currentPage === page}
-                >
-                  {page}
-                </PaginationLink>
-              </PaginationItem>
-            );
-          })}
+            {Array.from({ length: totalPages }, (_, i) => {
+              const page = i + 1;
+              return (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    href={`/noticias/page/${page}`}
+                    isActive={currentPage === page}
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            })}
 
-          <PaginationItem>
-            <PaginationNext href={`/noticias/page/${currentPage + 1}`} />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+            <PaginationItem>
+              <PaginationNext href={`/noticias/page/${currentPage + 1}`} />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 };
