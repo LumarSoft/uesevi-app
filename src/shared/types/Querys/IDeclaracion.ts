@@ -6,7 +6,7 @@ export interface IDeclaracion {
   rectificada: number;
   mes: number;
   year: number;
-  subtotal?: string | null;
+  subtotal: string | null;
   interes?: string | null;
   importe: string;
   vencimiento?: null;

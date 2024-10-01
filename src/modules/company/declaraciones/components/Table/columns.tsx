@@ -5,11 +5,16 @@ import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, FileStack } from "lucide-react";
 import Link from "next/link";
+import { PayDate } from "../Dialogs/PayDate";
 
 export const createColumns = (): ColumnDef<IDeclaracion>[] => [
   {
-    accessorKey: "",
+    accessorKey: "fecha",
     header: "Fecha de presentación",
+    cell: ({ row }) => {
+      const date = row.original.fecha;
+      return new Date(date).toLocaleDateString();
+    },
   },
   {
     accessorKey: "mes",
@@ -22,6 +27,15 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
   {
     accessorKey: "importe",
     header: "Importe",
+  },
+
+  {
+    accessorKey: "fecha_pago",
+    header: "Fecha de pago",
+    cell: ({ row }) => {
+      const date = row.original.fecha_pago;
+      return date ? new Date(date).toLocaleDateString() : "Sin pagar";
+    },
   },
 
   {
@@ -39,7 +53,16 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
   {
     id: "actions",
     cell: ({ row }) => {
-      return <div className="flex gap-3"></div>;
+      return (
+        <div className="flex gap-3">
+          <PayDate data={row.original} />
+          <Button>
+            <Link href={`/empresa/declaraciones/${row.original.id}`}>
+              <Eye />
+            </Link>
+          </Button>
+        </div>
+      );
     },
   },
 ];

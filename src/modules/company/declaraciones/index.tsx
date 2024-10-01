@@ -1,8 +1,13 @@
 "use client";
+import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { createColumns } from "./components/Table/columns";
 import { DataTable } from "./components/Table/Data-Table";
 
-export default function DeclaracionesModule() {
+export default function DeclaracionesModule({
+  statements,
+}: {
+  statements: IDeclaracion[];
+}) {
   const columns = createColumns();
 
   return (
@@ -13,7 +18,7 @@ export default function DeclaracionesModule() {
             Declaraciones juradas
           </h2>
         </div>
-        <DataTable columns={columns} data={[]} />
+        <DataTable columns={columns} data={statements} />
       </div>
     </div>
   );
