@@ -9,14 +9,23 @@ import {
 
 export default function NoticiaModule({ newData }: { newData: INoticias }) {
   return (
-    <div className="w-full">
-      <div className="container mx-auto py-8 md:py-20">
+    <div className="w-full min-h-screen">
+      <div className="container mx-auto py-8 md:py-20 mt-14">
         <Card className="overflow-hidden rounded-lg shadow-md">
           <CardContent className="p-6">
             {newData.titulo && (
-              <Badge variant="secondary" className="mb-2">
-                {newData.destinatario ? newData.destinatario : "Todos"}
-              </Badge>
+              <span
+                className={`text-sm font-medium me-2 px-2.5 py-0.5 rounded ${
+                  newData.destinatario
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-blue-100 text-blue-800"
+                } dark:bg-blue-900 dark:text-blue-300`}
+              >
+                {newData.destinatario
+                  ? newData.destinatario.charAt(0).toUpperCase() +
+                    newData.destinatario.slice(1)
+                  : "Todos"}
+              </span>
             )}
             {newData.archivo && (
               <Badge variant="outline" className="mb-2">
