@@ -52,9 +52,9 @@ export const Form = () => {
 
     try {
       const result = await postData("companies", formDataToSend);
+      console.log(result);
 
-
-      if (result.data.message === "Empresa creada") {
+      if (result.ok) {
         toast.success("Usuario registrado correctamente");
         setFormData({
           cuit: "",
