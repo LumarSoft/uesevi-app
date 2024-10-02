@@ -42,7 +42,6 @@ export function LoginEmpresaModule() {
       userStore.getState().setAuth(token, user);
       setCookie("auth-token", token);
 
-
       router.replace("/empresa/empleados/agregar-empleado");
     } catch (error) {
       console.error(error);
