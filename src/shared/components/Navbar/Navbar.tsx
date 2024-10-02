@@ -44,7 +44,7 @@ export const Navbar = () => {
 
   return (
     <FramerComponent
-      style={`w-full top-0 hidden md:flex justify-between items-center px-4 md:px-28 2xl:px-80 2xl:h-20 fixed z-20 transition-all duration-500 ${
+      style={`w-full top-0 hidden lg:flex justify-between items-center px-4 md:px-28 2xl:px-80 2xl:h-20 fixed z-20 transition-all duration-500 ${
         scrolled || !isHomePage ? "shadow-lg bg-white" : "bg-transparent"
       }`}
       animationInitial={{ y: -100, opacity: 0 }}

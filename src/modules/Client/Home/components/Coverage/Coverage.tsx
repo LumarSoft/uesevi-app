@@ -45,7 +45,7 @@ const Coverage = () => {
 
   return (
     <FramerComponent
-      style="lg:py-32 flex justify-center items-center"
+      style="md:py-32 flex justify-center items-center"
       animationInitial={{ opacity: 0, y: 50 }}
       animationWhileInView={{ opacity: 1, y: 0 }}
       animationTransition={{ duration: 0.3, delay: 0.1 }}
