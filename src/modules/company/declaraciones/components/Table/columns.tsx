@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, FileStack } from "lucide-react";
+import { Eye, FileStack, Pen } from "lucide-react";
 import Link from "next/link";
 import { PayDate } from "../Dialogs/PayDate";
 
@@ -59,6 +59,11 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
           <Button>
             <Link href={`/empresa/declaraciones/${row.original.id}`}>
               <Eye />
+            </Link>
+          </Button>
+          <Button>
+            <Link href={`/empresa/declaraciones/${row.original.id}/rectificar`}>
+              <Pen />
             </Link>
           </Button>
         </div>

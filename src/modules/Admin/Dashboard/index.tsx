@@ -2,7 +2,6 @@ import { CardHeader, CardTitle, CardContent, Card } from "@/components/ui/card";
 import { IDashboard } from "@/shared/types/Querys/IDashboard";
 
 const AdminDashboardModule = ({ data }: { data: IDashboard }) => {
-  console.log(data);
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
