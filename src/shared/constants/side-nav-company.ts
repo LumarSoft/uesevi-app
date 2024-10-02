@@ -36,17 +36,16 @@ export const NavItemsCompany: NavItem[] = [
     title: "Mis Empleados",
     href: "/empresa/empleados/mis-empleados",
     icon: Building2,
-    color: "text-rose-500",
+    color: "text-blue-500", // Color azul para "Mis Empleados"
   },
-  {
-    title: "Importacion masiva",
-    href: "/empresa/empleados/importacion",
-    icon: Pickaxe,
-    color: "text-rose-500",
-  },
-
   {
     title: "Declaracion jurada",
+    href: "/empresa/empleados/importacion",
+    icon: Pickaxe,
+    color: "text-orange-500", // Color naranja para "Declaracion jurada"
+  },
+  {
+    title: "Historial de declaraciones",
     icon: Newspaper,
     href: "/empresa/declaraciones",
     color: "text-indigo-500",

@@ -3,13 +3,13 @@ import { Info } from "./components/Info/Info";
 import { createColumns } from "./components/Table/Columns";
 import { DataTable } from "./components/Table/Data-Table";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
+import { Total } from "./components/Total/Total";
 
 export const DeclaracionModule = ({
   statement,
 }: {
   statement: IInfoDeclaracion;
 }) => {
-
   const columns = createColumns();
   return (
     <div className="flex h-full flex-col">
@@ -20,6 +20,7 @@ export const DeclaracionModule = ({
           </h2>
         </div>
         <Info statement={statement} />
+        <Total statement={statement} />
         <DataTable columns={columns} data={statement.empleados} />
       </div>
     </div>

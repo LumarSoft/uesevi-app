@@ -74,7 +74,9 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
     cell: ({ row }) => {
       return (
         <React.Fragment>
-          {formatCurrency(Number(row.original.total_bruto))}
+          {formatCurrency(
+            row.original.sueldo_basico + Number(row.original.adicional)
+          )}
         </React.Fragment>
       );
     },
@@ -89,7 +91,8 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
   {
     header: "FAS",
     cell: ({ row }) => {
-      const fas = row.original.total_bruto * 0.01;
+      const fas =
+        (row.original.sueldo_basico + Number(row.original.adicional)) * 0.01;
       return <React.Fragment>{formatCurrency(fas)}</React.Fragment>;
     },
   },
@@ -97,7 +100,9 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
     header: "Aporte solidario",
     cell: ({ row }) => {
       const aporteSolidario =
-        row.original.afiliado === "No" ? row.original.total_bruto * 0.02 : 0;
+        row.original.afiliado === "No"
+          ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.02
+          : 0;
       return <React.Fragment>{formatCurrency(aporteSolidario)}</React.Fragment>;
     },
   },
@@ -105,7 +110,9 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
     header: "Sindicato",
     cell: ({ row }) => {
       const sindicato =
-        row.original.afiliado === "Sí" ? row.original.total_bruto * 0.03 : 0;
+        row.original.afiliado === "Sí"
+          ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.03
+          : 0;
       return <React.Fragment>{formatCurrency(sindicato)}</React.Fragment>;
     },
   },
@@ -113,11 +120,16 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
     header: "Total",
     cell: ({ row }) => {
       //aporte extraordinario?
-      const fas = row.original.total_bruto * 0.01;
+      const fas =
+        (row.original.sueldo_basico + Number(row.original.adicional)) * 0.01;
       const aporteSolidario =
-        row.original.afiliado === "No" ? row.original.total_bruto * 0.02 : 0;
+        row.original.afiliado === "No"
+          ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.02
+          : 0;
       const sindicato =
-        row.original.afiliado === "Sí" ? row.original.total_bruto * 0.03 : 0;
+        row.original.afiliado === "Sí"
+          ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.03
+          : 0;
 
       const total = fas + aporteSolidario + sindicato;
       return <React.Fragment>{formatCurrency(total)}</React.Fragment>;
