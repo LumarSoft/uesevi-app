@@ -40,7 +40,7 @@ const ScalesPreview = () => {
         <CardHeader className="pb-4">
           <CardTitle className="text-2xl md:text-3xl font-bold text-primary flex items-center gap-2">
             <Shield className="w-8 h-8" />
-            Escalas Salariales del Gremio
+            Escalas Salariales y Derecho Laborales
           </CardTitle>
         </CardHeader>
         <CardContent>
