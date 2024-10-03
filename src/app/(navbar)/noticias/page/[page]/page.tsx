@@ -25,7 +25,7 @@ async function AsyncNewsContent({ page }: { page: number }) {
     }
 
     // Simulación de retraso
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     return newsResponse.data;
   }
