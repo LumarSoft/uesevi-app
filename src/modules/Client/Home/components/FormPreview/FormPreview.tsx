@@ -21,7 +21,7 @@ export default function FormPreview() {
     <Card className="w-full px-4 md:px-28 2xl:px-80 mx-auto py-10 border-none shadow-none">
       <CardHeader className="text-center">
         <CardTitle className="text-3xl font-bold text-blue-800 dark:text-blue-200">
-          Fortalece tu Carrera en Seguridad y Vigilancia
+          Nuestros beneficios
         </CardTitle>
         <p className="mt-2 text-blue-600 dark:text-blue-300">
           Únete a nuestro gremio y accede a beneficios exclusivos
@@ -33,11 +33,7 @@ export default function FormPreview() {
           title="Cobertura Médica"
           description="Emergencias, urgencias y visitas domiciliarias"
         />
-        <BenefitCard
-          icon={<Shield className="w-8 h-8 text-blue-500" />}
-          title="Seguro de Vida"
-          description="Convenio con Sancor Seguros"
-        />
+
         <BenefitCard
           icon={<Gift className="w-8 h-8 text-yellow-500" />}
           title="Beneficios Familiares"

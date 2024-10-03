@@ -64,7 +64,7 @@ const NoticiasPageModule = ({
         <TabsList>
           <TabsTrigger value="all">Todas</TabsTrigger>
           <TabsTrigger value="Empresas">Empresas</TabsTrigger>
-          <TabsTrigger value="Clientes">Clientes</TabsTrigger>
+          <TabsTrigger value="Afiliados">Afiliados</TabsTrigger>
         </TabsList>
       </Tabs>
 
