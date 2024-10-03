@@ -1,25 +1,42 @@
+import { Suspense } from "react";
 import NoticiasPageModule from "@/modules/Client/noticias";
 import { fetchData } from "@/services/mysql/functions";
+import Loading from "./Loading";
 
-export default async function NoticiasPage({
+export default function NoticiasPage({
   params: { page },
 }: {
   params: { page: number };
 }) {
-  const newsResponse = await fetchData(`news/client/${page}`);
+  return (
+    <Suspense fallback={<Loading />}>
+      <AsyncNewsContent page={Number(page)} />
+    </Suspense>
+  );
+}
 
-  if (!newsResponse.ok || newsResponse.error) {
-    console.error("Error al obtener las noticias:", newsResponse.error);
-    return <div>Error al cargar las noticias.</div>;
+async function AsyncNewsContent({ page }: { page: number }) {
+  async function loadNews() {
+    const newsResponse = await fetchData(`news/client/${page}`);
+
+    if (!newsResponse.ok || newsResponse.error) {
+      console.error("Error al obtener las noticias:", newsResponse.error);
+      return { noticias: [], totalPages: 0 };
+    }
+
+    // Simulación de retraso
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    return newsResponse.data;
   }
 
-  const news = newsResponse.data;
+  const news = await loadNews();
 
   return (
     <NoticiasPageModule
       news={news.noticias}
       totalPages={news.totalPages}
-      currentPage={Number(page)}
+      currentPage={page}
     />
   );
 }
