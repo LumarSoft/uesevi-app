@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
 import { toast } from "react-toastify";
 import { postData } from "@/services/mysql/functions";
+import { Info } from "lucide-react";
 
 export const Form = () => {
   // States for personal information
@@ -434,7 +435,9 @@ export const Form = () => {
                 />
               </div>
 
-              <CardTitle className="lg:col-span-3">Información de la Empresa</CardTitle>
+              <CardTitle className="lg:col-span-3">
+                Información de la Empresa
+              </CardTitle>
 
               <div className="space-y-2">
                 <Label>Empresa</Label>
@@ -556,6 +559,24 @@ export const Form = () => {
                   value={objective}
                   onChange={(e) => setObjective(e.target.value)}
                 />
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mt-6 mb-4 p-4 bg-yellow-50 text-yellow-700 rounded-md border border-yellow-200 shadow-sm">
+              <Info className="w-6 h-6 flex-shrink-0 mt-1 sm:mt-0" />
+              <div className="text-sm sm:text-base">
+                <p className="font-semibold mb-1">
+                  Validación presencial requerida
+                </p>
+                <p>
+                  Por favor, visite nuestra oficina para validar su información:
+                </p>
+                <p className="font-bold mt-2">
+                  Dirección:{" "}
+                  <span className="underline">Mariano Moreno 60</span>
+                </p>
+                <p className="mt-1">
+                  Horario: Lunes a viernes, de 9:00 a.m. a 14:00 p.m.
+                </p>
               </div>
             </div>
 

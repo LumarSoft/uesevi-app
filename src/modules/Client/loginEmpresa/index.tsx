@@ -64,40 +64,42 @@ export function LoginEmpresaModule() {
             Ingrese sus credenciales para acceder al sistema
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Correo electrónico</Label>
-            <Input
-              id="email"
-              placeholder="nombre@empresa.com"
-              required
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Contraseña</Label>
-            <Input
-              id="password"
-              required
-              type="password"
-              placeholder="********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button
-            onClick={handleSubmit}
-            type="submit"
-            className="w-full"
-            disabled={loading}
-          >
-            {loading ? <LoadingSpinner /> : "Iniciar sesión"}
-          </Button>
-        </CardFooter>
+        <form action="">
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Correo electrónico</Label>
+              <Input
+                id="email"
+                placeholder="nombre@empresa.com"
+                required
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Contraseña</Label>
+              <Input
+                id="password"
+                required
+                type="password"
+                placeholder="********"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button
+              onClick={handleSubmit}
+              type="submit"
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? <LoadingSpinner /> : "Iniciar sesión"}
+            </Button>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   );
