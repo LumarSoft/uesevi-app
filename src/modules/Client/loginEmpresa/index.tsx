@@ -25,27 +25,63 @@ export function LoginEmpresaModule() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async () => {
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Expresión regular para validar formato de email
+    return emailRegex.test(email);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Evita el comportamiento por defecto del formulario
     setLoading(true);
+
+    // Validar formato del email
+    if (!validateEmail(email)) {
+      toast.error("Por favor, ingrese un correo electrónico válido.");
+      setLoading(false);
+      return;
+    }
+
     const formData = new FormData();
     formData.append("email", email);
     formData.append("password", password);
 
     try {
       const result = await postData("login/company", formData);
-      const { data } = result;
-      if (data.error) {
-        toast.error(result.data.details.message);
-      }
-      const { user, token } = data;
 
+      if (!result.ok) {
+        toast.error(result.message || "Ocurrió un error al iniciar sesión.");
+        setLoading(false);
+        return;
+      }
+
+      const { data } = result as { data: any };
+
+      const { user, token } = data;
       userStore.getState().setAuth(token, user);
       setCookie("auth-token", token);
 
       router.replace("/empresa/empleados/agregar-empleado");
-    } catch (error) {
-      console.error(error);
-      toast.error("Ocurrió un error al iniciar sesión");
+    } catch (error: any) {
+      console.error("Error en la solicitud:", error);
+
+      // Manejo de errores específicos de Axios
+      if (error.response) {
+        // Error en la respuesta de la API
+        const { statusCode, message } = error.response.data;
+
+        // Mostrar mensaje específico basado en el código de estado
+        if (statusCode === 401) {
+          toast.error(
+            "Las credenciales son incorrectas. Verifique su correo y contraseña."
+          );
+        } else {
+          toast.error(message || "Ocurrió un error al iniciar sesión.");
+        }
+      } else {
+        // Error genérico
+        toast.error("Ocurrió un error en la solicitud.");
+      }
+
       setLoading(false);
     }
   };
@@ -64,12 +100,11 @@ export function LoginEmpresaModule() {
             Ingrese sus credenciales para acceder al sistema
           </CardDescription>
         </CardHeader>
-        <form action="">
+        <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Correo electrónico</Label>
               <Input
-                id="email"
                 placeholder="nombre@empresa.com"
                 required
                 type="email"
@@ -90,12 +125,7 @@ export function LoginEmpresaModule() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button
-              onClick={handleSubmit}
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <LoadingSpinner /> : "Iniciar sesión"}
             </Button>
           </CardFooter>

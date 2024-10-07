@@ -27,7 +27,7 @@ export default function FormPreview() {
           Únete a nuestro gremio y accede a beneficios exclusivos
         </p>
       </CardHeader>
-      <CardContent className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <CardContent className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
         <BenefitCard
           icon={<Heart className="w-8 h-8 text-red-500" />}
           title="Cobertura Médica"
@@ -47,17 +47,8 @@ export default function FormPreview() {
         <BenefitCard
           icon={<Briefcase className="w-8 h-8 text-purple-500" />}
           title="Apoyo Profesional"
-          description="Respaldo en tu carrera de seguridad"
+          description="Respaldo en tu trayectoria profesional en seguridad."
         />
-        <div className="flex flex-col justify-center items-center p-4 bg-primary-foreground border rounded-lg">
-          <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">
-            ¿Eres elegible?
-          </h3>
-          <p className="text-sm text-center text-blue-600 dark:text-blue-300">
-            Si trabajas en seguridad privada, vigilancia o investigaciones,
-            ¡este es tu gremio!
-          </p>
-        </div>
       </CardContent>
       <CardFooter className="flex justify-center mt-6">
         <Link href="/afiliaciones">

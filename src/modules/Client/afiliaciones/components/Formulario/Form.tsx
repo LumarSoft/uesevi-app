@@ -45,7 +45,6 @@ export const Form = () => {
   const [companyPostalCode, setCompanyPostalCode] = useState("");
   const [companyProvince, setCompanyProvince] = useState(""); // For provinces in the company section
   const [companyCuit, setCompanyCuit] = useState("");
-  const [agencyNumber, setAgencyNumber] = useState("");
   const [objective, setObjective] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -199,12 +198,6 @@ export const Form = () => {
       return;
     }
 
-    // Validar número de agencia de la empresa
-    if (!agencyNumber.trim()) {
-      toast.error("El número de agencia es requerido");
-      return;
-    }
-
     // Validar objetivo
     if (!objective.trim()) {
       toast.error("El objetivo es requerido");
@@ -237,7 +230,6 @@ export const Form = () => {
     formData.append("companyPostalCode", companyPostalCode);
     formData.append("companyProvince", companyProvince);
     formData.append("companyCuit", companyCuit);
-    formData.append("agencyNumber", agencyNumber);
     formData.append("objective", objective);
 
     try {
@@ -268,7 +260,6 @@ export const Form = () => {
         setCompanyPostalCode("");
         setCompanyProvince("");
         setCompanyCuit("");
-        setAgencyNumber("");
         setObjective("");
         return toast.success("Formulario enviado correctamente");
       }
@@ -545,15 +536,7 @@ export const Form = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Número de Agencia</Label>
-                <Input
-                  value={agencyNumber}
-                  onChange={(e) => setAgencyNumber(e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2 lg:col-span-2">
+              <div className="space-y-2 lg:col-span-3">
                 <Label>Objetivo</Label>
                 <Textarea
                   value={objective}
@@ -569,6 +552,10 @@ export const Form = () => {
                 </p>
                 <p>
                   Por favor, visite nuestra oficina para validar su información:
+                </p>
+                <p>
+                  Para completar la afiliación, deberá presentarse con recibo de
+                  haberes y DNI físico en la sede sindical
                 </p>
                 <p className="font-bold mt-2">
                   Dirección:{" "}
