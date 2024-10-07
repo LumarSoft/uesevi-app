@@ -40,33 +40,31 @@ export const Beneficios = () => {
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-5 space-y-2">
+              <li>Subsidios por nacimiento, adopción y fallecimiento</li>
+              <li>Asesoramiento legal</li>
               <li>
-                Cardiss: emergencias médicas, urgencias, visitas médicas
-                domiciliarias, traslados programados
+                Entrega de kit escolar para hijos de afiliados en edad escolar
+                en el mes de febrero con previa inscripción
               </li>
+              <li>Entrega de bolsones de mercaderias</li>
+              <li>Entrega de cajas navideñas</li>
+              <li>Descuento en optica</li>
+              <li>Descuento en vacuna antigripal</li>
+              <li>atención en clinicas oeste</li>
+              <li>Descuentos en laboratorios y practicas</li>
+              <li>Servicio de emergencias medicas para el afiliado</li>
+              <li>Camping</li>
+              <li>Servicio de sepelio</li>
               <li>
-                Cochería Oeste: 2 complejos velatorios equipados con cocina,
-                dormitorio de descanso, baños y un amplio estar climatizado,
-                salas climatizadas, kinder, bar, desayuno, cafetería, servicio
-                de portería, flota de vehículos de categoría.
-              </li>
-              <li>
-                Farmacias: 50% de descuento en Red de Farmacias colegiadas en
-                todo el país, con mas de 2500 puntos de atención. Programa de
-                medicamentos ambulatorios. Acceso directo con credencial
-                identificatoria + receta médica.
-              </li>
-              <li>
-                Seguro de vida: convenio con sancor seguros, un monto $10.000
-                por fallecimiento.
-              </li>
-              <li>
-                Kit escolar: presentar certificado de escolaridad, último recibo
-                de sueldo, dni original y copia del empleado y del beneficiario.
-              </li>
-              <li>
-                Subsidio por nacimiento: presentar último recibo de sueldo,
-                certificado de nacimiento y dni con fotocopia de ambos lados.
+                Descuento en farmacias. La receta medica debe contener:
+                &quot;SANCOR SEGUROS/SEGURAMAX&quot;. consultar farmacias
+                adheridas haciendo click aqui{" "}
+                <a
+                  href="https://www.sancorseguros.com.ar/farmacias-vademecum"
+                  className="text-primary"
+                >
+                  aqui
+                </a>
               </li>
             </ul>
           </CardContent>

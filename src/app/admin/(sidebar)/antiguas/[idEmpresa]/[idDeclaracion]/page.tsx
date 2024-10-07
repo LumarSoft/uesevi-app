@@ -9,7 +9,6 @@ export default async function Declaracion({
   const statementResult = await fetchData(
     `old-statements/info/${idEmpresa}/${idDeclaracion}`
   );
-  console.log(statementResult);
 
   if (!statementResult.ok) {
     return <div>Error al cargar los datos</div>;
