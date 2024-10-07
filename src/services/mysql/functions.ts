@@ -5,12 +5,12 @@ import httpMysqlClient from "./apiClient";
 // Función genérica para manejar la respuesta de la API
 const handleResponse = (response: any) => {
   if (response.error) {
-    console.error("Error en la respuesta de la API:", response.error);
     return {
       ok: false,
       status: "error",
-      statusCode: 500,
-      message: response.error.message || "Error desconocido",
+      statusCode: response.details.code || 500,
+      message: response.details.message || "Error desconocido",
+      data: null, // Asegúrate de devolver 'data' incluso en caso de error
     };
   }
 
@@ -20,7 +20,7 @@ const handleResponse = (response: any) => {
     status: "success",
     statusCode: 200,
     message: "Datos obtenidos con éxito",
-    data: response.data,
+    data: response.data, // Devuelves la data correctamente aquí
   };
 };
 
@@ -75,11 +75,17 @@ export const postData = async (endpoint: string, postData: FormData) => {
     return handleResponse(response);
   } catch (error: any) {
     console.error("Error al enviar datos:", error);
+
+    // Si la respuesta tiene un código de error específico (como 401)
+    const statusCode = error.response?.status;
+    const message = error.response?.data?.message || "Error desconocido";
+
     return {
       ok: false,
       status: "error",
-      statusCode: 500,
-      message: error.response?.data || error.message || "Error desconocido",
+      statusCode: statusCode || 500,
+      message,
+      data: null,
     };
   }
 };
@@ -91,7 +97,6 @@ export const updateData = async (
 ) => {
   try {
     const url = endpoint.replace(":id", id.toString());
-
 
     const response = await httpMysqlClient({
       method: "PUT",

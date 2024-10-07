@@ -12,8 +12,6 @@ const TasasModule = ({ data }: { data: ITasas[] }) => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const tasaActualizada = data[0]; // Toma la primera tasa (puedes ajustar según lo necesario)
-    console.log("Tasa actualizada para enviar:", tasaActualizada); // Log de la tasa a enviar
 
     const formData = new FormData();
     formData.append("percentage", percentage);
