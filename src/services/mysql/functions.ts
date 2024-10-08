@@ -58,6 +58,7 @@ export const fetchOneRow = async (endpoint: string, id: number) => {
       status: "error",
       statusCode: 500,
       message: error.message || "Error desconocido",
+      data: null,
     };
   }
 };
