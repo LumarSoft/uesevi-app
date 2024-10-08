@@ -49,23 +49,6 @@ export const PrintFicha = ({ data }: { data: IFormulario }) => {
         ? data.cod_postal_empresa.toString()
         : "0";
 
-      // Formatear codigo_postal_empresa a string
-      const formattedCantidadHijos = data.cantidad_hijos
-        ? data.cantidad_hijos.toString()
-        : "";
-
-      // Formatear codigo_postal_empresa a string
-      const formattedNumeroAgencia = data.numero_agencia_empresa
-        ? data.numero_agencia_empresa.toString()
-        : "0";
-
-      // Datos empleado
-      page.drawText(data.id.toString(), {
-        x: 335,
-        y: 762,
-        size: 14,
-        color: rgb(0, 0, 0),
-      });
       page.drawText(data.apellido + " " + data.nombre, {
         x: 210,
         y: 638,
@@ -144,7 +127,7 @@ export const PrintFicha = ({ data }: { data: IFormulario }) => {
         size: 12,
         color: rgb(0, 0, 0),
       });
-      page.drawText(formattedCantidadHijos, {
+      page.drawText(data.cantidad_hijos.toString(), {
         x: 443,
         y: 510,
         size: 12,
@@ -159,48 +142,41 @@ export const PrintFicha = ({ data }: { data: IFormulario }) => {
         color: rgb(0, 0, 0),
       });
       page.drawText(data.telefono_empresa, {
-        x: 415,
-        y: 407,
-        size: 12,
-        color: rgb(0, 0, 0),
-      });
-      page.drawText(data.domicilio_empresa, {
         x: 132,
         y: 385,
         size: 12,
         color: rgb(0, 0, 0),
       });
+      page.drawText(data.domicilio_empresa, {
+        x: 360,
+        y: 386,
+        size: 12,
+        color: rgb(0, 0, 0),
+      });
       page.drawText(data.localidad_empresa, {
-        x: 445,
-        y: 385,
+        x: 140,
+        y: 363,
         size: 12,
         color: rgb(0, 0, 0),
       });
       page.drawText(formattedCodigoPostalEmpresa, {
-        x: 63,
-        y: 365,
+        x: 300,
+        y: 363,
         size: 12,
         color: rgb(0, 0, 0),
       });
       page.drawText(data.provincia_empresa, {
-        x: 235,
-        y: 365,
+        x: 465,
+        y: 363,
         size: 12,
         color: rgb(0, 0, 0),
       });
       page.drawText(data.cuit_empresa, {
-        x: 363,
-        y: 364,
+        x: 85,
+        y: 341,
         size: 12,
         color: rgb(0, 0, 0),
       });
-      page.drawText(formattedNumeroAgencia, {
-        x: 200,
-        y: 345,
-        size: 12,
-        color: rgb(0, 0, 0),
-      });
-
       page.drawText(data.objetivo, {
         x: 120,
         y: 95,
