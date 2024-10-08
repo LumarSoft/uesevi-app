@@ -25,7 +25,7 @@ export const DeleteCategoria = ({
     const result = await deleteData("category/:id", data.id);
 
     if (!result.ok) {
-      return toast.error("Error al eliminar datos:", result);
+      return toast.error("Error al eliminar datos:", result.message);
     }
 
     onDataDelete(data);
