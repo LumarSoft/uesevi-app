@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -14,14 +13,21 @@ import { useEffect, useState } from "react";
 import { NavItem } from "@/shared/constants/side-nav-admin";
 import { useSidebar } from "@/shared/hooks/useSidebar";
 import { ChevronDownIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface SideNavProps {
   items: NavItem[];
   setOpen?: (open: boolean) => void;
   className?: string;
+  CountCompaniesPending?: number;
 }
 
-export function SideNav({ items, setOpen, className }: SideNavProps) {
+export function SideNav({
+  items,
+  setOpen,
+  className,
+  CountCompaniesPending,
+}: SideNavProps) {
   const path = usePathname();
   const { isOpen } = useSidebar();
   const [openItem, setOpenItem] = useState("");
@@ -48,7 +54,7 @@ export function SideNav({ items, setOpen, className }: SideNavProps) {
             value={openItem}
             onValueChange={setOpenItem}
           >
-            <AccordionItem value={item.title} className="border-none ">
+            <AccordionItem value={item.title} className="border-none">
               <AccordionTrigger
                 className={cn(
                   buttonVariants({ variant: "ghost" }),
@@ -60,7 +66,7 @@ export function SideNav({ items, setOpen, className }: SideNavProps) {
                 </div>
                 <div
                   className={cn(
-                    "absolute left-12 text-base duration-200 ",
+                    "absolute left-12 text-base duration-200",
                     !isOpen && className
                   )}
                 >
@@ -88,11 +94,16 @@ export function SideNav({ items, setOpen, className }: SideNavProps) {
                     <child.icon className={cn("h-5 w-5", child.color)} />
                     <div
                       className={cn(
-                        "absolute left-12 text-base duration-200",
+                        "left-12 text-base duration-200 w-full flex justify-between",
                         !isOpen && className
                       )}
                     >
                       {child.title}
+                      {child.title === "Empresas" ? (
+                        <Badge className="bg-rose-500 hover:bg-rose-600">
+                          {CountCompaniesPending}
+                        </Badge>
+                      ) : null}
                     </div>
                   </Link>
                 ))}
