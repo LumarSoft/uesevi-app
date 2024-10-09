@@ -28,8 +28,8 @@ export default function SearchCard({
 }: {
   companies: IEmpresa[];
   contracts: IContratos[];
-  statements: IDeclaracion[];
-  setStatementsState: React.Dispatch<React.SetStateAction<IDeclaracion[]>>;
+  statements: (IDeclaracion)[]; // Cambia aquí
+  setStatementsState: React.Dispatch<React.SetStateAction<(IDeclaracion)[]>>; // Cambia aquí
 }) {
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(2022, 0, 20),
@@ -78,16 +78,27 @@ export default function SearchCard({
         statements
       );
     }
-    setStatementsState(filter);
+  
+    // Filtrar solo IDeclaracion antes de actualizar el estado
+    const filteredStatements = filter.filter((item): item is IDeclaracion => {
+      return (item as IDeclaracion).subtotal !== undefined; // Asegúrate de que `subtotal` está presente
+    });
+  
+    setStatementsState(filteredStatements);
   };
-
+  
   const handleClear = () => {
     setDate({ from: undefined, to: undefined });
     setCompany(null);
     setIdEmployee(null);
     setEmployees([]);
-    setStatementsState(statements); // Resetea las declaraciones al estado inicial
+    // Filtrar el estado inicial para solo IDeclaracion
+    const filteredStatements = statements.filter((item): item is IDeclaracion => {
+      return (item as IDeclaracion).subtotal !== undefined; // Asegúrate de que `subtotal` está presente
+    });
+    setStatementsState(filteredStatements); // Resetea las declaraciones al estado inicial
   };
+  
 
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">

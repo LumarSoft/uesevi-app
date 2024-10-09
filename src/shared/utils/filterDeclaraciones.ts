@@ -7,12 +7,30 @@ export const filterDeclaraciones = (
   empresa: number | null,
   empleado: number | null,
   contratos: IContratos[],
-  declaraciones: IDeclaracion[] | IOldDeclaracion[]
-) => {
-  let declaracionesFiltradas = declaraciones.filter((declaracion) => {
-    return "empresa_id" in declaracion || "old_empresa_id" in declaracion;
-  });
+  declaraciones: (IDeclaracion | IOldDeclaracion)[]
+): (IDeclaracion | IOldDeclaracion)[] => {
+  // Verifica el tipo de las declaraciones y realiza el filtrado correspondiente
+  let declaracionesFiltradas: (IDeclaracion | IOldDeclaracion)[];
 
+  // Comprobamos el tipo de la primera declaración para determinar el tipo general
+  if (declaraciones.length > 0) {
+    const primeraDeclaracion = declaraciones[0];
+
+    // Filtrar por el tipo de declaración
+    if ("empresa_id" in primeraDeclaracion) {
+      // Es un IDeclaracion
+      declaracionesFiltradas = declaraciones as IDeclaracion[];
+    } else if ("old_empresa_id" in primeraDeclaracion) {
+      // Es un IOldDeclaracion
+      declaracionesFiltradas = declaraciones as IOldDeclaracion[];
+    } else {
+      // Si no coincide con ningún tipo, retornar un array vacío
+      return [];
+    }
+  } else {
+    // Si no hay declaraciones, retornar un array vacío
+    return [];
+  }
 
   // Filtrar por fecha solo si se han proporcionado ambas fechas
   if (fecha && fecha.from !== undefined && fecha.to !== undefined) {
@@ -26,7 +44,6 @@ export const filterDeclaraciones = (
       );
     });
   }
-
 
   // Filtrar por empresa si se ha proporcionado
   if (empresa !== null) {
@@ -53,7 +70,6 @@ export const filterDeclaraciones = (
       declaracionesFiltradas = []; // Si no hay contrato, el empleado no tiene declaraciones
     }
   }
-
 
   return declaracionesFiltradas;
 };
