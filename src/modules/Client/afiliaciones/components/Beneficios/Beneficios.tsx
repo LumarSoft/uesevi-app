@@ -19,12 +19,12 @@ export const Beneficios = () => {
             <ul className="list-disc pl-5 space-y-2">
               <li>
                 Prestar servicios en empresas y/o agencias privadas de seguridad
-                y/o vigilancia y empresas de investigación privada.
+                y/o vigilancia y empresas de investigación privada
               </li>
               <li>
                 Empleados administrativos de empresas de seguridad y vigilancia,
                 tanto de protección física, custodias móviles, protección y
-                vigilancia electrónica y servicios conexos a los mismos.
+                vigilancia electronica y servicios conexos a los mismos
               </li>
               <li>
                 Cumplir tareas de seguridad y/o custodia, vigilancia e
@@ -33,11 +33,11 @@ export const Beneficios = () => {
                 jurídicas cumpliendo tareas de seguridad y/o vigilancia de tipo
                 comercial, industrial, civil, financiero-agropecuario, propiedad
                 de bienes y propiedad intelectual y/o patentes de invención y/o
-                investigaciones privadas.
+                investigaciones privadas
               </li>
               <li>
                 Personal que realice tareas de control de admisión y permanencia
-                de público en general.
+                de publico en general
               </li>
             </ul>
           </CardContent>
