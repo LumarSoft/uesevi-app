@@ -18,7 +18,7 @@ export default function DeclaracionesModule({
   contracts: IContratos[];
 }) {
 
-  const [statementsState, setStatementsState] = useState(statements);
+  const [statementsState, setStatementsState] = useState<IDeclaracion[]>(statements);
 
   const changeState = (updatedItem: IDeclaracion) => {
     const newData = statementsState.map((item) =>
