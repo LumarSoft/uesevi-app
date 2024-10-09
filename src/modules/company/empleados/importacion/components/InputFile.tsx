@@ -20,7 +20,8 @@ export const InputFile: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { user } = userStore();
 
-  const sendJson = async (data: any[]) => {
+  // Función para enviar datos a la API y retornar el estado
+  const sendJson = async (data: any[]): Promise<boolean> => {
     const formData = new FormData();
 
     data.forEach((item, index) => {
@@ -33,8 +34,17 @@ export const InputFile: React.FC = () => {
 
     try {
       const result = await postData("employees/import", formData);
+      if (result.ok) {
+        return true;
+      } else {
+        console.error("Error al enviar el formulario:", result);
+        toast.error("Error al enviar los datos a la API");
+        return false;
+      }
     } catch (error) {
       console.error("Error al enviar el formulario:", error);
+      toast.error("Error al enviar los datos a la API");
+      return false; // Indica que hubo un error
     }
   };
 
@@ -62,7 +72,7 @@ export const InputFile: React.FC = () => {
   };
 
   // Función para procesar y subir el archivo Excel
-  const uploadExcel = async (file: File) => {
+  const uploadExcel = async (file: File): Promise<boolean> => {
     try {
       const data = await new Promise<any[]>((resolve, reject) => {
         const fileReader = new FileReader();
@@ -87,14 +97,12 @@ export const InputFile: React.FC = () => {
 
       const formattedData = formatKeys(data);
 
-      // Aca se lo enviamos a la funcion para enviar a la api y esperamos a que termine, cuando termine retornamos true
-      await sendJson(formattedData);
-
-      return true;
+      // Aca se lo enviamos a la funcion para enviar a la api y esperamos a que termine
+      return await sendJson(formattedData); // Retorna el resultado de sendJson
     } catch (error) {
       console.error(error);
       toast.error("Ocurrió un error al subir el archivo");
-      return false;
+      return false; // Retorna false si hay un error
     }
   };
 
@@ -112,6 +120,8 @@ export const InputFile: React.FC = () => {
 
     if (isFinish) {
       toast.success("Archivo subido correctamente");
+    } else {
+      toast.error("Hubo un problema al procesar el archivo");
     }
   };
 
