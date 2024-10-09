@@ -1,4 +1,4 @@
-import DeclaracionesModule from "@/modules/Admin/Antiguas";
+import DeclaracionesViejasModule from "@/modules/Admin/Antiguas";
 import { fetchData } from "@/services/mysql/functions";
 
 export default async function AntiguasPage() {
@@ -17,7 +17,7 @@ export default async function AntiguasPage() {
   const contracts = contractsResult.data;
 
   return (
-    <DeclaracionesModule
+    <DeclaracionesViejasModule
       companies={companies}
       statements={statements}
       contracts={contracts}

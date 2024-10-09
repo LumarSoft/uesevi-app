@@ -31,7 +31,7 @@ export default function SearchCard({
   contracts: IOldContratos[];
   statements: IOldDeclaracion[];
   setStatementsState: React.Dispatch<
-    React.SetStateAction<IOldDeclaracion[] | IDeclaracion[]>
+    React.SetStateAction<IOldDeclaracion[] | IDeclaracion[] | undefined>
   >;
 }) {
   const [date, setDate] = useState<DateRange | undefined>({
@@ -46,8 +46,7 @@ export default function SearchCard({
   const fetchEmpleadosByEmpresa = async (company: number) => {
     try {
       const result = await fetchData(`employees/company/${company}`);
-      setEmployees(result);
-      console.log(result);
+      setEmployees(result.data);
     } catch (error) {
       console.error("Error fetching empleados:", error);
     }
@@ -56,24 +55,33 @@ export default function SearchCard({
   useEffect(() => {
     if (company !== null) {
       fetchEmpleadosByEmpresa(company);
-      console.log(company);
     }
   }, [company]);
 
   const handleFilter = () => {
-    if (!date || !date.from || !date.to) return;
-    const filtrado = filterDeclaraciones(
-      { from: date.from, to: date.to },
-      company,
-      idEmployee,
-      contracts,
-      statements
-    );
-    setStatementsState(filtrado);
+    let filters;
+    if (!date || !date.from || !date.to) {
+      filters = filterDeclaraciones(
+        undefined,
+        company,
+        idEmployee,
+        contracts,
+        statements
+      );
+    } else {
+      filters = filterDeclaraciones(
+        { from: date.from, to: date.to },
+        company,
+        idEmployee,
+        contracts,
+        statements
+      );
+    }
+    setStatementsState(filters as IOldDeclaracion[]);
   };
 
   const handleClear = () => {
-    setDate({ from: undefined, to: undefined});
+    setDate({ from: undefined, to: undefined });
     setCompany(null);
     setIdEmployee(null);
     setEmployees([]);
@@ -99,11 +107,19 @@ export default function SearchCard({
             setCompany={setCompany}
           />
 
-          <ComboboxEmployee employees={employees} setEmployee={setIdEmployee} idEmployee={idEmployee}/>
+          <ComboboxEmployee
+            employees={employees}
+            setEmployee={setIdEmployee}
+            idEmployee={idEmployee}
+          />
         </CardContent>
 
         <CardFooter className="flex items-center justify-between gap-4">
-          <Button variant="destructive" className="flex-1" onClick={handleClear}>
+          <Button
+            variant="destructive"
+            className="flex-1"
+            onClick={handleClear}
+          >
             Limpiar
           </Button>
           <Button variant="default" className="flex-1" onClick={handleFilter}>
