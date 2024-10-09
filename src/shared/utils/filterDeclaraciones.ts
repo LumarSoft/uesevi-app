@@ -9,31 +9,36 @@ export const filterDeclaraciones = (
   contratos: IContratos[],
   declaraciones: IDeclaracion[] | IOldDeclaracion[]
 ) => {
-  console.log(fecha, empresa, empleado);
+  let declaracionesFiltradas = declaraciones.filter((declaracion) => {
+    return "empresa_id" in declaracion || "old_empresa_id" in declaracion;
+  });
 
-  let declaracionesFiltradas: IDeclaracion[] = declaraciones.filter(
-    (declaracion): declaracion is IDeclaracion => {
-      return "empresa_id" in declaracion;
-    }
-  );
 
   // Filtrar por fecha solo si se han proporcionado ambas fechas
-  if (fecha && fecha.from !== null && fecha.to !== null) {
+  if (fecha && fecha.from !== undefined && fecha.to !== undefined) {
     declaracionesFiltradas = declaracionesFiltradas.filter((declaracion) => {
       const fechaDeclaracion = new Date(declaracion.fecha);
-      return fecha.from !== null && fecha.to !== null && fechaDeclaracion >= fecha.from && fechaDeclaracion <= fecha.to;
+      return (
+        fecha.from !== null &&
+        fecha.to !== null &&
+        fechaDeclaracion >= fecha.from &&
+        fechaDeclaracion <= fecha.to
+      );
     });
   }
 
-  console.log(declaracionesFiltradas);
 
   // Filtrar por empresa si se ha proporcionado
   if (empresa !== null) {
-    declaracionesFiltradas = declaracionesFiltradas.filter(
-      (declaracion) => declaracion.empresa_id === empresa
-    );
+    declaracionesFiltradas = declaracionesFiltradas.filter((declaracion) => {
+      if ("old_empresa_id" in declaracion) {
+        return declaracion.old_empresa_id === empresa;
+      } else if ("empresa_id" in declaracion) {
+        return declaracion.empresa_id === empresa;
+      }
+      return false;
+    });
   }
-  console.log(declaracionesFiltradas);
 
   // Filtrar por empleado si se ha proporcionado
   if (empleado !== null) {
@@ -49,7 +54,6 @@ export const filterDeclaraciones = (
     }
   }
 
-  console.log(declaracionesFiltradas);
 
   return declaracionesFiltradas;
 };

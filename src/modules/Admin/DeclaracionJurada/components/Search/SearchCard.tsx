@@ -40,6 +40,10 @@ export default function SearchCard({
   const [idEmployee, setIdEmployee] = useState<number | null>(null);
   const [employees, setEmployees] = useState<IEmpleado[] | []>([]);
 
+  useEffect(() => {
+    console.log(company);
+  }, [company]);
+
   const fetchEmpleadosByEmpresa = async (company: number) => {
     try {
       const result = await fetchData(`employees/company/${company}`);
@@ -56,15 +60,25 @@ export default function SearchCard({
   }, [company]);
 
   const handleFilter = () => {
-    if (!date || !date.from || !date.to) return; // Aseguramos que las fechas estén presentes
-    const filtrado = filterDeclaraciones(
-      { from: date.from, to: date.to }, // Convertimos DateRange a {from, to}
-      company,
-      idEmployee,
-      contracts,
-      statements
-    );
-    setStatementsState(filtrado);
+    let filter;
+    if (!date || !date.from || !date.to) {
+      filter = filterDeclaraciones(
+        undefined,
+        company,
+        idEmployee,
+        contracts,
+        statements
+      );
+    } else {
+      filter = filterDeclaraciones(
+        { from: date.from, to: date.to },
+        company,
+        idEmployee,
+        contracts,
+        statements
+      );
+    }
+    setStatementsState(filter);
   };
 
   const handleClear = () => {

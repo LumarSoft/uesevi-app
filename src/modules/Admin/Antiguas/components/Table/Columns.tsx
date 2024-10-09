@@ -29,6 +29,7 @@ export const createColumns = (): ColumnDef<
   {
     accessorKey: "fecha",
     header: "Fecha de presentación",
+    cell: ({ row }) => new Date(row.original.fecha).toLocaleDateString(),
   },
 
   {

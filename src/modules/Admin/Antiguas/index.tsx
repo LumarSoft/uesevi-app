@@ -9,7 +9,7 @@ import { IOldContratos } from "@/shared/types/Querys/IOldContratos";
 import { useState } from "react";
 import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 
-export default function DeclaracionesModule({
+export default function DeclaracionesViejasModule({
   companies,
   statements,
   contracts,
@@ -18,7 +18,9 @@ export default function DeclaracionesModule({
   statements: IOldDeclaracion[];
   contracts: IOldContratos[];
 }) {
-  const [statementsState, setStatementsState] = useState<IOldDeclaracion[]|IDeclaracion[]>(statements);
+  const [statementsState, setStatementsState] = useState<
+    IOldDeclaracion[] | IDeclaracion[] | undefined
+  >(statements);
 
   const columns = createColumns();
 
