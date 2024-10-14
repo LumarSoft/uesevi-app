@@ -105,10 +105,10 @@ export default function AddNoticiaModule() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="epigraph">Epigrafe (obligatorio)</Label>
+          <Label htmlFor="epigraph">Epígrafe (obligatorio)</Label>
           <Input
             id="epigraph"
-            placeholder="Escriba el epigrafe"
+            placeholder="Escriba el epígrafe"
             value={epigraph}
             onChange={(e) => setEpigraph(e.target.value)}
           />

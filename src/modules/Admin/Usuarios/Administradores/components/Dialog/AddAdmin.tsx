@@ -47,13 +47,9 @@ export const AddAdmin = ({
         return;
       }
 
-      console.log({ id: result.data.id, firstName, lastName, email, phone });
-
       onAdminAdded({
         id: result.data.id,
-        created: `${String(new Date().getDate()).padStart(2, "0")}/${String(
-          new Date().getMonth() + 1
-        ).padStart(2, "0")}/${String(new Date().getFullYear()).slice(-2)}`,
+        created: new Date(),
         nombre: firstName,
         apellido: lastName,
         email,
