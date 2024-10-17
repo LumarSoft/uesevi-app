@@ -40,16 +40,19 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
   {
     id: "actions",
     cell: ({ row }) => {
+      const isFirstRow = row.index === 0;
       return (
         <>
-          <Link
-            href={`/admin/declaraciones/${row.original.empresa_id}/${row.original.id}`}
-          >
-            <Button>
-              <EyeIcon />
-              Ver
-            </Button>
-          </Link>
+          {isFirstRow && (
+            <Link
+              href={`/admin/declaraciones/${row.original.empresa_id}/${row.original.id}`}
+            >
+              <Button>
+                <EyeIcon />
+                Ver
+              </Button>
+            </Link>
+          )}
         </>
       );
     },

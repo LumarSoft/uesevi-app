@@ -27,7 +27,7 @@ const ScalesPreview = () => {
   }, []);
 
   const currentDate = new Date();
-  const month = currentDate.toLocaleString("default", { month: "long" });
+  const month = currentDate.toLocaleString("es-ES", { month: "long" });
   const year = currentDate.getFullYear();
 
   return (
