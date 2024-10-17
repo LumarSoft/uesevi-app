@@ -1,10 +1,18 @@
+"use client";
 import HomeModule from "@/modules/Client/Home";
 import { fetchData } from "@/services/mysql/functions";
+import { useEffect, useState } from "react";
 
-export default async function Home() {
-  const latestNewsResponse = await fetchData("news/last-three");
+export default function Home() {
+  const [data, setData] = useState([]);
 
-  const latestNews = latestNewsResponse.data;
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await fetchData("news/last-three");
+      setData(response.data);
+    };
+    fetch();
+  }, []);
 
-  return <HomeModule noticias={latestNews} />;
+  return <HomeModule noticias={data} />;
 }
