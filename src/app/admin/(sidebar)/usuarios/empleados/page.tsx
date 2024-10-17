@@ -12,22 +12,16 @@ export default function AdminEmpleados() {
       const employees = await fetchData("employees");
       const companies = await fetchData("companies");
 
-      if (!employees.ok || employees.error) {
-        console.error("Error al obtener los empleados:", employees.error);
-        return;
-      }
-
-      if (!companies.ok || companies.error) {
-        console.error("Error al obtener las empresas:", companies.error);
-        return;
-      }
-
       setDataEmployees(employees.data);
       setDataCompanies(companies.data);
     };
 
     fetch();
   }, []);
+
+  if (!dataEmployees.length || !dataCompanies.length) {
+    return <div>Cargando</div>;
+  }
 
   return (
     <AdminEmpleadosModule employees={dataEmployees} companies={dataCompanies} />

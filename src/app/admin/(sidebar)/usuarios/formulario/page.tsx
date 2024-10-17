@@ -12,22 +12,16 @@ export default function AdminFormulario() {
       const forms = await fetchData("forms");
       const companies = await fetchData("companies");
 
-      if (!forms.ok || forms.error) {
-        console.error("Error al obtener los formularios:", forms.error);
-        return;
-      }
-
-      if (!companies.ok || companies.error) {
-        console.error("Error al obtener las empresas:", companies.error);
-        return;
-      }
-
       setFormsData(forms.data);
       setCompaniesData(companies.data);
     };
 
     fetch();
   }, []);
+
+  if (!formsData.length || !companiesData.length) {
+    return <div>Cargando</div>;
+  }
 
   return <AdminFormularioModule forms={formsData} companies={companiesData} />;
 }

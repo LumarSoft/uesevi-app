@@ -23,7 +23,7 @@ export default function AntiguasPage() {
   }, []);
 
   if (!companies.length || !statements.length || !contracts.length) {
-    return <div>Error al cargar los datos</div>;
+    return <div>Cargando</div>;
   }
 
   return (

@@ -9,19 +9,15 @@ export default function AdminEmpresas() {
     const fetch = async () => {
       const result = await fetchData("companies");
 
-      if (!result.ok || result.error) {
-        console.error(
-          "Error al obtener los datos de las empresas:",
-          result.error
-        );
-        return;
-      }
-
       setData(result.data);
     };
 
     fetch();
   }, []);
+
+  if (!data.length) {
+    return <div>Cargando</div>;
+  }
 
   return <AdminEmpresasModule data={data} />;
 }
