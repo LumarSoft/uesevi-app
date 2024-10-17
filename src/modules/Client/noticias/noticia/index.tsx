@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/carousel";
 
 export default function NoticiaModule({ newData }: { newData: INoticias }) {
-
   const BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
   return (
     <div className="w-full min-h-screen">
@@ -60,7 +59,7 @@ export default function NoticiaModule({ newData }: { newData: INoticias }) {
                 <img
                   src={`${BASE_API_URL}/uploads/${newData.images[0].nombre}`}
                   alt={newData.titulo}
-                  className="w-full h-auto rounded-lg"
+                  className="w-full h-auto rounded-lg md:w-1/2 mx-auto" // Cambia el tamaño en desktop
                 />
               ) : (
                 // Mostrar un carrusel si hay más de una imagen
@@ -71,7 +70,7 @@ export default function NoticiaModule({ newData }: { newData: INoticias }) {
                         <img
                           src={`${BASE_API_URL}/uploads/${image.nombre}`}
                           alt={`Imagen ${index + 1} de ${newData.titulo}`}
-                          className="w-full h-auto rounded-lg"
+                          className="w-full h-auto rounded-lg md:w-1/2 mx-auto" // Cambia el tamaño en desktop
                         />
                       </CarouselItem>
                     ))}
