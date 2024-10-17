@@ -1,26 +1,38 @@
+"use client";
 import DeclaracionesModule from "@/modules/Admin/DeclaracionJurada";
 import { fetchData } from "@/services/mysql/functions";
+import { useEffect, useState } from "react";
 
-export default async function Declaraciones() {
-  const companiesResult = await fetchData("companies");
+export default function Declaraciones() {
+  const [dataCompanies, setDataCompanies] = useState([]);
+  const [dataStatements, setDataStatements] = useState([]);
+  const [dataContracts, setDataContracts] = useState([]);
 
-  const statementsResult = await fetchData("statements");
+  useEffect(() => {
+    const fetch = async () => {
+      const companiesResult = await fetchData("companies");
 
-  const contractsResult = await fetchData("contracts");
+      const statementsResult = await fetchData("statements");
 
-  if (!companiesResult.ok || !statementsResult.ok || !contractsResult.ok) {
-    return <div>Error al cargar los datos</div>;
-  }
+      const contractsResult = await fetchData("contracts");
 
-  const companies = companiesResult.data;
-  const statements = statementsResult.data;
-  const contracts = contractsResult.data;
+      if (!companiesResult.ok || !statementsResult.ok || !contractsResult.ok) {
+        return <div>Error al cargar los datos</div>;
+      }
+
+      setDataCompanies(companiesResult.data);
+      setDataStatements(statementsResult.data);
+      setDataContracts(contractsResult.data);
+    };
+
+    fetch();
+  }, []);
 
   return (
     <DeclaracionesModule
-      companies={companies}
-      statements={statements}
-      contracts={contracts}
+      companies={dataCompanies}
+      statements={dataStatements}
+      contracts={dataContracts}
     />
   );
 }

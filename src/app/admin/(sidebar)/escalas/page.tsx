@@ -1,14 +1,21 @@
+"use client";
 import EscalasModule from "@/modules/Admin/Escalas";
 import { fetchData } from "@/services/mysql/functions";
+import { useEffect, useState } from "react";
 
-export default async function Escalas() {
-  const result = await fetchData("scales");
+export default function Escalas() {
+  const [data, setData] = useState([]);
 
-  if (!result.ok || result.error) {
-    return <div>Error al solicitar los datos</div>;
-  }
-  
-  const data = result.data;
+  useEffect(() => {
+    const fetch = async () => {
+      const result = await fetchData("scales");
+      if (!result.ok || result.error) {
+        return;
+      }
+      setData(result.data);
+    };
+    fetch();
+  }, []);
 
   return <EscalasModule data={data} />;
 }

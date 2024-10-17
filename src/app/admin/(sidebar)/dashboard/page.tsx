@@ -1,19 +1,20 @@
+"use client";
 import AdminDashboardModule from "@/modules/Admin/Dashboard";
 import { fetchData } from "@/services/mysql/functions";
+import { useEffect, useState } from "react";
 
-export default async function DashboardPage() {
-  const dashboardResponse = await fetchData("dashboard");
+export default function DashboardPage() {
+  const [data, setData] = useState([]);
 
-  if (!dashboardResponse.ok || dashboardResponse.error) {
-    console.error(
-      "Error al obtener los datos del dashboard:",
-      dashboardResponse.error
-    );
-    return <div>Error al cargar los datos del dashboard.</div>;
-  }
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await fetchData("dashboard");
+      setData(response.data);
+    };
+    fetch();
+  }, []);
 
-  const { data } = dashboardResponse;
-
+  if (!data.length) return null;
 
   return <AdminDashboardModule data={data[0]} />;
 }

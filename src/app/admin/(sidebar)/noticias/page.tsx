@@ -1,15 +1,21 @@
+"use client";
 import AdminNoticiasModule from "@/modules/Admin/Noticias";
 import { fetchData } from "@/services/mysql/functions";
+import { useEffect, useState } from "react";
 
-export default async function AdminNoticias() {
-  const newsResponse = await fetchData("news");
+export default function AdminNoticias() {
+  const [data, setData] = useState([]);
 
-  if (!newsResponse.ok || newsResponse.error) {
-    console.error("Error al obtener las noticias:", newsResponse.error);
-    return <div>Error al cargar las noticias.</div>;
-  }
+  useEffect(() => {
+    const fetch = async () => {
+      const result = await fetchData("news");
+      if (!result.ok) {
+        console.error("Error al obtener las noticias:", result.error);
+        return;
+      }
+      setData(result.data);
+    };
+  }, []);
 
-  const news = newsResponse.data;
-
-  return <AdminNoticiasModule news={news} />;
+  return <AdminNoticiasModule news={data} />;
 }
