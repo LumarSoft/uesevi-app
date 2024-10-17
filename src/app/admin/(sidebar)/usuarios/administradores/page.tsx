@@ -1,18 +1,28 @@
+"use client"
 import AdminEmpresasModule from "@/modules/Admin/Usuarios/Administradores/";
 import { fetchData } from "@/services/mysql/functions";
+import { useEffect, useState } from "react";
 
-export default async function AdminEmpresas() {
-  const result = await fetchData("administrators");
+export default function AdminEmpresas() {
+  const [data, setData] = useState([]);
 
-  if (!result.ok || result.error) {
-    console.error(
-      "Error al obtener los datos de los administradores:",
-      result.error
-    );
-    return <div>Error al cargar los datos de los administradores.</div>;
-  }
+  useEffect(() => {
+    const fetch = async () => {
+      const result = await fetchData("administrators");
 
-  const { data } = result;
+      if (!result.ok || result.error) {
+        console.error(
+          "Error al obtener los datos de los administradores:",
+          result.error
+        );
+        return;
+      }
+
+      setData(result.data);
+    };
+
+    fetch();
+  }, []);
 
   return <AdminEmpresasModule data={data} />;
 }
