@@ -1,20 +1,30 @@
+"use client";
 import DeclaracionesViejasModule from "@/modules/Admin/Antiguas";
 import { fetchData } from "@/services/mysql/functions";
+import { useEffect, useState } from "react";
 
-export default async function AntiguasPage() {
-  const companiesResult = await fetchData("old-companies");
+export default function AntiguasPage() {
+  const [companies, setCompanies] = useState([]);
+  const [statements, setStatements] = useState([]);
+  const [contracts, setContracts] = useState([]);
 
-  const statementsResult = await fetchData("old-statements");
+  useEffect(() => {
+    const fetch = async () => {
+      const companiesResult = await fetchData("old-companies");
+      const statementsResult = await fetchData("old-statements");
+      const contractsResult = await fetchData("old-contracts");
 
-  const contractsResult = await fetchData("old-contracts");
+      setCompanies(companiesResult.data);
+      setStatements(statementsResult.data);
+      setContracts(contractsResult.data);
+    };
 
-  if (!companiesResult.ok || !statementsResult.ok || !contractsResult.ok) {
+    fetch();
+  }, []);
+
+  if (!companies.length || !statements.length || !contracts.length) {
     return <div>Error al cargar los datos</div>;
   }
-
-  const companies = companiesResult.data;
-  const statements = statementsResult.data;
-  const contracts = contractsResult.data;
 
   return (
     <DeclaracionesViejasModule
