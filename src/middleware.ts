@@ -28,7 +28,9 @@ export async function middleware(req: NextRequest) {
 
         // Si el rol es "empresa", redirigimos a la página de agregar empleado
         if (rol === "empresa") {
-          return NextResponse.redirect(new URL("/empresa/empleados/agregar-empleado", req.url));
+          return NextResponse.redirect(
+            new URL("/empresa/empleados/agregar-empleado", req.url)
+          );
         }
       } catch (error) {
         console.error(

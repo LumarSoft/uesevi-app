@@ -8,6 +8,7 @@ import ScalesPreview from "./components/ScalesPreview/ScalesPreview";
 import FormPreview from "./components/FormPreview/FormPreview";
 
 const HomeModule = ({ noticias }: { noticias: INoticias[] }) => {
+  console.log(noticias);
   return (
     <div>
       <HeroComponent />

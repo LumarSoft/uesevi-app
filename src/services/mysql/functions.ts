@@ -1,36 +1,36 @@
+// Revalidate para Next.js
 export const revalidate = 1;
 
-import httpMysqlClient from "./apiClient";
+const BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
 
-// Función genérica para manejar la respuesta de la API
-const handleResponse = (response: any) => {
-  if (response.error) {
+// Función para manejar la respuesta de la API
+const handleResponse = async (response: Response) => {
+  if (!response.ok) {
+    const errorDetails = await response.json();
     return {
       ok: false,
       status: "error",
-      statusCode: response.details.code || 500,
-      message: response.details.message || "Error desconocido",
+      statusCode: response.status,
+      message: errorDetails.message || "Error desconocido",
       data: null, // Asegúrate de devolver 'data' incluso en caso de error
     };
   }
 
-  // Estructura estándar para una respuesta exitosa
-  return {
-    ok: true,
-    status: "success",
-    statusCode: 200,
-    message: "Datos obtenidos con éxito",
-    data: response.data, // Devuelves la data correctamente aquí
-  };
+  const responseData = await response.json();
+  return responseData;
 };
 
+// Función para obtener datos
 export const fetchData = async (endpoint: string): Promise<any> => {
   try {
-    const response = await httpMysqlClient({
+    const response = await fetch(`${BASE_API_URL}/${endpoint}`, {
       method: "GET",
-      url: `/${endpoint}`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
     });
-    return handleResponse(response);
+    return await handleResponse(response);
   } catch (error: any) {
     console.error("Error al obtener datos:", error);
     return {
@@ -42,15 +42,18 @@ export const fetchData = async (endpoint: string): Promise<any> => {
   }
 };
 
+// Función para obtener un único registro
 export const fetchOneRow = async (endpoint: string, id: number) => {
   try {
     const url = endpoint.replace(":id", id.toString());
 
-    const response = await httpMysqlClient({
+    const response = await fetch(`${BASE_API_URL}/${url}`, {
       method: "GET",
-      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
-    return handleResponse(response);
+    return await handleResponse(response);
   } catch (error: any) {
     console.error("Error al obtener datos:", error);
     return {
@@ -63,28 +66,24 @@ export const fetchOneRow = async (endpoint: string, id: number) => {
   }
 };
 
+// Función para enviar datos (POST)
 export const postData = async (endpoint: string, postData: FormData) => {
   try {
-    const response = await httpMysqlClient({
+    const response = await fetch(`${BASE_API_URL}/${endpoint}`, {
       method: "POST",
-      url: `/${endpoint}`,
-      data: postData,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      body: postData, // No agregues el header 'Content-Type'
     });
-    return handleResponse(response);
+    return await handleResponse(response);
   } catch (error: any) {
     console.error("Error al enviar datos:", error);
 
-    // Si la respuesta tiene un código de error específico (como 401)
-    const statusCode = error.response?.status;
+    const statusCode = error.response?.status || 500;
     const message = error.response?.data?.message || "Error desconocido";
 
     return {
       ok: false,
       status: "error",
-      statusCode: statusCode || 500,
+      statusCode,
       message,
       data: null,
     };
@@ -99,15 +98,11 @@ export const updateData = async (
   try {
     const url = endpoint.replace(":id", id.toString());
 
-    const response = await httpMysqlClient({
+    const response = await fetch(`${BASE_API_URL}/${url}`, {
       method: "PUT",
-      url,
-      data: updateData,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      body: updateData, // No agregues el header 'Content-Type'
     });
-    return handleResponse(response);
+    return await handleResponse(response);
   } catch (error: any) {
     console.error("Error al actualizar datos:", error);
     return {
@@ -119,15 +114,18 @@ export const updateData = async (
   }
 };
 
+// Función para eliminar datos (DELETE)
 export const deleteData = async (endpoint: string, id: number) => {
   try {
     const url = endpoint.replace(":id", id.toString());
 
-    const response = await httpMysqlClient({
+    const response = await fetch(`${BASE_API_URL}/${url}`, {
       method: "DELETE",
-      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
-    return handleResponse(response);
+    return await handleResponse(response);
   } catch (error: any) {
     console.error("Error al eliminar datos:", error);
     return {
