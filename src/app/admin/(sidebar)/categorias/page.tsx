@@ -1,15 +1,26 @@
+"use client";
 import CategoryModule from "@/modules/Admin/Categorias";
 import { fetchData } from "@/services/mysql/functions";
+import { useEffect, useState } from "react";
 
-export default async function CategoriasPage() {
-  const categoriesResult = await fetchData("category");
+export default function CategoriasPage() {
+  const [data, setData] = useState([]);
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const categoriesResult = await fetchData("category");
 
-  if (!categoriesResult.ok || categoriesResult.error) {
-    return <div>Error</div>;
+      if (categoriesResult.ok) {
+        setData(categoriesResult.data);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (!data.length) {
+    return <div>Error al cargar los datos</div>;
   }
-
-  const data = categoriesResult.data;
 
   return <CategoryModule data={data} />;
 }
