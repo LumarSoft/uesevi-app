@@ -39,6 +39,19 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
   },
 
   {
+    accessorKey: "rectificada",
+    header: "Número de rectificación",
+    cell: ({ row }) => {
+      const rectificada = row.original.rectificada;
+      if (rectificada === 0) {
+        return <span className="text-green-500">ORIGINAL</span>;
+      } else {
+        return <span>{rectificada}</span>;
+      }
+    },
+  },
+
+  {
     accessorKey: "estado",
     header: "Estado",
     cell: ({ row }) => {

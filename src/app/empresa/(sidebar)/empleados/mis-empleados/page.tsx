@@ -53,7 +53,7 @@ export default function MisEmpleadosPage() {
               href="/empresa/empleados/importacion"
               className="text-primary"
             >
-              Importacion masiva
+              Importación masiva
             </Link>{" "}
             de empleados
           </AlertDescription>

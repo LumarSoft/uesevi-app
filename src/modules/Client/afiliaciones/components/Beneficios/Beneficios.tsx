@@ -67,12 +67,12 @@ export const Beneficios = () => {
               <li>
                 Descuento en farmacias. La receta medica debe contener:
                 &quot;SANCOR SEGUROS/SEGURAMAX&quot;. consultar farmacias
-                adheridas haciendo click aqui{" "}
+                adheridas haciendo click {" "}
                 <a
                   href="https://www.sancorseguros.com.ar/farmacias-vademecum"
                   className="text-primary"
                 >
-                  aqui
+                acá.
                 </a>
               </li>
             </ul>
