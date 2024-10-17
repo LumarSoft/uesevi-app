@@ -16,10 +16,6 @@ export default function Declaraciones() {
 
       const contractsResult = await fetchData("contracts");
 
-      if (!companiesResult.ok || !statementsResult.ok || !contractsResult.ok) {
-        return <div>Error al cargar los datos</div>;
-      }
-
       setDataCompanies(companiesResult.data);
       setDataStatements(statementsResult.data);
       setDataContracts(contractsResult.data);
@@ -27,6 +23,14 @@ export default function Declaraciones() {
 
     fetch();
   }, []);
+
+  if (
+    !dataCompanies.length ||
+    !dataStatements.length ||
+    !dataContracts.length
+  ) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <DeclaracionesModule

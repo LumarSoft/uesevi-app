@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/carousel";
 
 export default function NoticiaModule({ newData }: { newData: INoticias }) {
+
+  const BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
   return (
     <div className="w-full min-h-screen">
       <div className="container mx-auto py-8 md:py-20 mt-14">
@@ -56,7 +58,7 @@ export default function NoticiaModule({ newData }: { newData: INoticias }) {
               {newData.images.length === 1 ? (
                 // Mostrar una sola imagen
                 <img
-                  src={`http://localhost:3006/uploads/${newData.images[0].nombre}`}
+                  src={`${BASE_API_URL}/uploads/${newData.images[0].nombre}`}
                   alt={newData.titulo}
                   className="w-full h-auto rounded-lg"
                 />
@@ -67,7 +69,7 @@ export default function NoticiaModule({ newData }: { newData: INoticias }) {
                     {newData.images.map((image, index) => (
                       <CarouselItem key={index}>
                         <img
-                          src={`http://localhost:3006/uploads/${image.nombre}`}
+                          src={`${BASE_API_URL}/uploads/${image.nombre}`}
                           alt={`Imagen ${index + 1} de ${newData.titulo}`}
                           className="w-full h-auto rounded-lg"
                         />

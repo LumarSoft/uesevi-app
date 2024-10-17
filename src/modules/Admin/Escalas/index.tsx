@@ -1,29 +1,42 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createColumns } from "@/modules/Admin/Escalas/Table/Columns";
 import { IEscalas } from "@/shared/types/Querys/IEscalas";
 import { AddScaleDialog } from "@/modules/Admin/Escalas/Dialog/AddEscalaDialog";
 import { DataTable } from "./Table/Data-Table";
+import { fetchData } from "@/services/mysql/functions";
 
-const EscalasModule = ({ data }: { data: IEscalas[] }) => {
-  const [scales, setScales] = useState(data);
+const EscalasModule = () => {
+  const [scales, setScales] = useState<IEscalas[]>([]);
+  
+  useEffect(() => {
+    const fetchScales = async () => {
+      try {
+        const result = await fetchData("scales");
+        setScales(result.data || []);
+      } catch (error) {
+        console.error("Error fetching scales:", error);
+      }
+    };
+    fetchScales();
+  }, []);
 
   const handleUpdate = (updatedItem: IEscalas) => {
-    const newData = scales.map((item) =>
-      item.id === updatedItem.id ? updatedItem : item
+    setScales((prevScales) =>
+      prevScales.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
-    setScales(newData);
   };
 
   const handleDelete = (deleteItem: IEscalas) => {
-    const newData = scales.filter((item) => item.id !== deleteItem.id);
-    setScales(newData);
+    setScales((prevScales) => 
+      prevScales.filter((item) => item.id !== deleteItem.id)
+    );
   };
 
   const columns = createColumns(handleUpdate, handleDelete);
 
-  //Conseguir el ultimo id de la data
-  const lastId = data[0].id + 1;
+  // Conseguir el último id de la data, asegurando que scales no esté vacío
+  const lastId = scales.length > 0 ? scales[0].id + 1 : 1;
 
   return (
     <div className="flex h-full flex-col">

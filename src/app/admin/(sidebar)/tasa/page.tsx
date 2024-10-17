@@ -9,15 +9,14 @@ export default function Escalas() {
   useEffect(() => {
     const fetch = async () => {
       const result = await fetchData("rates");
-      if (!result.ok) {
-        console.error("Error al obtener las tasas:", result.error);
-        return;
-      }
+
       setData(result.data);
     };
 
     fetch();
   }, []);
+
+  if (!data.length) return <div>Cargando</div>;
 
   return <TasasModule data={data} />;
 }

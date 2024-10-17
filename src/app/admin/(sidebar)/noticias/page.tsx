@@ -9,13 +9,16 @@ export default function AdminNoticias() {
   useEffect(() => {
     const fetch = async () => {
       const result = await fetchData("news");
-      if (!result.ok) {
-        console.error("Error al obtener las noticias:", result.error);
-        return;
-      }
+
       setData(result.data);
     };
+
+    fetch();
   }, []);
+
+  if (!data.length) {
+    return <div>Cargando</div>;
+  }
 
   return <AdminNoticiasModule news={data} />;
 }
