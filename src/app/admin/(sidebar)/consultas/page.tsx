@@ -1,15 +1,22 @@
+"use client";
 import ConsultasModule from "@/modules/Admin/Consultas";
 import { fetchData } from "@/services/mysql/functions";
+import { useEffect, useState } from "react";
 
-export default async function ConsultasPage() {
-  const inquiriesResult = await fetchData("inquiries");
+export default function ConsultasPage() {
+  const [data, setData] = useState([]);
 
+  useEffect(() => {
+    const fetch = async () => {
+      const inquiriesResult = await fetchData("inquiries");
+      setData(inquiriesResult.data);
+    };
+    fetch();
+  }, []);
 
-  if (!inquiriesResult.ok) {
+  if (data.length === 0) {
     return <div>Error al cargar los datos</div>;
   }
 
-  const inquiries = inquiriesResult.data;
-
-  return <ConsultasModule inquiries={inquiries} />;
+  return <ConsultasModule inquiries={data} />;
 }
