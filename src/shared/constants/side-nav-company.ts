@@ -50,10 +50,4 @@ export const NavItemsCompany: NavItem[] = [
     href: "/empresa/declaraciones",
     color: "text-indigo-500",
   },
-  {
-    title: "Instructivo del sistema",
-    icon: BookUser,
-    href: "/empresa/instructivo",
-    color: "text-green-500",
-  },
 ];
