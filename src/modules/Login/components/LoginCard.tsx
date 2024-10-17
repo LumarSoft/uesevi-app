@@ -40,11 +40,12 @@ export const LoginCard = () => {
         router.replace("/admin/dashboard");
       } else {
         setError("Error al iniciar sesión. Por favor, intente de nuevo.");
+        setLoading(false);  // Detiene el loading si el login no es exitoso
       }
     } catch (error: any) {
       console.error("Error en login:", error);
       setError("Error al iniciar sesión. Por favor, intente de nuevo.");
-      setLoading(false);
+      setLoading(false);  // Detiene el loading en caso de error
     }
   };
 
