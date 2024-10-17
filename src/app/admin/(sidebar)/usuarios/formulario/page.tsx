@@ -1,23 +1,33 @@
+"use client";
 import AdminFormularioModule from "@/modules/Admin/Usuarios/Formulario";
 import { fetchData } from "@/services/mysql/functions";
+import { useEffect, useState } from "react";
 
-export default async function AdminFormulario() {
-  const formsResponse = await fetchData("forms");
-  const companiesResponse = await fetchData("companies");
+export default function AdminFormulario() {
+  const [formsData, setFormsData] = useState([]);
+  const [companiesData, setCompaniesData] = useState([]);
 
-  if (!formsResponse.ok || formsResponse.error) {
-    console.error("Error al obtener los formularios:", formsResponse.error);
-    return <div>Error al cargar los formularios.</div>;
-  }
+  useEffect(() => {
+    const fetch = async () => {
+      const forms = await fetchData("forms");
+      const companies = await fetchData("companies");
 
-  if (!companiesResponse.ok || companiesResponse.error) {
-    console.error("Error al obtener las empresas:", companiesResponse.werror);
-    return <div>Error al cargar las empresas.</div>;
-  }
+      if (!forms.ok || forms.error) {
+        console.error("Error al obtener los formularios:", forms.error);
+        return;
+      }
 
+      if (!companies.ok || companies.error) {
+        console.error("Error al obtener las empresas:", companies.error);
+        return;
+      }
 
-  const forms = formsResponse.data;
-  const companies = companiesResponse.data;
+      setFormsData(forms.data);
+      setCompaniesData(companies.data);
+    };
 
-  return <AdminFormularioModule forms={forms} companies={companies} />;
+    fetch();
+  }, []);
+
+  return <AdminFormularioModule forms={formsData} companies={companiesData} />;
 }
