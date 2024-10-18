@@ -1,5 +1,6 @@
 "use client";
 import { Building2 } from "lucide-react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,6 +23,7 @@ import LoadingSpinner from "@/modules/Login/components/LoadingSpinner";
 export function LoginEmpresaModule() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // Nueva variable de estado para mostrar/ocultar contraseña
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -66,10 +68,8 @@ export function LoginEmpresaModule() {
 
       // Manejo de errores específicos de Axios
       if (error.response) {
-        // Error en la respuesta de la API
         const { statusCode, message } = error.response.data;
 
-        // Mostrar mensaje específico basado en el código de estado
         if (statusCode === 401) {
           toast.error(
             "Las credenciales son incorrectas. Verifique su correo y contraseña."
@@ -78,7 +78,6 @@ export function LoginEmpresaModule() {
           toast.error(message || "Ocurrió un error al iniciar sesión.");
         }
       } else {
-        // Error genérico
         toast.error("Ocurrió un error en la solicitud.");
       }
 
@@ -112,16 +111,23 @@ export function LoginEmpresaModule() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="password">Contraseña</Label>
               <Input
                 id="password"
                 required
-                type="password"
+                type={showPassword ? "text" : "password"} // Muestra/oculta la contraseña
                 placeholder="********"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type="button"
+                className="absolute right-2 top-9" // Ajusta la posición del ícono
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+              </button>
             </div>
           </CardContent>
           <CardFooter>
