@@ -1,18 +1,20 @@
-"use client";
 import HomeModule from "@/modules/Client/Home";
-import { fetchData } from "@/services/mysql/functions";
-import { useEffect, useState } from "react";
+import { BASE_API_URL } from "@/shared/providers/envProvider";
 
-export default function Home() {
-  const [data, setData] = useState([]);
+// Indica que la página debe revalidarse cada 60 segundos (1 minuto)
+export const revalidate = 60; 
 
-  useEffect(() => {
-    const fetch = async () => {
-      const response = await fetchData("news/last-three");
-      setData(response.data);
-    };
-    fetch();
-  }, []);
+export default async function Home() {
+  const res = await fetch(`${BASE_API_URL}/news/last-three`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const resJSON = await res.json();
+
+  const data = resJSON.data;
 
   return <HomeModule noticias={data} />;
 }

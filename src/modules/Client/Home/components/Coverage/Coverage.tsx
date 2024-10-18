@@ -1,9 +1,3 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
@@ -11,37 +5,31 @@ import { Globe } from "lucide-react";
 import React from "react";
 
 const Coverage = () => {
-  const localities = {
-    "Área Metropolitana de Rosario (Cercana)": [
-      "Villa Gobernador Gálvez",
-      "Granadero Baigorria",
-      "Pérez",
-      "Funes",
-      "Ibarlucea",
-      "Alvear",
-    ],
-    "Área Suburbana (Intermedia)": [
-      "Arroyo Seco",
-      "Pueblo Esther",
-      "Zavalla",
-      "General Lagos",
-      "Soldini",
-      "Piñero",
-    ],
-    "Área Rural y Periférica (Lejana)": [
-      "Alvarez",
-      "Acebal",
-      "Fighiera",
-      "Coronel Bogado",
-      "Villa Amelia",
-      "Coronel Domínguez",
-      "Pueblo Uranga",
-      "Carmen del Sauce",
-      "Pueblo Muñoz",
-      "Albarellos",
-      "Arminda",
-    ],
-  };
+  const localities = [
+    "Villa Gobernador Gálvez",
+    "Granadero Baigorria",
+    "Pérez",
+    "Funes",
+    "Ibarlucea",
+    "Alvear",
+    "Arroyo Seco",
+    "Pueblo Esther",
+    "Zavalla",
+    "General Lagos",
+    "Soldini",
+    "Piñero",
+    "Alvarez",
+    "Acebal",
+    "Fighiera",
+    "Coronel Bogado",
+    "Villa Amelia",
+    "Coronel Domínguez",
+    "Pueblo Uranga",
+    "Carmen del Sauce",
+    "Pueblo Muñoz",
+    "Albarellos",
+    "Arminda",
+  ];
 
   return (
     <FramerComponent
@@ -71,26 +59,17 @@ const Coverage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Accordion type="single" collapsible className="w-full">
-                  {Object.entries(localities).map(([region, towns], i) => (
-                    <AccordionItem value={`item-${i}`} key={i}>
-                      <AccordionTrigger>{region}</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="grid grid-cols-2 gap-2">
-                          {towns.map((locality, index) => (
-                            <Badge
-                              variant="secondary"
-                              key={index}
-                              className="justify-start"
-                            >
-                              {locality}
-                            </Badge>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                  {localities.map((locality, index) => (
+                    <Badge
+                      variant="secondary"
+                      key={index}
+                      className="justify-start"
+                    >
+                      {locality}
+                    </Badge>
                   ))}
-                </Accordion>
+                </div>
               </CardContent>
             </Card>
           </div>
