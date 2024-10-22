@@ -12,7 +12,6 @@ export const DeclaracionModule = ({
   statement: IInfoDeclaracion;
   basicSalary: any;
 }) => {
-  console.log(basicSalary);
   const columns = createColumns(basicSalary);
   return (
     <div className="flex h-full flex-col">
