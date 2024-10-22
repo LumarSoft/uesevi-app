@@ -12,7 +12,7 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-export const createColumns = (): ColumnDef<Empleado>[] => [
+export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
   {
     header: "Nombre",
     accessorKey: "nombre_completo",
@@ -91,8 +91,7 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
   {
     header: "FAS",
     cell: ({ row }) => {
-      const fas =
-        (row.original.sueldo_basico + Number(row.original.adicional)) * 0.01;
+      const fas = basicSalary * 0.01;
       return <React.Fragment>{formatCurrency(fas)}</React.Fragment>;
     },
   },
@@ -100,9 +99,7 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
     header: "Aporte solidario",
     cell: ({ row }) => {
       const aporteSolidario =
-        row.original.afiliado === "No"
-          ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.02
-          : 0;
+        row.original.afiliado === "No" ? row.original.sueldo_basico * 0.02 : 0;
       return <React.Fragment>{formatCurrency(aporteSolidario)}</React.Fragment>;
     },
   },

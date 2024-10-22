@@ -7,10 +7,12 @@ import { Total } from "./components/Total/Total";
 
 export const DeclaracionModule = ({
   statement,
+  basicSalary,
 }: {
   statement: IInfoDeclaracion;
+  basicSalary: any;
 }) => {
-  const columns = createColumns();
+  const columns = createColumns(basicSalary);
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">

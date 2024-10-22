@@ -12,6 +12,7 @@ export default function DeclaracionPage({
   params: { idDeclaracion: number };
 }) {
   const [statements, setStatements] = useState<IInfoDeclaracion | null>(null);
+  const [basicSalary, setBasicSalary] = useState(null);
   const { user } = userStore();
   const idCompany = user?.empresa?.id;
 
@@ -28,12 +29,21 @@ export default function DeclaracionPage({
       }
     };
 
+    const getBasicSalary = async () => {
+      const basicSalary = await fetchData("basicSalary");
+
+      if (basicSalary.ok) {
+        setBasicSalary(basicSalary.data[0].sueldo_basico);
+      }
+    };
+
     fetchStatement();
+    getBasicSalary();
   }, [idCompany, idDeclaracion]);
 
   if (!statements) {
     return <div>Cargando...</div>;
   }
 
-  return <DeclaracionModule statement={statements} />;
+  return <DeclaracionModule statement={statements} basicSalary={basicSalary} />;
 }
