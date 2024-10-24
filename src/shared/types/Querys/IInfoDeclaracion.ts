@@ -8,6 +8,7 @@ export interface IInfoDeclaracion {
   rectificada: number;
   vencimiento: string;
   fecha_pago: string;
+  pago_parcial: string | null;
   empleados: Empleado[];
 }
 

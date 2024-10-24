@@ -79,6 +79,15 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
               <Pen />
             </Link>
           </Button>
+          {row.original.rectificada !== 0 && (
+            <Button>
+              <Link
+                href={`/empresa/declaraciones/historial/${row.original.year}/${row.original.mes}`}
+              >
+                <FileStack />
+              </Link>
+            </Button>
+          )}
         </div>
       );
     },

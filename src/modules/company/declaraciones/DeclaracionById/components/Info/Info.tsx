@@ -2,6 +2,17 @@ import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 import React from "react";
 
 export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
+  // Función para formatear las fechas
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+
   return (
     <div className="w-full flex">
       <div className="flex flex-col w-full gap-3">
@@ -14,8 +25,13 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
       </div>
       <div className="flex flex-col w-full gap-3">
         <span>Rectificada: {statement.rectificada}</span>
-        <span>Fecha de vencimiento: {statement.vencimiento}</span>
-        <span>Fecha de pago: {statement.fecha_pago}</span>
+        <span>
+          Fecha de vencimiento: {formatDate(statement.vencimiento)}
+        </span>
+        <span>
+          Fecha de pago: {statement.fecha_pago ? formatDate(statement.fecha_pago) : "No disponible"}
+        </span>
+        <span>Pago parcial: {statement.pago_parcial}</span>
       </div>
     </div>
   );
