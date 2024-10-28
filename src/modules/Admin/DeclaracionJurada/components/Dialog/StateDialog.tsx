@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { updateData } from "@/services/mysql/functions";
+import { Input } from "@/components/ui/input";
+import { toast } from "react-toastify";
 
 export const StateDialog = ({
   statement,
@@ -33,6 +35,7 @@ export const StateDialog = ({
   const [newState, setNewState] = useState<number | undefined | null>(
     statement.estado
   );
+  const [partialPayment, setPartialPayment] = useState(0);
 
   const SwitchEstado = (estado: number | null | undefined) => {
     estado = estado || 0;
@@ -53,6 +56,10 @@ export const StateDialog = ({
     const formData = new FormData();
     formData.append("state", String(newState));
 
+    if (newState === 2) {
+      formData.append("partial_payment", String(partialPayment));
+    }
+
     try {
       const result: any = await updateData(
         "statements/:id/state",
@@ -60,8 +67,10 @@ export const StateDialog = ({
         formData
       );
 
-      if (result.message === "Estado de la declaración actualizado") {
+
+      if (result.ok) {
         changeState({ ...statement, estado: newState });
+        toast.success("Estado actualizado");
       } else {
         console.log(result.error);
       }
@@ -83,7 +92,7 @@ export const StateDialog = ({
             Cambiar estado
           </AlertDialogTitle>
           <AlertDialogDescription className="text-center">
-            Esta accion cambiara el estado de la declaracion en la base de datos
+            Esta acción cambiara el estado de la declaración en la base de datos
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div>Estado actual: {SwitchEstado(statement.estado)}</div>
@@ -101,6 +110,18 @@ export const StateDialog = ({
             </SelectContent>
           </Select>
         </Label>
+        {newState === 2 && (
+          <Label>
+            Monto del pago parcial:
+            <Input
+              type="number"
+              onChange={(e) => {
+                setPartialPayment(Number(e.target.value));
+              }}
+            />
+          </Label>
+        )}
+
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleChange}>Continue</AlertDialogAction>
