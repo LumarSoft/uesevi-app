@@ -8,9 +8,11 @@ import { Total } from "./components/Total/Total";
 export const DeclaracionModule = ({
   statement,
   basicSalary,
+  rate,
 }: {
   statement: IInfoDeclaracion;
   basicSalary: any;
+  rate: any;
 }) => {
   const columns = createColumns(basicSalary);
   return (
@@ -22,7 +24,7 @@ export const DeclaracionModule = ({
           </h2>
         </div>
         <Info statement={statement} />
-        <Total statement={statement} />
+        <Total statement={statement} rate={rate} basicSalary={basicSalary}/>
         <DataTable columns={columns} data={statement.empleados} />
       </div>
     </div>
