@@ -13,7 +13,7 @@ const AboutUs = () => {
       >
         <div className="relative w-full h-full">
           <Image
-            src="/about.jpg"
+            src="/about.png"
             fill
             alt="Imagen representativa del sindicato"
             style={{ objectFit: "cover" }}
