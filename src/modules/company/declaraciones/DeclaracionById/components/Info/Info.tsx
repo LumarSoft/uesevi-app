@@ -12,7 +12,6 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
     });
   };
 
-
   return (
     <div className="w-full flex">
       <div className="flex flex-col w-full gap-3">
@@ -25,13 +24,17 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
       </div>
       <div className="flex flex-col w-full gap-3">
         <span>Rectificada: {statement.rectificada}</span>
+        <span>Fecha de vencimiento: {formatDate(statement.vencimiento)}</span>
         <span>
-          Fecha de vencimiento: {formatDate(statement.vencimiento)}
+          Fecha de pago:{" "}
+          {statement.fecha_pago
+            ? formatDate(statement.fecha_pago)
+            : "No disponible"}
         </span>
         <span>
-          Fecha de pago: {statement.fecha_pago ? formatDate(statement.fecha_pago) : "No disponible"}
+          Pago parcial:{" "}
+          {statement.pago_parcial ? `$${statement.pago_parcial}` : ""}
         </span>
-        <span>Pago parcial: {statement.pago_parcial}</span>
       </div>
     </div>
   );
