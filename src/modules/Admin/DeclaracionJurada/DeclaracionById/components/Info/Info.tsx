@@ -24,7 +24,20 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
       </div>
       <div className="flex flex-col w-full gap-3">
         <span>Rectificada: {statement.rectificada}</span>
-        <span>Fecha de vencimiento: {formatDate(statement.vencimiento)}</span>
+        <span>
+          Fecha de vencimiento: {formatDate(statement.vencimiento)}.
+          {new Date(statement.vencimiento) < new Date() && (
+            <span className="text-red-500">
+              {" "}
+              Lleva vencida:{" "}
+              {Math.floor(
+                (new Date().getTime() - new Date(statement.vencimiento).getTime()) /
+                  (1000 * 60 * 60 * 24)
+              )}{" "}
+              días
+            </span>
+          )}
+        </span>
         <span>Fecha de pago: {formatDate(statement.fecha_pago)}</span>
         <span>
           Pago parcial: {statement.pago_parcial ? `$${statement.pago_parcial}` : ""}

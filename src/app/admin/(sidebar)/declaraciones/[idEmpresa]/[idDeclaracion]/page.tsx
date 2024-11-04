@@ -9,7 +9,7 @@ export default function Declaracion({
   params: { idEmpresa: number; idDeclaracion: number };
 }) {
   const [statement, setStatement] = useState(null);
-  const [basicSalary, setBasicSalary] = useState(null);
+  const [rate, setRate] = useState([]);
 
   useEffect(() => {
     const fetchStatement = async () => {
@@ -22,21 +22,21 @@ export default function Declaracion({
       }
     };
 
-    const getBasicSalary = async () => {
-      const basicSalary = await fetchData("basicSalary");
+    const getRate = async () => {
+      const rate = await fetchData("rates");
 
-      if (basicSalary.ok) {
-        setBasicSalary(basicSalary.data[0].sueldo_basico);
+      if (rate.ok) {
+        setRate(rate.data[0]);
       }
     };
 
     fetchStatement();
-    getBasicSalary();
+    getRate();
   }, [idEmpresa, idDeclaracion]);
 
   if (!statement) {
     return <div>Error al cargar los datos</div>;
   }
 
-  return <DeclaracionModule statement={statement} basicSalary={basicSalary} />;
+  return <DeclaracionModule statement={statement} rate={rate}/>;
 }

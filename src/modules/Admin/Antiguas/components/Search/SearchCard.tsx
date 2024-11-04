@@ -62,7 +62,6 @@ export default function SearchCard({
     let filters;
     if (!date || !date.from || !date.to) {
       filters = filterDeclaraciones(
-        undefined,
         company,
         idEmployee,
         contracts,
@@ -70,7 +69,6 @@ export default function SearchCard({
       );
     } else {
       filters = filterDeclaraciones(
-        { from: date.from, to: date.to },
         company,
         idEmployee,
         contracts,

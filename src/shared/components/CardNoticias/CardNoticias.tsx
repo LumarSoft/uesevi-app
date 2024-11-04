@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Card,
@@ -20,10 +21,17 @@ const CardNoticias = ({ noticia }: { noticia: INoticias }) => {
       <CardContent className="flex-grow flex flex-col">
         <div className="relative h-48 mb-4">
           <Image
-            src={noticia.portada ? `https://uesevi.org.ar/img/news/main/${noticia.portada}` : "/logo_uesevi.png"}
+            src={
+              noticia.portada
+                ? `https://uesevi.org.ar/img/news/main/${noticia.portada}`
+                : "/logo_uesevi.png"
+            }
             alt={noticia.titulo}
             fill
             className="rounded-lg object-cover"
+            onError={(e) => {
+              e.currentTarget.src = "/logo_uesevi.png";
+            }}
           />
         </div>
         <p className="text-sm flex-grow line-clamp-4">{noticia.cuerpo}</p>

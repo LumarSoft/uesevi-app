@@ -1,5 +1,3 @@
-"use client";
-
 import { Suspense } from "react";
 import NoticiasPageModule from "@/modules/Client/noticias";
 import { fetchData } from "@/services/mysql/functions";

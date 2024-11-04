@@ -4,6 +4,7 @@ export interface IEmpleado {
   apellido: string;
   email: string;
   cuil: string;
+  empleado_id: number;
   created: string;
   empresa_id: number;
   nombre_empresa: string;

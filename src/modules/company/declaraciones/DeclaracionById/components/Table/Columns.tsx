@@ -116,13 +116,14 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
   {
     header: "Total",
     cell: ({ row }) => {
-      //aporte extraordinario?
-      const fas =
-        (row.original.sueldo_basico + Number(row.original.adicional)) * 0.01;
+      // 1% del basicSalary
+      const fas = basicSalary * 0.01;
+
+      // 2% del sueldo básico solo para no afiliados
       const aporteSolidario =
-        row.original.afiliado === "No"
-          ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.02
-          : 0;
+        row.original.afiliado === "No" ? row.original.sueldo_basico * 0.02 : 0;
+
+      // 3% del (sueldo básico + adicionales) solo para afiliados
       const sindicato =
         row.original.afiliado === "Sí"
           ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.03

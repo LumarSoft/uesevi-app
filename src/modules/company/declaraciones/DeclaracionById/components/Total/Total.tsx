@@ -1,6 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 
+const FAS_PERCENTAGE = 0.01; // 1%
+const APORTE_SOLIDARIO_PERCENTAGE = 0.02; // 2%
+const SINDICATO_PERCENTAGE = 0.03; // 3%
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  }).format(value);
+};
+
 export function Total({
   statement,
   rate,
@@ -10,31 +21,36 @@ export function Total({
   rate: any;
   basicSalary: any;
 }) {
-  let totalFas = 0;
-  let totalAporteSolidario = 0;
-  let totalSindicato = 0;
-
+  let intereses = 0;
   const employeeData = statement.empleados;
 
-  employeeData.forEach((employee) => {
-    const totalEmployee = employee.sueldo_basico + Number(employee.adicional);
-    const fas = basicSalary * 0.01;
-    const aporteSolidario =
-      employee.afiliado === "No" ? totalEmployee * 0.02 : 0;
-    const sindicato = employee.afiliado === "Sí" ? totalEmployee * 0.03 : 0;
+  const totalFaz = basicSalary * FAS_PERCENTAGE * employeeData.length;
 
-    totalFas += fas;
-    totalAporteSolidario += aporteSolidario;
-    totalSindicato += sindicato;
-  });
+  const { totalAporteSolidario, totalSindicato } = employeeData.reduce(
+    (acc, employee) => {
+      const totalEmployee = employee.sueldo_basico + Number(employee.adicional);
 
-  const grandTotal = totalFas + totalAporteSolidario + totalSindicato;
+      const aporteSolidario =
+        employee.afiliado === "No"
+          ? employee.sueldo_basico * APORTE_SOLIDARIO_PERCENTAGE
+          : 0;
 
-  // Cálculo de los intereses
-  const vencimiento = new Date(statement.vencimiento);
+      const sindicato =
+        employee.afiliado === "Sí" ? totalEmployee * SINDICATO_PERCENTAGE : 0;
+
+      return {
+        totalAporteSolidario: acc.totalAporteSolidario + aporteSolidario,
+        totalSindicato: acc.totalSindicato + sindicato,
+      };
+    },
+    { totalAporteSolidario: 0, totalSindicato: 0 }
+  );
+
+  const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
+
+  // Declare and initialize the variable 'fechaActual'
   const fechaActual = new Date();
-
-  let intereses = 0;
+  const vencimiento = new Date(statement.vencimiento);
 
   // Solo calculamos intereses si la fecha actual es posterior a la fecha de vencimiento
   if (fechaActual > vencimiento) {
@@ -57,26 +73,28 @@ export function Total({
         <div className="grid grid-cols-5 gap-4">
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">FAS</h3>
-            <p className="text-2xl font-bold">$ {totalFas.toFixed(2)}</p>
+            <p className="text-2xl font-bold">{formatCurrency(totalFaz)}</p>
           </div>
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">
               Aporte Solidario
             </h3>
             <p className="text-2xl font-bold">
-              $ {totalAporteSolidario.toFixed(2)}
+              {formatCurrency(totalAporteSolidario)}
             </p>
           </div>
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">
               Sindicato
             </h3>
-            <p className="text-2xl font-bold">$ {totalSindicato.toFixed(2)}</p>
+            <p className="text-2xl font-bold">
+              {formatCurrency(totalSindicato)}
+            </p>
           </div>
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">TOTAL</h3>
             <p className="text-2xl font-bold text-primary">
-              $ {grandTotal.toFixed(2)}
+              {formatCurrency(grandTotal)}
             </p>
           </div>
           <div className="space-y-2">

@@ -12,7 +12,6 @@ export default function DeclaracionPage({
   params: { idDeclaracion: number };
 }) {
   const [statements, setStatements] = useState<IInfoDeclaracion | null>(null);
-  const [basicSalary, setBasicSalary] = useState(null);
   const [rate, setRate] = useState([]);
 
   const { user } = userStore();
@@ -31,14 +30,6 @@ export default function DeclaracionPage({
       }
     };
 
-    const getBasicSalary = async () => {
-      const basicSalary = await fetchData("basicSalary");
-
-      if (basicSalary.ok) {
-        setBasicSalary(basicSalary.data[0].sueldo_basico);
-      }
-    };
-
     const getRate = async () => {
       const rate = await fetchData("rates");
 
@@ -48,7 +39,6 @@ export default function DeclaracionPage({
     };
 
     fetchStatement();
-    getBasicSalary();
     getRate();
   }, [idCompany, idDeclaracion]);
 
@@ -59,7 +49,6 @@ export default function DeclaracionPage({
   return (
     <DeclaracionModule
       statement={statements}
-      basicSalary={basicSalary}
       rate={rate}
     />
   );

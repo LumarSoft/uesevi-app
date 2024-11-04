@@ -3,7 +3,6 @@ import { IDeclaracion } from "../types/Querys/IDeclaracion";
 import { IOldDeclaracion } from "../types/Querys/IOldDeclaracion";
 
 export const filterDeclaraciones = (
-  fecha: { from: Date | null; to: Date | null } | undefined,
   empresa: number | null,
   empleado: number | null,
   contratos: IContratos[],
@@ -32,19 +31,6 @@ export const filterDeclaraciones = (
     return [];
   }
 
-  // Filtrar por fecha solo si se han proporcionado ambas fechas
-  if (fecha && fecha.from !== undefined && fecha.to !== undefined) {
-    declaracionesFiltradas = declaracionesFiltradas.filter((declaracion) => {
-      const fechaDeclaracion = new Date(declaracion.fecha);
-      return (
-        fecha.from !== null &&
-        fecha.to !== null &&
-        fechaDeclaracion >= fecha.from &&
-        fechaDeclaracion <= fecha.to
-      );
-    });
-  }
-
   // Filtrar por empresa si se ha proporcionado
   if (empresa !== null) {
     declaracionesFiltradas = declaracionesFiltradas.filter((declaracion) => {
@@ -62,6 +48,7 @@ export const filterDeclaraciones = (
     const contrato = contratos.find(
       (contrato) => contrato.empleado_id === empleado
     );
+    console.log(contrato);
     if (contrato) {
       declaracionesFiltradas = declaracionesFiltradas.filter(
         (declaracion) => declaracion.empresa_id === contrato.empresa_id
