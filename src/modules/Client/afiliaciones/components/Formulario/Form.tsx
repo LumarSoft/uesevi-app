@@ -235,7 +235,7 @@ export const Form = () => {
     try {
       const result = await postData("forms", formData);
       console.log(result);
-      if (result.data.message === "Formulario creado") {
+      if (result.ok) {
         setName("");
         setLastName("");
         setEmail("");
@@ -559,7 +559,7 @@ export const Form = () => {
                 </p>
                 <p className="font-bold mt-2">
                   Dirección:{" "}
-                  <span className="underline">Mariano Moreno 60</span>
+                  <span className="underline">Mariano Moreno 58</span>
                 </p>
                 <p className="mt-1">
                   Horario: Lunes a viernes, de 9:00 a.m. a 14:00 p.m.
