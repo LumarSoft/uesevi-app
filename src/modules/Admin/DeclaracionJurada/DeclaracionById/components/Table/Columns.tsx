@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Empleado } from "@/shared/types/Querys/IInfoDeclaracion";
 import { ColumnDef } from "@tanstack/react-table";
-import { fetchData } from "@/services/mysql/functions";
 
 // Función para formatear números como moneda
 const formatCurrency = (value: number) => {
@@ -87,29 +86,28 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
     cell: () => {
       return <React.Fragment>{0}</React.Fragment>;
     },
-    // ??
   },
   {
     header: "FAS",
     cell: ({ row }) => {
-      const fas =
-      basicSalary * 0.01;
+      // 1% del basicSalary
+      const fas = basicSalary * 0.01;
       return <React.Fragment>{formatCurrency(fas)}</React.Fragment>;
     },
   },
   {
     header: "Aporte solidario",
     cell: ({ row }) => {
+      // 2% del sueldo básico solo para no afiliados
       const aporteSolidario =
-        row.original.afiliado === "No"
-          ? (row.original.sueldo_basico) * 0.02
-          : 0;
+        row.original.afiliado === "No" ? row.original.sueldo_basico * 0.02 : 0;
       return <React.Fragment>{formatCurrency(aporteSolidario)}</React.Fragment>;
     },
   },
   {
     header: "Sindicato",
     cell: ({ row }) => {
+      // 3% del (sueldo básico + adicionales) solo para afiliados
       const sindicato =
         row.original.afiliado === "Sí"
           ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.03
@@ -120,13 +118,14 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
   {
     header: "Total",
     cell: ({ row }) => {
-      //aporte extraordinario?
-      const fas =
-        (row.original.sueldo_basico + Number(row.original.adicional)) * 0.01;
+      // 1% del basicSalary
+      const fas = basicSalary * 0.01;
+
+      // 2% del sueldo básico solo para no afiliados
       const aporteSolidario =
-        row.original.afiliado === "No"
-          ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.02
-          : 0;
+        row.original.afiliado === "No" ? row.original.sueldo_basico * 0.02 : 0;
+
+      // 3% del (sueldo básico + adicionales) solo para afiliados
       const sindicato =
         row.original.afiliado === "Sí"
           ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.03

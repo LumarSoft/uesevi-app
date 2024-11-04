@@ -7,12 +7,14 @@ import { Total } from "./components/Total/Total";
 
 export const DeclaracionModule = ({
   statement,
-  basicSalary,
+  rate
 }: {
   statement: IInfoDeclaracion;
-  basicSalary: any;
+  rate: any;
 }) => {
-  const columns = createColumns(basicSalary);
+  const sueldoBasico = statement.sueldo_basico;
+
+  const columns = createColumns(sueldoBasico);
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -22,7 +24,7 @@ export const DeclaracionModule = ({
           </h2>
         </div>
         <Info statement={statement} />
-        <Total statement={statement} />
+        <Total statement={statement} rate={rate} basicSalary={sueldoBasico} />
         <DataTable columns={columns} data={statement.empleados} />
       </div>
     </div>

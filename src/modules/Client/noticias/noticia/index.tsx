@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/carousel";
 
 export default function NoticiaModule({ newData }: { newData: INoticias }) {
+  console.log(newData);
   const BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
   return (
     <div className="w-full min-h-screen">

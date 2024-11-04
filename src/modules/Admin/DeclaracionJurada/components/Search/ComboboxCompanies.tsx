@@ -26,7 +26,7 @@ export const ComboboxCompanies = ({
 }: {
   companies: IEmpresa[];
   companyProp: number | null;
-  setCompany: (companyitem: number | null) => void;
+  setCompany: (companyId: number | null) => void;
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -58,7 +58,7 @@ export const ComboboxCompanies = ({
                   {companies.map((company) => (
                     <CommandItem
                       key={company.id}
-                      value={String(company.id)}
+                      value={company.nombre}
                       onSelect={() => {
                         setCompany(
                           companyProp === company.id ? null : company.id

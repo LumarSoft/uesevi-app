@@ -37,6 +37,8 @@ const InteresesDialog = ({ declaracion }: { declaracion: IDeclaracion }) => {
         toast.error("Fecha de pago actualizada");
       }
 
+      console.log(result);
+
       toast.success("Fecha de pago actualizada");
     } catch (error) {
       console.log(error);
@@ -88,8 +90,22 @@ const InteresesDialog = ({ declaracion }: { declaracion: IDeclaracion }) => {
           </Label>
           <Label>
             Vencimiento
-            <Input disabled value={declaracion.vencimiento ?? ""} />
+            <Input
+              disabled
+              value={
+                declaracion.vencimiento
+                  ? `${String(
+                      new Date(declaracion.vencimiento).getDate()
+                    ).padStart(2, "0")}/` +
+                    `${String(
+                      new Date(declaracion.vencimiento).getMonth() + 1
+                    ).padStart(2, "0")}/` +
+                    `${new Date(declaracion.vencimiento).getFullYear()}`
+                  : ""
+              }
+            />
           </Label>
+
           <Label>
             Fecha de pago
             <Input disabled value={declaracion.fecha_pago ?? ""} />

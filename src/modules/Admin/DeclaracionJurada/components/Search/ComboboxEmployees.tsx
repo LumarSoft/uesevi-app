@@ -2,7 +2,7 @@ import React from "react";
 import { Label } from "@/components/ui/label";
 import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
 
-export const ComboboxEmployee= ({
+export const ComboboxEmployee = ({
   employees,
   setEmployee,
   idEmployee,
@@ -16,16 +16,17 @@ export const ComboboxEmployee= ({
       <Label>Empleado</Label>
       <select
         className="px-4 py-2 bg-background border rounded-lg"
-        value={idEmployee || ""} 
+        value={idEmployee || ""}
         onChange={(e) => {
           const value = e.target.value === "" ? null : Number(e.target.value);
           setEmployee(value);
         }}
       >
-        <option value="">Seleccionar empleado</option> {/* Opción predeterminada */}
+        <option value="">Seleccionar empleado</option>{" "}
+        {/* Opción predeterminada */}
         {employees.map((employee) => (
-          <option key={employee.id} value={employee.id}>
-            {employee.nombre}
+          <option key={employee.id} value={employee.empleado_id}>
+            {employee.nombre} {employee.apellido}
           </option>
         ))}
       </select>
