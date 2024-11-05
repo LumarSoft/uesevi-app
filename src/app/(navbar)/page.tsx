@@ -1,8 +1,8 @@
-import HomeModule from "@/modules/Client/Home";
+import UnderConstructionModule from "@/modules/Client/Home/Mantenimiento";
 import { BASE_API_URL } from "@/shared/providers/envProvider";
 
 // Indica que la página debe revalidarse cada 60 segundos (1 minuto)
-export const revalidate = 60; 
+export const revalidate = 60;
 
 export default async function Home() {
   const res = await fetch(`${BASE_API_URL}/news/last-three`, {
@@ -16,5 +16,5 @@ export default async function Home() {
 
   const data = resJSON.data;
 
-  return <HomeModule noticias={data} />;
+  return <UnderConstructionModule />;
 }
