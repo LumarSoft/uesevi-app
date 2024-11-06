@@ -1,3 +1,4 @@
+import HomeModule from "@/modules/Client/Home";
 import UnderConstructionModule from "@/modules/Client/Home/Mantenimiento";
 import { BASE_API_URL } from "@/shared/providers/envProvider";
 
@@ -16,5 +17,5 @@ export default async function Home() {
 
   const data = resJSON.data;
 
-  return <UnderConstructionModule />;
+  return <HomeModule noticias={data} />;
 }
