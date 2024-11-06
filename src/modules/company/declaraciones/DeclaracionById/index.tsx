@@ -1,9 +1,9 @@
 "use client";
-import { Info } from "./components/Info/Info";
 import { createColumns } from "./components/Table/Columns";
 import { DataTable } from "./components/Table/Data-Table";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 import { Total } from "./components/Total/Total";
+import { Info } from "./components/Info/Info";
 
 export const DeclaracionModule = ({
   statement,

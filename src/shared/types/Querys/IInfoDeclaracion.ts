@@ -7,7 +7,7 @@ export interface IInfoDeclaracion {
   mes: number;
   rectificada: number;
   vencimiento: string;
-  fecha_pago: string;
+  fecha_pago: string | null;
   sueldo_basico: number;
   pago_parcial: string | null;
   empleados: Empleado[];
@@ -23,4 +23,5 @@ export interface Empleado {
   categoria: string;
   adicional: string;
   total_bruto: number;
+  monto: string;
 }

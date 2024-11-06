@@ -7,7 +7,7 @@ import { Total } from "./components/Total/Total";
 
 export const DeclaracionModule = ({
   statement,
-  rate
+  rate,
 }: {
   statement: IInfoDeclaracion;
   rate: any;
