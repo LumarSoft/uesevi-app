@@ -47,19 +47,15 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold">
-          Información de la Declaración
+      <CardHeader className="bg-slate-100 text-black py-4 mb-4 rounded-sm">
+        <CardTitle className="text-center text-2xl font-bold">
+          {statement.nombre_empresa}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-gray-500" />
-              <span className="font-medium">Empresa:</span>
-              <span>{statement.nombre_empresa}</span>
-            </div>
+         
             
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-gray-500" />
