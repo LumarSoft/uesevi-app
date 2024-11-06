@@ -11,11 +11,11 @@ export default function ClientLayout({
   return (
     <ThemeProvider forcedTheme="light" attribute="class">
       <main className="overflow-x-hidden">
-        {/* <Navbar /> */}
+        <Navbar />
         <DropDownNav />
         {children}
         <WspLogo />
-        {/* <Footer /> */}
+        <Footer />
       </main>
     </ThemeProvider>
   );
