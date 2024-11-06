@@ -51,21 +51,21 @@ export const createColumns = (
         <div className="flex gap-3">
           <StateDialog statement={row.original} changeState={changeState} />
           <InteresesDialog declaracion={row.original} />
-          <Button>
-            <Link
-              href={`/admin/declaraciones/${row.original.empresa_id}/${row.original.id}`}
-            >
-              <Eye />
-            </Link>
-          </Button>
-          {row.original.rectificada !== 0 && (
+          <Link
+            href={`/admin/declaraciones/${row.original.empresa_id}/${row.original.id}`}
+          >
             <Button>
-              <Link
-                href={`/admin/declaraciones/historial/${row.original.empresa_id}/${row.original.year}/${row.original.mes}`}
-              >
-                <FileStack />
-              </Link>
+              <Eye />
             </Button>
+          </Link>
+          {row.original.rectificada !== 0 && (
+            <Link
+              href={`/admin/declaraciones/historial/${row.original.empresa_id}/${row.original.year}/${row.original.mes}`}
+            >
+              <Button>
+                <FileStack />
+              </Button>
+            </Link>
           )}
         </div>
       );
