@@ -9,7 +9,7 @@ export interface IDeclaracion {
   subtotal: string | null;
   interes?: string | null;
   importe: string;
-  vencimiento?: null;
+  vencimiento: string;
   fecha_pago?: string | null;
   estado?: number | null;
   pago_parcial?: null;

@@ -21,18 +21,19 @@ export function Total({
   rate: any;
   basicSalary: any;
 }) {
-  let intereses = 0;
+  const fechaPago = statement.fecha_pago;
+  let totalIntereses = 0;
   const employeeData = statement.empleados;
 
   const totalFaz = basicSalary * FAS_PERCENTAGE * employeeData.length;
 
   const { totalAporteSolidario, totalSindicato } = employeeData.reduce(
     (acc, employee) => {
-      const totalEmployee = employee.sueldo_basico + Number(employee.adicional);
+      const totalEmployee = Number(employee.monto) + Number(employee.adicional);
 
       const aporteSolidario =
         employee.afiliado === "No"
-          ? employee.sueldo_basico * APORTE_SOLIDARIO_PERCENTAGE
+          ? Number(employee.monto) * APORTE_SOLIDARIO_PERCENTAGE
           : 0;
 
       const sindicato =
@@ -48,24 +49,30 @@ export function Total({
 
   const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
 
-  // Declare and initialize the variable 'fechaActual'
-  const fechaActual = new Date();
   const vencimiento = new Date(statement.vencimiento);
+  let diffDays;
 
-  // Solo calculamos intereses si la fecha actual es posterior a la fecha de vencimiento
-  if (fechaActual > vencimiento) {
-    // Diferencia de días entre la fecha de vencimiento y la fecha actual
-    const diffTime = Math.abs(fechaActual.getTime() - vencimiento.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (fechaPago) {
+    const pagoDate = new Date(fechaPago);
+    diffDays = Math.floor(
+      (pagoDate.getTime() - vencimiento.getTime()) / (1000 * 60 * 60 * 24)
+    );
+  } else {
+    const hoyDate = new Date();
+    diffDays = Math.floor(
+      (hoyDate.getTime() - vencimiento.getTime()) / (1000 * 60 * 60 * 24)
+    );
+  }
 
-    // Cálculo de los intereses: total base multiplicado por la tasa de interés y la cantidad de días
+  // Calcular intereses solo si la declaración está vencida
+  if (diffDays > 0) {
     const tasaInteres = parseFloat(rate.porcentaje);
     const interes = tasaInteres * diffDays;
-    intereses = (grandTotal * interes) / 1000;
+    totalIntereses = (grandTotal * interes) / 100;
   }
 
   return (
-    <Card className="w-full max-w-4xl">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Resumen</CardTitle>
       </CardHeader>
@@ -99,10 +106,10 @@ export function Total({
           </div>
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">
-              INTERESES
+              Intereses
             </h3>
-            <p className="text-2xl font-bold text-primary">
-              $ {intereses.toFixed(2)}
+            <p className="text-2xl font-bold text-red-500">
+              {formatCurrency(totalIntereses)}
             </p>
           </div>
         </div>

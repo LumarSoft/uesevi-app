@@ -68,11 +68,11 @@ export function Total({
   if (diffDays > 0) {
     const tasaInteres = parseFloat(rate.porcentaje);
     const interes = tasaInteres * diffDays;
-    totalIntereses = (grandTotal * interes) / 1000;
+    totalIntereses = (grandTotal * interes) / 100;
   }
 
   return (
-    <Card className="w-full max-w-6xl">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Resumen</CardTitle>
       </CardHeader>

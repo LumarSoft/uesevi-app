@@ -5,10 +5,12 @@ import { DataTable } from "./components/Table/Data-Table";
 
 export default function DeclaracionesModule({
   statements,
+  rates,
 }: {
   statements: IDeclaracion[];
+  rates: string;
 }) {
-  const columns = createColumns();
+  const columns = createColumns(rates);
 
   return (
     <div className="flex h-full flex-col">

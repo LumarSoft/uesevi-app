@@ -1,6 +1,6 @@
 "use client";
 import DeclaracionesModule from "@/modules/company/declaraciones";
-import { fetchOneRow } from "@/services/mysql/functions";
+import { fetchData, fetchOneRow } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -9,6 +9,7 @@ import Link from "next/link";
 
 export default function DeclaracionesPage() {
   const [statements, setStatements] = useState([]);
+  const [rates, setRates] = useState("");
   const { user } = userStore();
 
   const idCompany = user?.empresa?.id;
@@ -18,14 +19,19 @@ export default function DeclaracionesPage() {
       const result = await fetchOneRow("statements/company/:id", idCompany);
       setStatements(result.data);
     };
+    const fetchRates = async () => {
+      const result = await fetchData("rates");
+      setRates(result.data[0].porcentaje);
+    };
 
     if (idCompany) {
       fetchStatements();
+      fetchRates();
     }
   }, [idCompany]);
 
   if (statements.length > 0) {
-    return <DeclaracionesModule statements={statements} />;
+    return <DeclaracionesModule statements={statements} rates={rates} />;
   } else {
     return (
       <div className="w-full h-full flex items-center justify-center">

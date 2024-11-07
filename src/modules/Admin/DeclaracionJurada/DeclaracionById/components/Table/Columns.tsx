@@ -25,7 +25,10 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
     header: "CUIL",
     accessorKey: "cuil",
   },
-
+  {
+    header: "Categoria",
+    accessorKey: "categoria",
+  },
   {
     header: "Sueldo básico de la categoría",
     cell: ({ row }) => {
@@ -57,8 +60,10 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
     },
   },
   {
-    header: "Categoria",
-    accessorKey: "categoria",
+    header: "Aporte extraordinario",
+    cell: () => {
+      return <React.Fragment>$ {0}</React.Fragment>;
+    },
   },
   {
     header: "Sueldo básico del empleado",
@@ -86,16 +91,10 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
       return (
         <React.Fragment>
           {formatCurrency(
-            row.original.sueldo_basico + Number(row.original.adicional)
+            Number(row.original.monto) + Number(row.original.adicional)
           )}
         </React.Fragment>
       );
-    },
-  },
-  {
-    header: "Aporte extraordinario",
-    cell: () => {
-      return <React.Fragment>{0}</React.Fragment>;
     },
   },
   {
@@ -121,7 +120,7 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
       // 3% del (sueldo básico + adicionales) solo para afiliados
       const sindicato =
         row.original.afiliado === "Sí"
-          ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.03
+          ? (Number(row.original.monto) + Number(row.original.adicional)) * 0.03
           : 0;
       return <React.Fragment>{formatCurrency(sindicato)}</React.Fragment>;
     },
