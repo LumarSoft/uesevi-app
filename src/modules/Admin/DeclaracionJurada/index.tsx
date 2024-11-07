@@ -17,8 +17,8 @@ export default function DeclaracionesModule({
   statements: IDeclaracion[];
   contracts: IContratos[];
 }) {
-
-  const [statementsState, setStatementsState] = useState<IDeclaracion[]>(statements);
+  const [statementsState, setStatementsState] =
+    useState<IDeclaracion[]>(statements);
 
   const changeState = (updatedItem: IDeclaracion) => {
     const newData = statementsState.map((item) =>
@@ -27,7 +27,12 @@ export default function DeclaracionesModule({
     setStatementsState(newData);
   };
 
-  const columns = createColumns(changeState);
+  const deleteStatement = (id: number) => {
+    const newData = statementsState.filter((item) => item.id !== id);
+    setStatementsState(newData);
+  };
+
+  const columns = createColumns(changeState, deleteStatement);
 
   return (
     <div className="flex h-full flex-col">

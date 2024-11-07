@@ -7,10 +7,12 @@ import { Eye, FileStack } from "lucide-react";
 import { StateDialog } from "../Dialog/StateDialog";
 import InteresesDialog from "../Dialog/InteresesDialog";
 import Link from "next/link";
-import { ChangeExpiration } from "../Dialog/ChangeExpiration";
+import { ChangeExpiration } from "../Dialog/ChangeExpirationDialog";
+import { DeleteDialog } from "../Dialog/DeleteDialog";
 
 export const createColumns = (
-  changeState: (updateItem: IDeclaracion) => void
+  changeState: (updateItem: IDeclaracion) => void,
+  deleteStatement: (id: number) => void
 ): ColumnDef<IDeclaracion>[] => [
   {
     accessorKey: "nombre_empresa",
@@ -69,6 +71,7 @@ export const createColumns = (
               </Button>
             </Link>
           )}
+          <DeleteDialog statement={row.original} deleteStatement={deleteStatement}/>
         </div>
       );
     },
