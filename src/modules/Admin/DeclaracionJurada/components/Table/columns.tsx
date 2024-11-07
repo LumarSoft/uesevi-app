@@ -7,6 +7,7 @@ import { Eye, FileStack } from "lucide-react";
 import { StateDialog } from "../Dialog/StateDialog";
 import InteresesDialog from "../Dialog/InteresesDialog";
 import Link from "next/link";
+import { ChangeExpiration } from "../Dialog/ChangeExpiration";
 
 export const createColumns = (
   changeState: (updateItem: IDeclaracion) => void
@@ -50,6 +51,7 @@ export const createColumns = (
       return (
         <div className="flex gap-3">
           <StateDialog statement={row.original} changeState={changeState} />
+          <ChangeExpiration statement={row.original} />
           <InteresesDialog declaracion={row.original} />
           <Link
             href={`/admin/declaraciones/${row.original.empresa_id}/${row.original.id}`}

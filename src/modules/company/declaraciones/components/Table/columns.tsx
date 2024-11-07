@@ -7,7 +7,7 @@ import { Eye, FileStack, Pen } from "lucide-react";
 import Link from "next/link";
 import { PayDate } from "../Dialogs/PayDate";
 
-export const createColumns = (): ColumnDef<IDeclaracion>[] => [
+export const createColumns = (rates: string): ColumnDef<IDeclaracion>[] => [
   {
     accessorKey: "fecha",
     header: "Fecha de presentación",
@@ -24,10 +24,6 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
     accessorKey: "year",
     header: "Año",
   },
-  {
-    accessorKey: "importe",
-    header: "Importe",
-  },
 
   {
     accessorKey: "fecha_pago",
@@ -35,6 +31,15 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
     cell: ({ row }) => {
       const date = row.original.fecha_pago;
       return date ? new Date(date).toLocaleDateString() : "Sin pagar";
+    },
+  },
+
+  {
+    accessorKey: "vencimiento",
+    header: "Fecha de vencimiento",
+    cell: ({ row }) => {
+      const date = row.original.vencimiento;
+      return new Date(date).toLocaleDateString();
     },
   },
 
@@ -68,7 +73,7 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
     cell: ({ row }) => {
       return (
         <div className="flex gap-3">
-          <PayDate data={row.original} />
+          <PayDate data={row.original} rates={rates} />
           <Button>
             <Link href={`/empresa/declaraciones/${row.original.id}`}>
               <Eye />

@@ -1,15 +1,13 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { 
-  Building2, 
-  Users, 
-  UserCheck, 
-  Calendar, 
+import {
+  Users,
+  UserCheck,
+  Calendar,
   ClipboardCheck,
   Clock,
   CreditCard,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 
@@ -29,12 +27,17 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
     const hoyDate = new Date();
     const fechaPago = statement.fecha_pago;
 
-    if (fechaPago && new Date(fechaPago) <= new Date(statement.vencimiento)) {
-      return Math.floor(
-        (new Date(fechaPago).getTime() - vencimientoDate.getTime()) /
+    if (fechaPago) {
+      // Si hay fecha de pago y es posterior al vencimiento
+      if (new Date(fechaPago) > vencimientoDate) {
+        return Math.floor(
+          (new Date(fechaPago).getTime() - vencimientoDate.getTime()) /
           (1000 * 60 * 60 * 24)
-      );
-    } else if (!fechaPago && hoyDate > vencimientoDate) {
+        );
+      }
+      return 0; // Si se pagó antes del vencimiento
+    } else if (hoyDate > vencimientoDate) {
+      // Si no hay pago y está vencida
       return Math.floor(
         (hoyDate.getTime() - vencimientoDate.getTime()) / (1000 * 60 * 60 * 24)
       );
@@ -42,7 +45,8 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
     return 0;
   };
 
-  const isPaid = statement.fecha_pago && statement.fecha_pago <= statement.vencimiento;
+  const isPaid =
+    statement.fecha_pago && new Date(statement.fecha_pago) <= new Date(statement.vencimiento);
   const daysOverdue = calculateDaysOverdue();
 
   return (
@@ -55,24 +59,24 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
-         
-            
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-gray-500" />
               <span className="font-medium">Empleados:</span>
               <span>{statement.cantidad_empleados_declaracion}</span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <UserCheck className="h-5 w-5 text-gray-500" />
               <span className="font-medium">Afiliados:</span>
               <span>{statement.cantidad_afiliados_declaracion}</span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-gray-500" />
               <span className="font-medium">Fecha:</span>
-              <span>{statement.mes}/{statement.year}</span>
+              <span>
+                {statement.mes}/{statement.year}
+              </span>
             </div>
           </div>
 
@@ -82,7 +86,7 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
               <span className="font-medium">Rectificada:</span>
               <span>{statement.rectificada}</span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-gray-500" />
               <span className="font-medium">Vencimiento:</span>
@@ -100,20 +104,18 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
                 )}
               </span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-gray-500" />
               <span className="font-medium">Fecha de pago:</span>
               <span>{formatDate(statement.fecha_pago)}</span>
             </div>
-            
-            {statement.pago_parcial && (
-              <div className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-gray-500" />
-                <span className="font-medium">Pago parcial:</span>
-                <span>${statement.pago_parcial}</span>
-              </div>
-            )}
+
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-gray-500" />
+              <span className="font-medium">Pago parcial:</span>
+              {statement.pago_parcial ? statement.pago_parcial : "N/A"}
+            </div>
           </div>
         </div>
       </CardContent>
