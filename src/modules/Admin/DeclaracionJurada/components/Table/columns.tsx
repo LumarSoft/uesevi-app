@@ -71,7 +71,7 @@ export const createColumns = (
               </Button>
             </Link>
           )}
-          <DeleteDialog statement={row.original} deleteStatement={deleteStatement}/>
+          {/* <DeleteDialog statement={row.original} deleteStatement={deleteStatement}/> */}
         </div>
       );
     },
