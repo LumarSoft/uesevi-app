@@ -14,11 +14,14 @@ import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
+import { useRouter } from "next/navigation";
 
 export const InputFile: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const { user } = userStore();
+  const router = useRouter();
 
   // Función para enviar datos a la API y retornar el estado
   const sendJson = async (data: any[]): Promise<boolean> => {
@@ -97,7 +100,7 @@ export const InputFile: React.FC = () => {
 
       const formattedData = formatKeys(data);
 
-      // Aca se lo enviamos a la funcion para enviar a la api y esperamos a que termine
+      // Aquí se lo enviamos a la función para enviar a la API y esperamos a que termine
       return await sendJson(formattedData); // Retorna el resultado de sendJson
     } catch (error) {
       console.error(error);
@@ -112,14 +115,21 @@ export const InputFile: React.FC = () => {
       return toast.error("Por favor seleccione un archivo");
     }
 
+    if (isUploading) {
+      return toast.warning("Ya se está subiendo un archivo. Por favor espere.");
+    }
+
     setLoading(true);
+    setIsUploading(true);
 
     const isFinish = await uploadExcel(file);
 
     setLoading(false);
+    setIsUploading(false);
 
     if (isFinish) {
       toast.success("Archivo subido correctamente");
+      return router.push("/empresa/declaraciones");
     } else {
       toast.error("Hubo un problema al procesar el archivo");
     }
@@ -138,8 +148,8 @@ export const InputFile: React.FC = () => {
         <Input type="file" onChange={changeFile} accept=".xlsx, .xls" />
       </CardContent>
       <CardFooter>
-        <Button onClick={handleUpload} disabled={loading}>
-          {loading ? "Cargando..." : "Cargar"}
+        <Button onClick={handleUpload} disabled={loading || isUploading}>
+          {loading ? "Cargando..." : isUploading ? "Subiendo..." : "Cargar"}
         </Button>
       </CardFooter>
     </Card>

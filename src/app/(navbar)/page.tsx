@@ -17,5 +17,7 @@ export default async function Home() {
 
   const data = resJSON.data;
 
-  return <HomeModule noticias={data} />;
+  // return <HomeModule noticias={data} />;
+
+  return <UnderConstructionModule />;
 }
