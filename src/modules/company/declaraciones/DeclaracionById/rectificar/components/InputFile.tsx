@@ -15,12 +15,14 @@ import { toast } from "react-toastify";
 import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
+import { useRouter } from "next/navigation";
 
 export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
-  console.log(statement);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const { user } = userStore();
+  const router = useRouter();
 
   const sendJson = async (data: any[]) => {
     const formData = new FormData();
@@ -38,6 +40,7 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
 
     try {
       const result = await postData("statements/rectifications", formData);
+      console.log(result)
     } catch (error) {
       console.error("Error al enviar el formulario:", error);
     }
@@ -109,14 +112,23 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
       return toast.error("Por favor seleccione un archivo");
     }
 
+    if (isUploading) {
+      return toast.warning("Ya se está subiendo un archivo. Por favor espere.");
+    }
+
     setLoading(true);
+    setIsUploading(true);
 
     const isFinish = await uploadExcel(file);
 
     setLoading(false);
+    setIsUploading(false);
 
     if (isFinish) {
       toast.success("Archivo subido correctamente");
+      return router.push("/empresa/declaraciones");
+    } else {
+      toast.error("Hubo un problema al procesar el archivo");
     }
   };
 
