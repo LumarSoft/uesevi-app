@@ -26,15 +26,6 @@ export const createColumns = (rates: string): ColumnDef<IDeclaracion>[] => [
   },
 
   {
-    accessorKey: "fecha_pago",
-    header: "Fecha de pago",
-    cell: ({ row }) => {
-      const date = row.original.fecha_pago;
-      return date ? new Date(date).toLocaleDateString() : "Sin pagar";
-    },
-  },
-
-  {
     accessorKey: "vencimiento",
     header: "Fecha de vencimiento",
     cell: ({ row }) => {
@@ -73,7 +64,7 @@ export const createColumns = (rates: string): ColumnDef<IDeclaracion>[] => [
     cell: ({ row }) => {
       return (
         <div className="flex gap-3">
-          <PayDate data={row.original} rates={rates} />
+          {/* <PayDate data={row.original} rates={rates} /> Sacamos la opcion de que las empresas puedan modificar la fecha de pago */}
           <Button>
             <Link href={`/empresa/declaraciones/${row.original.id}`}>
               <Eye />

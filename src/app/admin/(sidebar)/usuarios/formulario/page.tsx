@@ -19,8 +19,8 @@ export default function AdminFormulario() {
     fetch();
   }, []);
 
-  if (!formsData.length || !companiesData.length) {
-    return <div>Cargando</div>;
+  if (companiesData.length === 0) {
+    return <div>Error al cargar la info</div>;
   }
 
   return <AdminFormularioModule forms={formsData} companies={companiesData} />;
