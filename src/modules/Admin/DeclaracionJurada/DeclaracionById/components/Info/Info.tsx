@@ -32,7 +32,7 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
       if (new Date(fechaPago) > vencimientoDate) {
         return Math.floor(
           (new Date(fechaPago).getTime() - vencimientoDate.getTime()) /
-          (1000 * 60 * 60 * 24)
+            (1000 * 60 * 60 * 24)
         );
       }
       return 0; // Si se pagó antes del vencimiento
@@ -46,8 +46,19 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
   };
 
   const isPaid =
-    statement.fecha_pago && new Date(statement.fecha_pago) <= new Date(statement.vencimiento);
+    statement.fecha_pago &&
+    new Date(statement.fecha_pago) <= new Date(statement.vencimiento);
   const daysOverdue = calculateDaysOverdue();
+
+  const calculateAfiliados = () => {
+    let afiliados = 0;
+    statement.empleados.forEach((empleado) => {
+      if (empleado.afiliado === "Sí") {
+        afiliados++;
+      }
+    });
+    return afiliados;
+  };
 
   return (
     <Card className="w-full">
@@ -62,13 +73,13 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-gray-500" />
               <span className="font-medium">Empleados:</span>
-              <span>{statement.cantidad_empleados_declaracion}</span>
+              <span>{statement.empleados.length}</span>
             </div>
 
             <div className="flex items-center gap-2">
               <UserCheck className="h-5 w-5 text-gray-500" />
               <span className="font-medium">Afiliados:</span>
-              <span>{statement.cantidad_afiliados_declaracion}</span>
+              <span>{calculateAfiliados()}</span>
             </div>
 
             <div className="flex items-center gap-2">

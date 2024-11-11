@@ -4,6 +4,7 @@ import { createColumns } from "./components/Table/Columns";
 import { DataTable } from "./components/Table/Data-Table";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 import { Total } from "./components/Total/Total";
+import PDFDownloadButton from "./components/PDFDownloadButton";
 
 export const DeclaracionModule = ({
   statement,
@@ -23,6 +24,7 @@ export const DeclaracionModule = ({
             Declaración jurada
           </h2>
         </div>
+        <PDFDownloadButton data={statement} rate={rate} basicSalary={sueldoBasico}/>
         <Info statement={statement} />
         <Total statement={statement} rate={rate} basicSalary={sueldoBasico} />
         <DataTable columns={columns} data={statement.empleados} />
