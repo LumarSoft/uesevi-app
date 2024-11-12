@@ -22,7 +22,7 @@ export async function middleware(req: NextRequest) {
 
         if (payload.rol === "empresa") {
           return NextResponse.redirect(
-            new URL("/empresa/empleados/agregar-empleado", req.url)
+            new URL("/empresa/empleados/importacion", req.url)
           );
         }
       } catch (error) {
