@@ -40,8 +40,7 @@ export const InputFile: React.FC = () => {
       if (result.ok) {
         return true;
       } else {
-        console.error("Error al enviar el formulario:", result);
-        toast.error("Error al enviar los datos a la API");
+        toast.error(result.message);
         return false;
       }
     } catch (error) {
