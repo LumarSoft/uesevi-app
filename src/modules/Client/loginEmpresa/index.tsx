@@ -62,7 +62,7 @@ export function LoginEmpresaModule() {
       userStore.getState().setAuth(token, user);
       setCookie("auth-token", token);
 
-      router.replace("/empresa/empleados/agregar-empleado");
+      router.replace("/empresa/empleados/importacion");
     } catch (error: any) {
       console.error("Error en la solicitud:", error);
 
