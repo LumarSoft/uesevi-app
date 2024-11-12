@@ -1,6 +1,7 @@
 "use client";
 import DeclaracionesViejasModule from "@/modules/Admin/Antiguas";
 import { fetchData } from "@/services/mysql/functions";
+import { Loader } from "@/shared/components/Loader/Loader";
 import { useEffect, useState } from "react";
 
 export default function AntiguasPage() {
@@ -23,7 +24,11 @@ export default function AntiguasPage() {
   }, []);
 
   if (!companies.length || !statements.length || !contracts.length) {
-    return <div>Cargando</div>;
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
 
   return (

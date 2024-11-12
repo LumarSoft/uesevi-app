@@ -1,6 +1,7 @@
 "use client";
 import DeclaracionesModule from "@/modules/Admin/DeclaracionJurada";
 import { fetchData } from "@/services/mysql/functions";
+import { Loader } from "@/shared/components/Loader/Loader";
 import { useEffect, useState } from "react";
 
 export default function Declaraciones() {
@@ -29,7 +30,11 @@ export default function Declaraciones() {
     !dataStatements.length ||
     !dataContracts.length
   ) {
-    return <div>Cargando...</div>;
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
 
   return (

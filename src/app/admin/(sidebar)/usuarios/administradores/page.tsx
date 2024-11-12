@@ -1,6 +1,7 @@
 "use client";
 import AdminEmpresasModule from "@/modules/Admin/Usuarios/Administradores/";
 import { fetchData } from "@/services/mysql/functions";
+import { Loader } from "@/shared/components/Loader/Loader";
 import { useEffect, useState } from "react";
 
 export default function AdminEmpresas() {
@@ -17,7 +18,11 @@ export default function AdminEmpresas() {
   }, []);
 
   if (!data.length) {
-    return <div>Cargando</div>;
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
 
   return <AdminEmpresasModule data={data} />;
