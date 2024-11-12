@@ -57,7 +57,7 @@ const PDFDownloadButton = ({
       // Cuando isGenerating es false, esperamos un pequeño delay antes de ocultar el overlay
       const hideOverlayTimer = setTimeout(() => {
         setShowOverlay(false);
-      }, 3000);
+      }, 5000);
       return () => clearTimeout(hideOverlayTimer);
     }
   }, [isGenerating]);
