@@ -2,6 +2,7 @@
 
 import NoticiaModule from "@/modules/Client/noticias/noticia";
 import { fetchOneRow } from "@/services/mysql/functions";
+import { Loader } from "@/shared/components/Loader/Loader";
 import { INoticias } from "@/shared/types/Querys/INoticias";
 import { useEffect, useState } from "react";
 
@@ -23,7 +24,11 @@ export default function NoticiaPage({
   }, [id]);
 
   if (!data) {
-    return <div>Cargando...</div>;
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
 
   return <NoticiaModule newData={data} />;

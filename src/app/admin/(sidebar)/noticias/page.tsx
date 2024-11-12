@@ -1,6 +1,7 @@
 "use client";
 import AdminNoticiasModule from "@/modules/Admin/Noticias";
 import { fetchData } from "@/services/mysql/functions";
+import { Loader } from "@/shared/components/Loader/Loader";
 import { useEffect, useState } from "react";
 
 export default function AdminNoticias() {
@@ -17,7 +18,7 @@ export default function AdminNoticias() {
   }, []);
 
   if (!data.length) {
-    return <div>Cargando</div>;
+    return <div><Loader /></div>;
   }
 
   return <AdminNoticiasModule news={data} />;

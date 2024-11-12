@@ -1,6 +1,7 @@
 "use client";
 import AdminEmpleadosModule from "@/modules/Admin/Usuarios/Empleados";
 import { fetchData } from "@/services/mysql/functions";
+import { Loader } from "@/shared/components/Loader/Loader";
 import { useEffect, useState } from "react";
 
 export default function AdminEmpleados() {
@@ -20,7 +21,7 @@ export default function AdminEmpleados() {
   }, []);
 
   if (!dataEmployees.length || !dataCompanies.length) {
-    return <div>Cargando</div>;
+    return <div><Loader /></div>;
   }
 
   return (
