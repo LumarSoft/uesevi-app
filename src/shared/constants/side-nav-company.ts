@@ -26,18 +26,12 @@ interface NavItem {
 }
 
 export const NavItemsCompany: NavItem[] = [
-  {
-    title: "Agregar Empleado",
-    href: "/empresa/empleados/agregar-empleado",
-    icon: UserRoundCog,
-    color: "text-rose-500",
-  },
-  {
-    title: "Mis Empleados",
-    href: "/empresa/empleados/mis-empleados",
-    icon: Building2,
-    color: "text-blue-500", // Color azul para "Mis Empleados"
-  },
+  // {
+  //   title: "Agregar Empleado",
+  //   href: "/empresa/empleados/agregar-empleado",
+  //   icon: UserRoundCog,
+  //   color: "text-rose-500",
+  // },
   {
     title: "Declaracion jurada",
     href: "/empresa/empleados/importacion",
@@ -49,5 +43,17 @@ export const NavItemsCompany: NavItem[] = [
     icon: Newspaper,
     href: "/empresa/declaraciones",
     color: "text-indigo-500",
+  },
+  {
+    title: "Mis Empleados",
+    href: "/empresa/empleados/mis-empleados",
+    icon: Users,
+    color: "text-green-500",
+  },
+  {
+    title: "Instructivo del sistema",
+    href: "/empresa/instructivo",
+    icon: BookText,
+    color: "text-blue-500",
   },
 ];
