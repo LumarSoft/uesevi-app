@@ -24,7 +24,11 @@ export const DeclaracionModule = ({
             Declaración jurada
           </h2>
         </div>
-        <PDFDownloadButton data={statement} rate={rate} basicSalary={sueldoBasico}/>
+        <PDFDownloadButton
+          data={statement}
+          rate={rate}
+          basicSalary={sueldoBasico}
+        />
         <Info statement={statement} />
         <Total statement={statement} rate={rate} basicSalary={sueldoBasico} />
         <DataTable columns={columns} data={statement.empleados} />

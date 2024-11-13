@@ -1,8 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getCookie } from "cookies-next";
-import { jwtVerify } from "jose";
+import { getCookie, setCookie } from "cookies-next";
+import { jwtVerify, SignJWT, type JWTPayload } from "jose";
 
 const JWT_SECRET = process.env.JWT_SECRET || "defaultsecret";
+const JWT_EXPIRATION_TIME = process.env.JWT_EXPIRATION_TIME || "1h";
 
 if (!JWT_SECRET || JWT_SECRET.length === 0) {
   throw new Error("JWT_SECRET no está definido o es vacío.");
@@ -59,10 +60,11 @@ export async function middleware(req: NextRequest) {
       const errorMessage = (error as Error).message;
       if (errorMessage.includes("expired")) {
         console.error("Token expirado - redirigiendo a login de empresa");
+        return NextResponse.redirect(new URL("/loginempresa", req.url));
       } else {
         console.error("Error al verificar el token de empresa:", errorMessage);
+        return NextResponse.redirect(new URL("/loginempresa", req.url));
       }
-      return NextResponse.redirect(new URL("/loginempresa", req.url));
     }
   }
 
@@ -89,15 +91,25 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL("/admin/login", req.url));
       }
 
+      // Comprobar si el token está a punto de expirar y generar uno nuevo si es necesario
+      if (payload.exp && payload.exp - Math.floor(Date.now() / 1000) < 60 * 5) {
+        // Generar un nuevo token con la misma información
+        const newToken = await generateNewToken(payload);
+        setCookie("auth-token", newToken, {
+          expires: new Date(Date.now() + 60 * 60 * 1000), // Ejemplo: 1 hora de expiración
+        });
+      }
+
       return NextResponse.next();
     } catch (error) {
       const errorMessage = (error as Error).message;
       if (errorMessage.includes("expired")) {
         console.error("Token expirado - redirigiendo a login de admin");
+        return NextResponse.redirect(new URL("/admin/login", req.url));
       } else {
         console.error("Error al verificar el token de admin:", errorMessage);
+        return NextResponse.redirect(new URL("/admin/login", req.url));
       }
-      return NextResponse.redirect(new URL("/admin/login", req.url));
     }
   }
 
@@ -107,3 +119,12 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: ["/admin/:path*", "/empresa/:path*", "/loginempresa"],
 };
+
+async function generateNewToken(payload: JWTPayload): Promise<string> {
+  const newToken = await new SignJWT(payload) // Aquí debes usar `SignJWT` en lugar de `jwtVerify`
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime(JWT_EXPIRATION_TIME)
+    .sign(new TextEncoder().encode(JWT_SECRET));
+
+  return newToken;
+}
