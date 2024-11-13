@@ -15,6 +15,10 @@ import { toast } from "react-toastify";
 import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
 import { useRouter } from "next/navigation";
+import { Progress } from "@/components/ui/progress";
+import { Upload, X, FileSpreadsheet, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 export const InputFile: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -22,6 +26,7 @@ export const InputFile: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const { user } = userStore();
   const router = useRouter();
+  const [dragActive, setDragActive] = useState(false);
 
   // Función para enviar datos a la API y retornar el estado
   const sendJson = async (data: any[]): Promise<boolean> => {
@@ -133,22 +138,159 @@ export const InputFile: React.FC = () => {
       toast.error("Hubo un problema al procesar el archivo");
     }
   };
+  // Manejadores de drag and drop
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const droppedFile = e.dataTransfer?.files[0];
+    if (
+      droppedFile &&
+      (droppedFile.name.endsWith(".xlsx") || droppedFile.name.endsWith(".xls"))
+    ) {
+      setFile(droppedFile);
+    } else {
+      toast.error("Por favor, solo archivos Excel (.xlsx, .xls)");
+    }
+  };
+
+  const removeFile = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const input = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
+    if (input) {
+      input.value = "";
+    }
+    setFile(null);
+  };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Inserte un archivo formato XLSX</CardTitle>
-        <CardDescription>
-          Al cargar el archivo nos encargaremos de analizar cada fila y columna
-          para guardar sus empleados.
+    <Card className="w-full max-w-7xl mx-auto">
+      <CardHeader className="px-8">
+        <CardTitle className="text-2xl font-bold">
+          Cargar Archivo Excel
+        </CardTitle>
+        <CardDescription className="text-base">
+          Suba su archivo Excel con la información de los empleados. Aceptamos
+          archivos .xlsx y .xls
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <Input type="file" onChange={changeFile} accept=".xlsx, .xls" />
+      <CardContent className="space-y-6 px-8">
+        {/* Zona de drop */}
+        <div className="relative">
+          <div
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            className={cn(
+              "relative border-2 border-dashed rounded-lg p-12 transition-all",
+              "flex flex-col items-center justify-center gap-4",
+              dragActive
+                ? "border-primary bg-primary/5"
+                : "border-gray-300 hover:border-primary/50"
+            )}
+          >
+            <input
+              type="file"
+              onChange={changeFile}
+              accept=".xlsx, .xls"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+            />
+
+            {!file ? (
+              <>
+                <Upload className="w-12 h-12 text-gray-400" />
+                <div className="text-center">
+                  <p className="text-lg font-medium">
+                    Arrastre su archivo aquí o haga clic para seleccionar
+                  </p>
+                  {/* <p className="text-sm text-gray-500 mt-2">
+                    Tamaño máximo: 10MB
+                  </p> */}
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-4 w-full max-w-2xl">
+                <FileSpreadsheet className="w-10 h-10 text-green-600 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate">{file.name}</p>
+                  <p className="text-sm text-gray-500">
+                    {(file.size / (1024 * 1024)).toFixed(2)} MB
+                  </p>
+                </div>
+                <div className="flex-shrink-0 z-20">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={removeFile}
+                    className="relative"
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Alerta informativa */}
+        <Alert className="border-blue-200 bg-blue-50">
+          <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-600" />
+          <AlertDescription className="text-blue-700">
+            Asegúrese de que su archivo Excel tenga los encabezados correctos y
+            siga el formato establecido.
+          </AlertDescription>
+        </Alert>
+
+        {/* Barra de progreso */}
+        {loading && (
+          <div className="space-y-2">
+            <Progress value={66} className="h-2" />
+            <p className="text-sm text-gray-500 text-center">
+              Procesando archivo...
+            </p>
+          </div>
+        )}
       </CardContent>
-      <CardFooter>
-        <Button onClick={handleUpload} disabled={loading || isUploading}>
-          {loading ? "Cargando..." : isUploading ? "Subiendo..." : "Cargar"}
+
+      <CardFooter className="flex justify-end gap-3 px-8 py-6">
+        <Button
+          variant="outline"
+          onClick={() => router.back()}
+          className="min-w-[120px]"
+        >
+          Cancelar
+        </Button>
+        <Button
+          onClick={handleUpload}
+          disabled={loading || !file || isUploading}
+          className="min-w-[120px]"
+        >
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Procesando
+            </span>
+          ) : isUploading ? (
+            "Subiendo..."
+          ) : (
+            "Cargar archivo"
+          )}
         </Button>
       </CardFooter>
     </Card>

@@ -21,6 +21,7 @@ export const LoginCard = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
       const formData = new FormData();
@@ -34,18 +35,26 @@ export const LoginCard = () => {
       if (response.ok && response.data) {
         const { token, user } = response.data;
 
+        if (user.rol !== "admin") {
+          setError(
+            "Acceso denegado. El usuario no tiene el rol de administrador."
+          );
+          setLoading(false);
+          return;
+        }
+
         userStore.getState().setAuth(token, user as any);
         setCookie("auth-token", token);
 
         router.replace("/admin/dashboard");
       } else {
         setError("Error al iniciar sesión. Por favor, intente de nuevo.");
-        setLoading(false);  // Detiene el loading si el login no es exitoso
+        setLoading(false);
       }
     } catch (error: any) {
       console.error("Error en login:", error);
       setError("Error al iniciar sesión. Por favor, intente de nuevo.");
-      setLoading(false);  // Detiene el loading en caso de error
+      setLoading(false);
     }
   };
 
