@@ -1,6 +1,7 @@
 "use client";
 import { DeclaracionModule } from "@/modules/Admin/Antiguas/DeclaracionById";
 import { fetchData } from "@/services/mysql/functions";
+import { Loader } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Declaracion({
@@ -25,7 +26,11 @@ export default function Declaracion({
   }, [idEmpresa, idDeclaracion]);
 
   if (!statement) {
-    return <div>Error al cargar los datos</div>;
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
 
   return <DeclaracionModule statement={statement} />;

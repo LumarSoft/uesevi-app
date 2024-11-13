@@ -1,6 +1,7 @@
 "use client";
 import { DeclaracionModule } from "@/modules/Admin/DeclaracionJurada/DeclaracionById";
 import { fetchData } from "@/services/mysql/functions";
+import { Loader } from "@/shared/components/Loader/Loader";
 import { useEffect, useState } from "react";
 
 export default function Declaracion({
@@ -10,15 +11,26 @@ export default function Declaracion({
 }) {
   const [statement, setStatement] = useState(null);
   const [rate, setRate] = useState([]);
-
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchStatement = async () => {
-      const statementResult = await fetchData(
-        `statements/info/${idEmpresa}/${idDeclaracion}`
-      );
+      try {
+        const statementResult = await fetchData(
+          `statements/info/${idEmpresa}/${idDeclaracion}`
+        );
 
-      if (statementResult.ok) {
-        setStatement(statementResult.data);
+        if (statementResult.ok) {
+          setStatement(statementResult.data);
+          setError(false);
+        } else {
+          setError(true);
+        }
+      } catch (e) {
+        console.error("Error al cargar los datos", e);
+        setError(true);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -34,9 +46,13 @@ export default function Declaracion({
     getRate();
   }, [idEmpresa, idDeclaracion]);
 
+  if (loading) {
+    return <Loader />;
+  }
+
   if (!statement) {
     return <div>Error al cargar los datos</div>;
   }
 
-  return <DeclaracionModule statement={statement} rate={rate}/>;
+  return <DeclaracionModule statement={statement} rate={rate} />;
 }
