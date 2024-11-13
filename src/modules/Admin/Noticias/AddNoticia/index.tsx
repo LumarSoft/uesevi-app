@@ -88,7 +88,7 @@ export default function AddNoticiaModule() {
               <SelectValue placeholder="Seleccionar" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="empleados">Empleados</SelectItem>
+              <SelectItem value="afiliados">Afiliados</SelectItem>
               <SelectItem value="empresas">Empresas</SelectItem>
             </SelectContent>
           </Select>
