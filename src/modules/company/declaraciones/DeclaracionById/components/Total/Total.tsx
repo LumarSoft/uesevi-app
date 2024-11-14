@@ -77,7 +77,7 @@ export function Total({
         <CardTitle className="text-2xl font-bold">Resumen</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">FAS</h3>
             <p className="text-2xl font-bold">{formatCurrency(totalFaz)}</p>
@@ -110,6 +110,14 @@ export function Total({
             </h3>
             <p className="text-2xl font-bold text-red-500">
               {formatCurrency(totalIntereses)}
+            </p>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Total a pagar
+            </h3>
+            <p className="text-2xl font-bold text-red-500">
+              {formatCurrency(grandTotal + totalIntereses)}
             </p>
           </div>
         </div>
