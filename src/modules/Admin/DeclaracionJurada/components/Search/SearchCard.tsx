@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { filterDeclaraciones } from "@/shared/utils/filterDeclaraciones";
 import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
-import { IContratos } from "@/shared/types/Querys/IContratos";
 import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
 import { fetchData } from "@/services/mysql/functions";
 import { ComboboxCompanies } from "./ComboboxCompanies";
@@ -19,25 +18,33 @@ import {
 
 export default function SearchCard({
   companies,
-  contracts,
   statements,
   setStatementsState,
 }: {
   companies: IEmpresa[];
-  contracts: IContratos[];
   statements: IDeclaracion[]; // Cambia aquí
   setStatementsState: React.Dispatch<React.SetStateAction<IDeclaracion[]>>; // Cambia aquí
 }) {
   const [company, setCompany] = useState<number | null>(null);
   const [idEmployee, setIdEmployee] = useState<number | null>(null);
   const [employees, setEmployees] = useState<IEmpleado[] | []>([]);
+  const [salaryEmployee, setSalaryEmployee] = useState([]);
 
   const fetchEmpleadosByEmpresa = async (company: number) => {
     try {
-      const result = await fetchData(`employees/company/${company}`);
+      const result = await fetchData(`employees/company/historic/${company}`);
       setEmployees(result.data);
     } catch (error) {
       console.error("Error fetching empleados:", error);
+    }
+  };
+
+  const fetchSalaries = async () => {
+    try {
+      const result = await fetchData(`statements/salaries/${idEmployee}`);
+      setSalaryEmployee(result.data);
+    } catch (error) {
+      console.error("Error fetching salarios:", error);
     }
   };
 
@@ -48,10 +55,16 @@ export default function SearchCard({
     }
   }, [company]);
 
+  useEffect(() => {
+    if (idEmployee !== null) {
+      fetchSalaries();
+    }
+  }, [idEmployee]);
+
   const handleFilter = () => {
     let filter;
 
-    filter = filterDeclaraciones(company, idEmployee, contracts, statements);
+    filter = filterDeclaraciones(company, statements, salaryEmployee);
 
     // Filtrar solo IDeclaracion antes de actualizar el estado
     const filteredStatements = filter.filter((item): item is IDeclaracion => {

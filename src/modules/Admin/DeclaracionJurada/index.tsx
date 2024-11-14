@@ -11,11 +11,9 @@ import { useState } from "react";
 export default function DeclaracionesModule({
   companies,
   statements,
-  contracts,
 }: {
   companies: IEmpresa[];
   statements: IDeclaracion[];
-  contracts: IContratos[];
 }) {
   const [statementsState, setStatementsState] =
     useState<IDeclaracion[]>(statements);
@@ -44,7 +42,6 @@ export default function DeclaracionesModule({
         </div>
         <SearchCard
           companies={companies}
-          contracts={contracts}
           statements={statements}
           setStatementsState={setStatementsState}
         />
