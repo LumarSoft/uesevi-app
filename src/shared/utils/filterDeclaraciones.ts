@@ -1,33 +1,25 @@
-import { IContratos } from "../types/Querys/IContratos";
 import { IDeclaracion } from "../types/Querys/IDeclaracion";
 import { IOldDeclaracion } from "../types/Querys/IOldDeclaracion";
 
 export const filterDeclaraciones = (
   empresa: number | null,
-  empleado: number | null,
-  contratos: IContratos[],
-  declaraciones: (IDeclaracion | IOldDeclaracion)[]
+  declaraciones: (IDeclaracion | IOldDeclaracion)[],
+  salaryEmployee: { declaracion_id: number }[]
 ): (IDeclaracion | IOldDeclaracion)[] => {
   // Verifica el tipo de las declaraciones y realiza el filtrado correspondiente
   let declaracionesFiltradas: (IDeclaracion | IOldDeclaracion)[];
 
-  // Comprobamos el tipo de la primera declaración para determinar el tipo general
   if (declaraciones.length > 0) {
     const primeraDeclaracion = declaraciones[0];
 
-    // Filtrar por el tipo de declaración
     if ("empresa_id" in primeraDeclaracion) {
-      // Es un IDeclaracion
       declaracionesFiltradas = declaraciones as IDeclaracion[];
     } else if ("old_empresa_id" in primeraDeclaracion) {
-      // Es un IOldDeclaracion
       declaracionesFiltradas = declaraciones as IOldDeclaracion[];
     } else {
-      // Si no coincide con ningún tipo, retornar un array vacío
       return [];
     }
   } else {
-    // Si no hay declaraciones, retornar un array vacío
     return [];
   }
 
@@ -43,20 +35,15 @@ export const filterDeclaraciones = (
     });
   }
 
-  // Filtrar por empleado si se ha proporcionado
-  if (empleado !== null) {
-    const contrato = contratos.find(
-      (contrato) => contrato.empleado_id === empleado
+  // Filtrar por declaraciones que coincidan con los IDs en salaryEmployee
+  if (salaryEmployee && salaryEmployee.length > 0) {
+    const salaryDeclaracionIds = new Set(salaryEmployee.map(s => s.declaracion_id));
+    declaracionesFiltradas = declaracionesFiltradas.filter(declaracion =>
+      salaryDeclaracionIds.has(declaracion.id)
     );
-    console.log(contrato);
-    if (contrato) {
-      declaracionesFiltradas = declaracionesFiltradas.filter(
-        (declaracion) => declaracion.empresa_id === contrato.empresa_id
-      );
-    } else {
-      declaracionesFiltradas = []; // Si no hay contrato, el empleado no tiene declaraciones
-    }
   }
+
+  console.log(declaracionesFiltradas);
 
   return declaracionesFiltradas;
 };

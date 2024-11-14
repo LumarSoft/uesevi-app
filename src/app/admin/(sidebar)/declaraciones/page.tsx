@@ -15,21 +15,14 @@ export default function Declaraciones() {
 
       const statementsResult = await fetchData("statements");
 
-      const contractsResult = await fetchData("contracts");
-
       setDataCompanies(companiesResult.data);
       setDataStatements(statementsResult.data);
-      setDataContracts(contractsResult.data);
     };
 
     fetch();
   }, []);
 
-  if (
-    !dataCompanies.length ||
-    !dataStatements.length ||
-    !dataContracts.length
-  ) {
+  if (!dataCompanies.length || !dataStatements.length) {
     return (
       <div>
         <Loader />
@@ -41,7 +34,6 @@ export default function Declaraciones() {
     <DeclaracionesModule
       companies={dataCompanies}
       statements={dataStatements}
-      contracts={dataContracts}
     />
   );
 }
