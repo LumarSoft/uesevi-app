@@ -23,12 +23,10 @@ import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 
 export default function SearchCard({
   companies,
-  contracts,
   statements,
   setStatementsState,
 }: {
   companies: IOldEmpresa[];
-  contracts: IOldContratos[];
   statements: IOldDeclaracion[];
   setStatementsState: React.Dispatch<
     React.SetStateAction<IOldDeclaracion[] | IDeclaracion[] | undefined>
@@ -60,22 +58,20 @@ export default function SearchCard({
 
   const handleFilter = () => {
     let filters;
-    if (!date || !date.from || !date.to) {
-      filters = filterDeclaraciones(
-        company,
-        idEmployee,
-        contracts,
-        statements
-      );
-    } else {
-      filters = filterDeclaraciones(
-        company,
-        idEmployee,
-        contracts,
-        statements
-      );
-    }
-    setStatementsState(filters as IOldDeclaracion[]);
+    // if (!date || !date.from || !date.to) {
+    //   filters = filterDeclaraciones(
+    //     company,
+    //     contracts,
+    //     statements
+    //   );
+    // } else {
+    //   filters = filterDeclaraciones(
+    //     company,
+    //     contracts,
+    //     statements
+    //   );
+    // }
+    // setStatementsState(filters as IOldDeclaracion[]);
   };
 
   const handleClear = () => {

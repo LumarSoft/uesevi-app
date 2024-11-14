@@ -35,12 +35,12 @@ export default function DeclaracionesViejasModule({
         <p>
           <i>Con fecha previa al 28/10/2021</i>
         </p>
-        <SearchCard
+        {/* <SearchCard
           companies={companies}
           contracts={contracts}
           statements={statements}
           setStatementsState={setStatementsState}
-        />
+        /> */}
         <DataTable columns={columns} data={statementsState || []} />
       </div>
     </div>
