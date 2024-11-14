@@ -55,6 +55,19 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL("/loginempresa", req.url));
       }
 
+      // Refrescar el token si le quedan menos de 5 minutos antes de expirar
+      if (payload.exp && payload.exp - Math.floor(Date.now() / 1000) < 5 * 60) {
+        const newToken = await generateNewToken(payload);
+        const response = NextResponse.next();
+        response.cookies.set("auth-token", newToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production", // Asegúrate de que solo se setee en producción
+          maxAge: 60 * 60, // 1 hora
+        });
+        console.log("Token refrescado exitosamente");
+        return response;
+      }
+
       return NextResponse.next();
     } catch (error) {
       const errorMessage = (error as Error).message;
@@ -91,13 +104,17 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL("/admin/login", req.url));
       }
 
-      // Comprobar si el token está a punto de expirar y generar uno nuevo si es necesario
-      if (payload.exp && payload.exp - Math.floor(Date.now() / 1000) < 60 * 5) {
-        // Generar un nuevo token con la misma información
+      // Refrescar el token si le quedan menos de 5 minutos antes de expirar
+      if (payload.exp && payload.exp - Math.floor(Date.now() / 1000) < 5 * 60) {
         const newToken = await generateNewToken(payload);
-        setCookie("auth-token", newToken, {
-          expires: new Date(Date.now() + 60 * 60 * 1000), // Ejemplo: 1 hora de expiración
+        const response = NextResponse.next();
+        response.cookies.set("auth-token", newToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production", // Asegúrate de que solo se setee en producción
+          maxAge: 60 * 60, // 1 hora
         });
+        console.log("Token refrescado exitosamente");
+        return response;
       }
 
       return NextResponse.next();
@@ -121,7 +138,7 @@ export const config = {
 };
 
 async function generateNewToken(payload: JWTPayload): Promise<string> {
-  const newToken = await new SignJWT(payload) // Aquí debes usar `SignJWT` en lugar de `jwtVerify`
+  const newToken = await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime(JWT_EXPIRATION_TIME)
     .sign(new TextEncoder().encode(JWT_SECRET));
