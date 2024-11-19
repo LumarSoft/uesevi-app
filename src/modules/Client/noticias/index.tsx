@@ -62,8 +62,8 @@ const NoticiasPageModule = ({
       <Tabs defaultValue="all" onValueChange={setSelectedType} className="mb-6">
         <TabsList>
           <TabsTrigger value="all">Todas</TabsTrigger>
-          <TabsTrigger value="Empresas">Empresas</TabsTrigger>
-          <TabsTrigger value="Afiliados">Afiliados</TabsTrigger>
+          <TabsTrigger value="empresas">Empresas</TabsTrigger>
+          <TabsTrigger value="afiliados">Afiliados</TabsTrigger>
         </TabsList>
       </Tabs>
 
