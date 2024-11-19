@@ -22,6 +22,7 @@ export default function HistorialDeclaraciones({
         if (statementsResult.ok) {
           setStatements(statementsResult.data);
           setError(false);
+          setLoading(false);
         } else {
           setError(true);
         }
