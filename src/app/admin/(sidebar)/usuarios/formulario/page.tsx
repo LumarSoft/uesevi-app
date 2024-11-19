@@ -19,6 +19,7 @@ export default function AdminFormulario() {
           setFormsData(forms.data);
           setCompaniesData(companies.data);
           setError(false);
+          setLoading(false);
         } else {
           setError(true);
         }

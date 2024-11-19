@@ -2,6 +2,7 @@
 import ConsultasModule from "@/modules/Admin/Consultas";
 import { fetchData } from "@/services/mysql/functions";
 import { Loader } from "@/shared/components/Loader/Loader";
+import { set } from "date-fns";
 import { useEffect, useState } from "react";
 
 export default function ConsultasPage() {
@@ -15,6 +16,7 @@ export default function ConsultasPage() {
         if (inquiriesResult.ok) {
           setData(inquiriesResult.data);
           setError(false);
+          setLoading(false);
         } else {
           setError(true);
         }
