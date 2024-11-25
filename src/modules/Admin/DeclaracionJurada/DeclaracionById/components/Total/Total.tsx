@@ -114,7 +114,7 @@ export function Total({
           </div>
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">
-              TOTAL A PAGAR
+              Total a pagar
             </h3>
             <p className="text-2xl font-bold text-red-500">
               {formatCurrency(grandTotal + totalIntereses)}
