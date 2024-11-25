@@ -27,17 +27,33 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
     const hoyDate = new Date();
     const fechaPago = statement.fecha_pago;
 
+    // If statement is approved (estado === 1), use payment date for calculation
+    if (statement.estado === 1) {
+      if (fechaPago) {
+        // If payment date is after due date
+        if (new Date(fechaPago) > vencimientoDate) {
+          return Math.floor(
+            (new Date(fechaPago).getTime() - vencimientoDate.getTime()) /
+              (1000 * 60 * 60 * 24)
+          );
+        }
+        return 0; // Paid before or on due date
+      }
+      return 0;
+    }
+
+    // For other states, use current date for overdue calculation
     if (fechaPago) {
-      // Si hay fecha de pago y es posterior al vencimiento
+      // If there's a payment date and it's after the due date
       if (new Date(fechaPago) > vencimientoDate) {
         return Math.floor(
           (new Date(fechaPago).getTime() - vencimientoDate.getTime()) /
             (1000 * 60 * 60 * 24)
         );
       }
-      return 0; // Si se pagó antes del vencimiento
+      return 0; // Paid before the due date
     } else if (hoyDate > vencimientoDate) {
-      // Si no hay pago y está vencida
+      // If no payment and current date is past due date
       return Math.floor(
         (hoyDate.getTime() - vencimientoDate.getTime()) / (1000 * 60 * 60 * 24)
       );
@@ -103,7 +119,11 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
               <span className="font-medium">Vencimiento:</span>
               <span className="flex">
                 {formatDate(statement.vencimiento)}
-                {isPaid ? (
+                {statement.estado === 1 ? (
+                  <span className="ml-2 text-green-500 font-medium">
+                    ✓ Aprobado
+                  </span>
+                ) : isPaid ? (
                   <span className="ml-2 text-green-500 font-medium">
                     ✓ Pagada a tiempo
                   </span>
