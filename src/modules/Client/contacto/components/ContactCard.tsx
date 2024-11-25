@@ -30,13 +30,13 @@ export default function ContactCard() {
       console.log(result);
       if (!result) {
         return toast.error("Error al enviar el mensaje");
-      } else if (result.data.message === "Inquiry added") {
+      } else if (result.message === "Consulta agregada con éxito") {
+        setName("");
+        setEmail("");
+        setPhone("");
+        setMessage("");
         return toast.success("Mensaje enviado correctamente");
       }
-      setName("");
-      setEmail("");
-      setPhone("");
-      setMessage("");
     } catch (error) {
       console.error(error);
     }

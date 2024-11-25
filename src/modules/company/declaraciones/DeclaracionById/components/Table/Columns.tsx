@@ -16,6 +16,11 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
   {
     header: "Nombre",
     accessorKey: "nombre_completo",
+    enableSorting: true,
+    sortingFn: (rowA, rowB) =>
+      rowA.original.nombre_completo.localeCompare(
+        rowB.original.nombre_completo
+      ),
   },
   {
     header: "Afiliado",
