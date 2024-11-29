@@ -135,11 +135,13 @@ export const Form = () => {
             </CardHeader>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
+                <span className="text-orange-600 font-bold">*</span>{" "}
                 <Label>Nombre</Label>
                 <Input value={name} onChange={(e) => setName(e.target.value)} />
               </div>
 
               <div className="space-y-2">
+                <span className="text-orange-600 font-bold">*</span>{" "}
                 <Label>Apellido</Label>
                 <Input
                   value={lastName}
