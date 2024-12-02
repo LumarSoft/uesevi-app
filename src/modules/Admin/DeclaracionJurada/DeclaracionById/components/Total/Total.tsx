@@ -25,9 +25,9 @@ export function Total({
   let totalIntereses = 0;
   const employeeData = statement.empleados;
 
-  const totalFaz = basicSalary * FAS_PERCENTAGE * employeeData.length;
+  let totalFaz = basicSalary * FAS_PERCENTAGE * employeeData.length;
 
-  const { totalAporteSolidario, totalSindicato } = employeeData.reduce(
+  let { totalAporteSolidario, totalSindicato } = employeeData.reduce(
     (acc, employee) => {
       const totalEmployee = Number(employee.monto) + Number(employee.adicional);
 
@@ -47,8 +47,6 @@ export function Total({
     { totalAporteSolidario: 0, totalSindicato: 0 }
   );
 
-  const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
-
   const vencimiento = new Date(statement.vencimiento);
   let diffDays;
 
@@ -64,13 +62,23 @@ export function Total({
     );
   }
 
+  if (statement.ajuste) {
+    let divisorAjuste = statement.ajuste / 3;
+
+    totalFaz = totalFaz + divisorAjuste;
+
+    totalAporteSolidario = totalAporteSolidario + divisorAjuste;
+
+    totalSindicato = totalSindicato + divisorAjuste;
+  }
+
+  const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
   // Calcular intereses solo si la declaración está vencida
   if (diffDays > 0) {
     const tasaInteres = parseFloat(rate.porcentaje);
     const interes = tasaInteres * diffDays;
     totalIntereses = (grandTotal * interes) / 100;
   }
-
   return (
     <Card className="w-full">
       <CardHeader>
