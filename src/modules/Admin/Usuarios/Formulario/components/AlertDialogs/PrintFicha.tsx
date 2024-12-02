@@ -141,39 +141,45 @@ export const PrintFicha = ({ data }: { data: IFormulario }) => {
         size: 12,
         color: rgb(0, 0, 0),
       });
+      page.drawText(data.categoria, {
+        x: 130,
+        y: 385,
+        size: 12,
+        color: rgb(0, 0, 0),
+      });
       page.drawText(data.telefono_empresa, {
         x: 132,
-        y: 385,
+        y: 364,
         size: 12,
         color: rgb(0, 0, 0),
       });
       page.drawText(data.domicilio_empresa, {
         x: 360,
-        y: 386,
+        y: 364,
         size: 12,
         color: rgb(0, 0, 0),
       });
       page.drawText(data.localidad_empresa, {
         x: 140,
-        y: 363,
+        y: 341,
         size: 12,
         color: rgb(0, 0, 0),
       });
       page.drawText(formattedCodigoPostalEmpresa, {
         x: 300,
-        y: 363,
+        y: 341,
         size: 12,
         color: rgb(0, 0, 0),
       });
       page.drawText(data.provincia_empresa, {
         x: 465,
-        y: 363,
+        y: 341,
         size: 12,
         color: rgb(0, 0, 0),
       });
       page.drawText(data.cuit_empresa, {
         x: 85,
-        y: 341,
+        y: 319,
         size: 12,
         color: rgb(0, 0, 0),
       });
