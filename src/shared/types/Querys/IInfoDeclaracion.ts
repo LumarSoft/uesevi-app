@@ -12,6 +12,7 @@ export interface IInfoDeclaracion {
   pago_parcial: string | null;
   empleados: Empleado[];
   estado: number;
+  ajuste: number;
 }
 
 export interface Empleado {
