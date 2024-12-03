@@ -16,7 +16,7 @@ import { FramerComponent } from "@/shared/Framer/FramerComponent";
 import { toast } from "react-toastify";
 import { postData } from "@/services/mysql/functions";
 import { Info } from "lucide-react";
-
+import { normalizeText } from "./normalizeText";
 export const Form = () => {
   // States for personal information
   const [name, setName] = useState("");
@@ -43,48 +43,64 @@ export const Form = () => {
   const [companyAddress, setCompanyAddress] = useState("");
   const [companyCity, setCompanyCity] = useState("");
   const [companyPostalCode, setCompanyPostalCode] = useState("");
-  const [companyProvince, setCompanyProvince] = useState(""); // For provinces in the company section
+  const [companyProvince, setCompanyProvince] = useState("");
   const [companyCuit, setCompanyCuit] = useState("");
   const [objective, setObjective] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Normalizar campos de texto antes de enviarlos
+    const nameNormalized = normalizeText(name);
+    const lastNameNormalized = normalizeText(lastName);
+    const emailNormalized = normalizeText(email);
+    const birthPlaceNormalized = normalizeText(birthPlace);
+    const nationalityNormalized = normalizeText(nationality);
+    const provinceNormalized = normalizeText(province);
+    const cityNormalized = normalizeText(city);
+    const addressNormalized = normalizeText(address);
+    const civilStatusNormalized = normalizeText(civilStatus);
+    const companyNormalized = normalizeText(company);
+    const categoryNormalized = normalizeText(category);
+    const companyAddressNormalized = normalizeText(companyAddress);
+    const companyCityNormalized = normalizeText(companyCity);
+    const companyProvinceNormalized = normalizeText(companyProvince);
+
     // Validar campos obligatorios
-    if (!name.trim()) {
+    if (!nameNormalized.trim()) {
       toast.error("El nombre es requerido");
       return;
     }
 
-    if (!lastName.trim()) {
+    if (!lastNameNormalized.trim()) {
       toast.error("El apellido es requerido");
       return;
     }
     // Crear objeto FormData
     const formData = new FormData();
-    formData.append("name", name);
-    formData.append("lastName", lastName);
-    formData.append("email", email);
+    formData.append("name", nameNormalized);
+    formData.append("lastName", lastNameNormalized);
+    formData.append("email", emailNormalized);
     formData.append("phone", phone);
     formData.append("cuil", cuil);
     formData.append("dni", dni);
     formData.append("birthDate", birthDate);
-    formData.append("birthPlace", birthPlace);
-    formData.append("nationality", nationality);
-    formData.append("province", province);
-    formData.append("city", city);
-    formData.append("address", address);
+    formData.append("birthPlace", birthPlaceNormalized);
+    formData.append("nationality", nationalityNormalized);
+    formData.append("province", provinceNormalized);
+    formData.append("city", cityNormalized);
+    formData.append("address", addressNormalized);
     formData.append("postalCode", postalCode);
-    formData.append("civilStatus", civilStatus);
-    formData.append("childrenCount", childrenCount.toString()); // Asegurarse de que sea un string
-    formData.append("company", company);
-    formData.append("category", category);
+    formData.append("civilStatus", civilStatusNormalized);
+    formData.append("childrenCount", childrenCount.toString());
+    formData.append("company", companyNormalized);
+    formData.append("category", categoryNormalized);
     formData.append("entryDate", entryDate);
     formData.append("companyPhone", companyPhone);
-    formData.append("companyAddress", companyAddress);
-    formData.append("companyCity", companyCity);
+    formData.append("companyAddress", companyAddressNormalized);
+    formData.append("companyCity", companyCityNormalized);
     formData.append("companyPostalCode", companyPostalCode);
-    formData.append("companyProvince", companyProvince);
+    formData.append("companyProvince", companyProvinceNormalized);
     formData.append("companyCuit", companyCuit);
     formData.append("objective", objective);
 
