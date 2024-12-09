@@ -16,8 +16,15 @@ import { PDFDocument, rgb } from "pdf-lib";
 import { useState } from "react";
 
 export const PrintFicha = ({ data }: { data: IFormulario }) => {
-
   const [loading, setLoading] = useState(false);
+
+  const formatDate = (dateString: string) => {
+    console.log("dateString", dateString);
+    if (!dateString || dateString === "0000-00-00" || dateString === null) {
+      return ""; // Devuelve un espacio vacío si la fecha no es válida
+    }
+    return new Date(dateString).toLocaleDateString("es-ES");
+  };
 
   const handleDownload = async () => {
     setLoading(true);
@@ -35,14 +42,11 @@ export const PrintFicha = ({ data }: { data: IFormulario }) => {
       const page = pdfDoc.getPage(0);
 
       // Formatear fecha_nacimiento a string
-      const formattedFechaNacimiento = data.fecha_nacimiento
-        ? new Date(data.fecha_nacimiento).toLocaleDateString("es-ES")
-        : "";
+      // Formatear fecha_nacimiento a string
+      const formattedFechaNacimiento = formatDate(data.fecha_nacimiento);
 
       // Formatear fecha_ingreso a string
-      const formattedFechaIngreso = data.fecha_ingreso
-        ? new Date(data.fecha_ingreso).toLocaleDateString("es-ES")
-        : "";
+      const formattedFechaIngreso = formatDate(data.fecha_ingreso);
 
       // Formatear codigo_postal_empresa a string
       const formattedCodigoPostalEmpresa = data.cod_postal_empresa
