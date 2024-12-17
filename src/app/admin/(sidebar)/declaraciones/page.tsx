@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 export default function Declaraciones() {
   const [dataCompanies, setDataCompanies] = useState([]);
   const [dataStatements, setDataStatements] = useState([]);
-  const [dataContracts, setDataContracts] = useState([]);
 
   useEffect(() => {
     const fetch = async () => {

@@ -62,23 +62,52 @@ export function Total({
     );
   }
 
-  if (statement.ajuste) {
-    let divisorAjuste = statement.ajuste / 3;
-
-    totalFaz = totalFaz + divisorAjuste;
-
-    totalAporteSolidario = totalAporteSolidario + divisorAjuste;
-
-    totalSindicato = totalSindicato + divisorAjuste;
-  }
-
+  // Calcular el total sin ajuste
   const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
+
+  // Calcular el ajuste automático
+  const importeDeclaracion = Number(statement.subtotal);
+  const ajuste = importeDeclaracion - grandTotal;
+
+  // Crear un array de contribuciones para distribuir el ajuste
+  const contribuciones = [
+    { nombre: "FAS", valor: totalFaz, porcentaje: totalFaz / grandTotal },
+    {
+      nombre: "Aporte Solidario",
+      valor: totalAporteSolidario,
+      porcentaje: totalAporteSolidario / grandTotal,
+    },
+    {
+      nombre: "Sindicato",
+      valor: totalSindicato,
+      porcentaje: totalSindicato / grandTotal,
+    },
+  ];
+
+  // Distribuir el ajuste de manera precisa
+  const contribucionesAjustadas = contribuciones.map((contribucion) => {
+    const ajusteContribucion = ajuste * contribucion.porcentaje;
+    return {
+      ...contribucion,
+      valorAjustado: contribucion.valor + ajusteContribucion,
+    };
+  });
+
+  // Extraer valores ajustados
+  const totalFazAjustado = contribucionesAjustadas[0].valorAjustado;
+  const totalAporteSolidarioAjustado = contribucionesAjustadas[1].valorAjustado;
+  const totalSindicatoAjustado = contribucionesAjustadas[2].valorAjustado;
+
+  const grandTotalAjustado =
+    totalFazAjustado + totalAporteSolidarioAjustado + totalSindicatoAjustado;
+
   // Calcular intereses solo si la declaración está vencida
   if (diffDays > 0) {
     const tasaInteres = parseFloat(rate.porcentaje);
     const interes = tasaInteres * diffDays;
-    totalIntereses = (grandTotal * interes) / 100;
+    totalIntereses = (grandTotalAjustado * interes) / 100;
   }
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -88,14 +117,16 @@ export function Total({
         <div className="grid 2xl:grid-cols-6 grid-cols-3 gap-4">
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">FAS</h3>
-            <p className="text-2xl font-bold">{formatCurrency(totalFaz)}</p>
+            <p className="text-2xl font-bold">
+              {formatCurrency(totalFazAjustado)}
+            </p>
           </div>
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">
               Aporte Solidario
             </h3>
             <p className="text-2xl font-bold">
-              {formatCurrency(totalAporteSolidario)}
+              {formatCurrency(totalAporteSolidarioAjustado)}
             </p>
           </div>
           <div className="space-y-2">
@@ -103,13 +134,13 @@ export function Total({
               Sindicato
             </h3>
             <p className="text-2xl font-bold">
-              {formatCurrency(totalSindicato)}
+              {formatCurrency(totalSindicatoAjustado)}
             </p>
           </div>
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">TOTAL</h3>
             <p className="text-2xl font-bold text-primary">
-              {formatCurrency(grandTotal)}
+              {formatCurrency(grandTotalAjustado)}
             </p>
           </div>
           <div className="space-y-2">
@@ -125,7 +156,7 @@ export function Total({
               Total a pagar
             </h3>
             <p className="text-2xl font-bold text-red-500">
-              {formatCurrency(grandTotal + totalIntereses)}
+              {formatCurrency(grandTotalAjustado + totalIntereses)}
             </p>
           </div>
         </div>
