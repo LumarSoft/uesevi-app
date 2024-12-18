@@ -13,7 +13,7 @@ export default function MisEmpleadosPage() {
   const { user } = userStore();
 
   // Verifica que user y user.empresa existan antes de acceder a idCompany
-  const idCompany = user?.empresa?.id;
+  const idCompany = user!.empresa.id;
 
   useEffect(() => {
     const fetchEmployees = async () => {

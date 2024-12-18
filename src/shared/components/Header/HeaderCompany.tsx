@@ -10,7 +10,7 @@ import { LogoutDialogCompany } from "./LogoutDialogCompany";
 export default function HeaderCompany() {
   const { user } = userStore();
 
-  const companyName = user?.empresa?.nombre;
+  const companyName = user!.empresa.nombre;
   const companyId = user?.empresa?.id;
 
   console.log(user)

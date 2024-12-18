@@ -37,7 +37,7 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
       });
     });
 
-    formData.append("companyId", user.empresa.id);
+    formData.append("companyId", user?.empresa?.id.toString() || "");
     formData.append("statementId", statement.id.toString());
     formData.append("year", statement.year.toString());
     formData.append("month", statement.mes.toString());
