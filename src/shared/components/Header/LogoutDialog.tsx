@@ -20,7 +20,7 @@ export const LogoutDialog = () => {
 
   const handleLogout = () => {
     logout();
-    router.replace("/loginadmin");
+    router.replace("/admin/login");
     setIsDialogOpen(false);
   };
   return (

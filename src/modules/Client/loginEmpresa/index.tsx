@@ -65,7 +65,7 @@ export function LoginEmpresaModule() {
       }
 
       await login(result);
-      router.replace("/empresa/empleados/importacion");
+      router.push("/empresa/empleados/importacion");
     } catch (error: any) {
       console.error("Error en la solicitud:", error);
 

@@ -1,6 +1,6 @@
-// hooks/useAuth.ts
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { userStore, User } from "../stores/userStore";
 
 interface DecodedToken {
   id: number;
@@ -10,12 +10,8 @@ interface DecodedToken {
 }
 
 export const useAuth = () => {
+  const { setAuth, logout: storeLogout, getUser } = userStore();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [user, setUser] = useState<{
-    id: number;
-    email: string;
-    rol: string;
-  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -30,51 +26,48 @@ export const useAuth = () => {
         // Verificar si el token ha expirado
         if (decoded.exp * 1000 > Date.now()) {
           setIsAuthenticated(true);
-          setUser({
-            id: decoded.id,
-            email: "", // No está en tu token actual
-            rol: decoded.rol,
-          });
         } else {
           // Token expirado
           localStorage.removeItem("authToken");
           setIsAuthenticated(false);
-          setUser(null);
+          storeLogout(); // Usar el método logout del store
         }
       } catch (error) {
         console.error("Error decoding token:", error);
         // Token inválido
         localStorage.removeItem("authToken");
         setIsAuthenticated(false);
-        setUser(null);
+        storeLogout(); // Usar el método logout del store
       }
     } else {
       setIsAuthenticated(false);
     }
 
     setIsLoading(false);
-  }, []);
+  }, [storeLogout]);
 
   const login = (loginResponse: any) => {
     // Guardar todo el token
     localStorage.setItem("authToken", loginResponse.data.token);
 
-    // Decodificar el token
-    const decoded = jwtDecode<DecodedToken>(loginResponse.data.token);
+    console.log(loginResponse);
 
     setIsAuthenticated(true);
-    setUser({
-      id: decoded.id,
-      email: loginResponse.data.user.correo,
-      rol: decoded.rol,
-    });
+
+    setAuth(loginResponse.data.token, loginResponse.data.user);
   };
 
   const logout = () => {
     localStorage.removeItem("authToken");
     setIsAuthenticated(false);
-    setUser(null);
+    storeLogout(); // Usar el método logout del store
   };
 
-  return { isAuthenticated, user, login, logout, isLoading };
+  return { 
+    isAuthenticated, 
+    login, 
+    logout, 
+    isLoading, 
+    user: getUser() as User | null
+  };
 };
