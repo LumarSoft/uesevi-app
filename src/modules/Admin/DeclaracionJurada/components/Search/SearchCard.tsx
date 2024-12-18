@@ -62,14 +62,19 @@ export default function SearchCard({
   }, [idEmployee]);
 
   const handleFilter = () => {
-    let filter;
+    let filter = filterDeclaraciones(company, statements, salaryEmployee);
 
-    filter = filterDeclaraciones(company, statements, salaryEmployee);
-
-    // Filtrar solo IDeclaracion antes de actualizar el estado
     const filteredStatements = filter.filter((item): item is IDeclaracion => {
-      return (item as IDeclaracion).subtotal !== undefined; // Asegúrate de que `subtotal` está presente
+      return (item as IDeclaracion).subtotal !== undefined;
     });
+
+    sessionStorage.setItem(
+      "searchState",
+      JSON.stringify({
+        company,
+        filteredStatements,
+      })
+    );
 
     setStatementsState(filteredStatements);
   };
