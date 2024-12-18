@@ -161,7 +161,7 @@ export default function CalculadoraModule({
                         <TableHead>Días Excedidos</TableHead>
                         <TableHead>Interés Aplicado</TableHead>
                         <TableHead>Valor Declaración</TableHead>
-                        <TableHead>Monto Multa</TableHead>
+                        <TableHead>Interes de la declaracion</TableHead>
                         <TableHead>Valor Final</TableHead>
                       </TableRow>
                     </TableHeader>
