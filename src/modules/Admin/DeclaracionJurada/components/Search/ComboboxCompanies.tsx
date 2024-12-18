@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Popover,
   PopoverContent,
@@ -30,6 +30,23 @@ export const ComboboxCompanies = ({
 }) => {
   const [open, setOpen] = React.useState(false);
 
+  useEffect(() => {
+    const savedCompany = sessionStorage.getItem("selectedCompany");
+    if (savedCompany) {
+      setCompany(Number(savedCompany));
+    }
+  }, [setCompany]);
+
+  const handleSelect = (companyId: number | null) => {
+    if (companyId !== null) {
+      sessionStorage.setItem("selectedCompany", companyId.toString());
+    } else {
+      sessionStorage.removeItem("selectedCompany");
+    }
+    setCompany(companyId);
+    setOpen(false);
+  };
+
   return (
     <div className="space-y-2 w-full">
       <Label htmlFor="date-range">Empresa</Label>
@@ -59,12 +76,11 @@ export const ComboboxCompanies = ({
                     <CommandItem
                       key={company.id}
                       value={company.nombre}
-                      onSelect={() => {
-                        setCompany(
+                      onSelect={() =>
+                        handleSelect(
                           companyProp === company.id ? null : company.id
-                        );
-                        setOpen(false);
-                      }}
+                        )
+                      }
                     >
                       <Check
                         className={cn(
