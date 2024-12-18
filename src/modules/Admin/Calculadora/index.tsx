@@ -148,7 +148,7 @@ export default function CalculadoraModule({
               </div>
 
               {/* Botón de Cálculo */}
-              <Button onClick={calcularMulta}>Calcular Multa</Button>
+              <Button onClick={calcularMulta}>Calcular Interes</Button>
 
               {/* Tabla de Resultados */}
               {resultado && (
