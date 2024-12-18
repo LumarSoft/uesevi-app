@@ -22,7 +22,12 @@ const AdminFormularioModule = ({
     setFormulario(newData);
   };
 
-  const columns = createColumns(handleUpdate, companies);
+  // Función para eliminar un elemento
+  const handleDelete = (id: number) => {
+    setFormulario((prevData) => prevData.filter((item) => item.id !== id));
+  };
+
+  const columns = createColumns(handleUpdate, companies, handleDelete);
 
   return (
     <div className="flex h-full flex-col">
