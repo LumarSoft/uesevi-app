@@ -13,6 +13,7 @@ import {
   Scroll,
   BookCopy,
   MessageSquare,
+  Calculator,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 
@@ -122,5 +123,11 @@ export const NavItemsAdmin: NavItem[] = [
     icon: MessageSquare,
     href: "/admin/consultas",
     color: "text-purple-500",
+  },
+  {
+    title: "Calculadora de intereses",
+    icon: Calculator,
+    href: "/admin/calculadora",
+    color: "text-pink-500",
   },
 ];

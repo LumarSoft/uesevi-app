@@ -13,6 +13,8 @@ export interface IInfoDeclaracion {
   empleados: Empleado[];
   estado: number;
   ajuste: number;
+  importe: number;
+  subtotal: number;
 }
 
 export interface Empleado {
