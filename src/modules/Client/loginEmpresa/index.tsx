@@ -15,10 +15,9 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { postData } from "@/services/mysql/functions";
-import { userStore } from "@/shared/stores/userStore";
-import { setCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/modules/Login/components/LoadingSpinner";
+import { useAuth } from "@/shared/hooks/use-auth";
 
 export function LoginEmpresaModule() {
   const [email, setEmail] = useState("");
@@ -26,6 +25,7 @@ export function LoginEmpresaModule() {
   const [showPassword, setShowPassword] = useState(false); // Nueva variable de estado para mostrar/ocultar contraseña
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Expresión regular para validar formato de email
@@ -56,12 +56,15 @@ export function LoginEmpresaModule() {
         return;
       }
 
-      const { data } = result as { data: any };
+      const { user } = result.data;
 
-      const { user, token } = data;
-      userStore.getState().setAuth(token, user);
-      setCookie("auth-token", token);
+      if (user.rol !== "empresa") {
+        toast.error("No tienes permisos para acceder.");
+        setLoading(false);
+        return;
+      }
 
+      await login(result);
       router.replace("/empresa/empleados/importacion");
     } catch (error: any) {
       console.error("Error en la solicitud:", error);

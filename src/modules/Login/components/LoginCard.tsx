@@ -4,10 +4,9 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { postData } from "@/services/mysql/functions";
-import { userStore } from "@/shared/stores/userStore";
-import { setCookie } from "cookies-next";
 import LoadingSpinner from "./LoadingSpinner";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useAuth } from "@/shared/hooks/use-auth";
 
 export const LoginCard = () => {
   const [email, setEmail] = useState("");
@@ -17,6 +16,7 @@ export const LoginCard = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -30,26 +30,18 @@ export const LoginCard = () => {
       formData.append("rol", "admin");
 
       const response = await postData("login", formData);
-      console.log(response);
 
       if (response.ok && response.data) {
-        const { token, user } = response.data;
+        const { user } = response.data;
 
         if (user.rol !== "admin") {
-          setError(
-            "Acceso denegado. El usuario no tiene el rol de administrador."
-          );
+          setError("No tienes permisos para acceder.");
           setLoading(false);
           return;
         }
 
-        userStore.getState().setAuth(token, user as any);
-        setCookie("auth-token", token);
-
-        router.replace("/admin/dashboard");
-      } else {
-        setError("Error al iniciar sesión. Por favor, intente de nuevo.");
-        setLoading(false);
+        await login(response);
+        router.push("/admin/dashboard");
       }
     } catch (error: any) {
       console.error("Error en login:", error);
