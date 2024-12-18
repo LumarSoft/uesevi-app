@@ -12,7 +12,7 @@ export default function DeclaracionesPage() {
   const [rates, setRates] = useState("");
   const { user } = userStore();
 
-  const idCompany = user?.empresa?.id;
+  const idCompany = user!.empresa.id;
 
   useEffect(() => {
     const fetchStatements = async () => {

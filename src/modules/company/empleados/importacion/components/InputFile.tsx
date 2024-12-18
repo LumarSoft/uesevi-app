@@ -38,7 +38,7 @@ export const InputFile: React.FC = () => {
       });
     });
 
-    formData.append("companyId", user.empresa.id);
+    formData.append("companyId", user?.empresa?.id.toString() ?? "");
 
     try {
       const result = await postData("employees/import", formData);

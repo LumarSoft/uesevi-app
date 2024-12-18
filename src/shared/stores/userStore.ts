@@ -7,7 +7,7 @@ export interface User {
   name: string;
   email: string;
   rol: string;
-  // Add other user properties as needed
+  empresa: { id: number; nombre: string };
 }
 
 export interface UserStoreState {

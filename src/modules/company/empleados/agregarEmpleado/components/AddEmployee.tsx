@@ -81,7 +81,7 @@ export const AddEmployee = () => {
     formData.append("employmentStatus", employmentStatus);
     formData.append("unionAdhesion", unionAdhesion);
     formData.append("email", email);
-    formData.append("companyId", user.empresa.id);
+    formData.append("companyId", user?.empresa?.id.toString() || "");
 
     try {
       const result = await postData("employees", formData);

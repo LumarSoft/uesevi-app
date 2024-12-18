@@ -10,7 +10,7 @@ export default function ImportacionEmpleadosPage() {
     null
   );
   const { user } = userStore();
-  const idCompany = user?.empresa?.id;
+  const idCompany = user!.empresa.id;
 
   useEffect(() => {
     const fetchLastDeclaration = async () => {
