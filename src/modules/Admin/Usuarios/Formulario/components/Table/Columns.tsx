@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 import { IFormulario } from "@/shared/types/Querys/IFormulario";
 import { DialogComponent } from "../Dialog/Dialog";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
+import { DeleteInsc } from "../AlertDialogs/DeleteInsc";
 
 export const createColumns = (
   onDataUpdate: (updatedItem: IFormulario) => void,
-  companies: IEmpresa[]
+  companies: IEmpresa[],
+  onDelete?: (id: number) => void
 ): ColumnDef<IFormulario>[] => [
   {
     accessorKey: "nombre",
@@ -87,7 +89,8 @@ export const createColumns = (
             companies={companies}
             onDataUpdate={onDataUpdate}
           />
-          <PrintFicha data={row.original}/>
+          <PrintFicha data={row.original} />
+          <DeleteInsc data={row.original} onDelete={onDelete} />
         </div>
       );
     },
