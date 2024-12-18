@@ -6,7 +6,7 @@ import { DataTable } from "./components/Table/Data-Table";
 import { createColumns } from "./components/Table/columns";
 import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { IContratos } from "@/shared/types/Querys/IContratos";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function DeclaracionesModule({
   companies,
@@ -17,6 +17,15 @@ export default function DeclaracionesModule({
 }) {
   const [statementsState, setStatementsState] =
     useState<IDeclaracion[]>(statements);
+
+  useEffect(() => {
+    // Recuperar estado desde sessionStorage si existe
+    const savedState = sessionStorage.getItem("searchState");
+    if (savedState) {
+      const { filteredStatements } = JSON.parse(savedState);
+      setStatementsState(filteredStatements);
+    }
+  }, []);
 
   const changeState = (updatedItem: IDeclaracion) => {
     const newData = statementsState.map((item) =>
