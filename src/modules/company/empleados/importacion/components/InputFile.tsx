@@ -20,7 +20,7 @@ import { Upload, X, FileSpreadsheet, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
-export const InputFile: React.FC = () => {
+export const InputFile: React.FC<{ selectedMonth: number | null }> = ({ selectedMonth }) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -39,6 +39,11 @@ export const InputFile: React.FC = () => {
     });
 
     formData.append("companyId", user.empresa.id);
+
+    // Agregar el mes seleccionado al formData
+    if (selectedMonth !== null) {
+      formData.append("selectedMonth", selectedMonth.toString());
+    }
 
     try {
       const result = await postData("employees/import", formData);
