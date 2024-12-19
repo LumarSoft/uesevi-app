@@ -18,10 +18,9 @@ export const LogoutDialogCompany = () => {
   const { logout } = useAuth();
   const router = useRouter();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
     router.push("/loginempresa");
-    setIsDialogOpen(false);
+    logout();
   };
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

@@ -60,14 +60,15 @@ export const useAuth = () => {
   const logout = () => {
     localStorage.removeItem("authToken");
     setIsAuthenticated(false);
+    console.log("logout");
     storeLogout(); // Usar el método logout del store
   };
 
-  return { 
-    isAuthenticated, 
-    login, 
-    logout, 
-    isLoading, 
-    user: getUser() as User | null
+  return {
+    isAuthenticated,
+    login,
+    logout,
+    isLoading,
+    user: getUser() as User | null,
   };
 };

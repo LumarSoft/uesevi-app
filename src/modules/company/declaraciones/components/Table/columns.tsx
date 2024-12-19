@@ -65,24 +65,24 @@ export const createColumns = (rates: string): ColumnDef<IDeclaracion>[] => [
       return (
         <div className="flex gap-3">
           {/* <PayDate data={row.original} rates={rates} /> Sacamos la opcion de que las empresas puedan modificar la fecha de pago */}
-          <Button>
-            <Link href={`/empresa/declaraciones/${row.original.id}`}>
-              <Eye />
-            </Link>
-          </Button>
-          <Button>
-            <Link href={`/empresa/declaraciones/${row.original.id}/rectificar`}>
-              <Pen />
-            </Link>
-          </Button>
-          {row.original.rectificada !== 0 && (
+          <Link href={`/empresa/declaraciones/${row.original.id}`}>
             <Button>
-              <Link
-                href={`/empresa/declaraciones/historial/${row.original.year}/${row.original.mes}`}
-              >
-                <FileStack />
-              </Link>
+              <Eye />
             </Button>
+          </Link>
+          <Link href={`/empresa/declaraciones/${row.original.id}/rectificar`}>
+            <Button>
+              <Pen />
+            </Button>
+          </Link>
+          {row.original.rectificada !== 0 && (
+            <Link
+              href={`/empresa/declaraciones/historial/${row.original.year}/${row.original.mes}`}
+            >
+              <Button>
+                <FileStack />
+              </Button>
+            </Link>
           )}
         </div>
       );
