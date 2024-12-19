@@ -19,15 +19,19 @@ import { Progress } from "@/components/ui/progress";
 import { Upload, X, FileSpreadsheet, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import ExcelPreview from "./ExcelPreview";
 
-export const InputFile: React.FC<{ selectedMonth: number | null }> = ({ selectedMonth }) => {
+export const InputFile: React.FC<{ selectedMonth: number | null }> = ({
+  selectedMonth,
+}) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const { user } = userStore();
   const router = useRouter();
   const [dragActive, setDragActive] = useState(false);
-
+  const [previewData, setPreviewData] = useState<any[]>([]);
+  const [showPreview, setShowPreview] = useState(false);
   // Función para enviar datos a la API y retornar el estado
   const sendJson = async (data: any[]): Promise<boolean> => {
     const formData = new FormData();
@@ -61,10 +65,24 @@ export const InputFile: React.FC<{ selectedMonth: number | null }> = ({ selected
   };
 
   // Función para cambiar el archivo seleccionado
-  const changeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const changeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
+
+      // Generar vista previa
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const data = event.target?.result;
+        const workbook = XLSX.read(data, { type: "array" });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        setPreviewData(jsonData);
+        setShowPreview(true);
+      };
+      reader.readAsArrayBuffer(selectedFile);
     }
   };
 
@@ -154,7 +172,7 @@ export const InputFile: React.FC<{ selectedMonth: number | null }> = ({ selected
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -165,11 +183,26 @@ export const InputFile: React.FC<{ selectedMonth: number | null }> = ({ selected
       (droppedFile.name.endsWith(".xlsx") || droppedFile.name.endsWith(".xls"))
     ) {
       setFile(droppedFile);
+
+      // Generar vista previa (convertimos el archivo a JSON para poder mostrarlo)
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const data = event.target?.result;
+        const workbook = XLSX.read(data, { type: "array" });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        setPreviewData(jsonData);
+        setShowPreview(true);
+      };
+      reader.readAsArrayBuffer(droppedFile);
     } else {
       toast.error("Por favor, solo archivos Excel (.xlsx, .xls)");
     }
   };
 
+  // Modificar removeFile
   const removeFile = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -180,6 +213,8 @@ export const InputFile: React.FC<{ selectedMonth: number | null }> = ({ selected
       input.value = "";
     }
     setFile(null);
+    setShowPreview(false);
+    setPreviewData([]);
   };
 
   return (
@@ -252,6 +287,14 @@ export const InputFile: React.FC<{ selectedMonth: number | null }> = ({ selected
             )}
           </div>
         </div>
+
+        {/* Vista previa */}
+        {showPreview && previewData.length > 0 && (
+          <ExcelPreview
+            data={previewData}
+            onClose={() => setShowPreview(false)}
+          />
+        )}
 
         {/* Alerta informativa */}
         <Alert className="border-blue-200 bg-blue-50">
