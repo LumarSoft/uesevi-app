@@ -9,26 +9,27 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { X } from "lucide-react";
 
-const ExcelPreview = ({
-  data,
-  onClose,
-}: {
-  data: any[];
-  onClose: () => void;
-}) => {
+const ExcelPreview = ({ data }: { data: any[] }) => {
   if (!data || data.length === 0) return null;
 
-  const headers = Object.keys(data[0]);
+  // Agregar la columna Total bruto a los datos
+  const dataWithTotal = data.map(row => {
+    const sueldoBasico = Number(row["Sueldo Básico"]) || 0;
+    const adicionales = Number(row["Adicionales"]) || 0;
+    return {
+      ...row,
+      "Total bruto": sueldoBasico + adicionales
+    };
+  });
+
+  // Obtener los headers incluyendo la nueva columna
+  const headers = Object.keys(dataWithTotal[0]);
 
   return (
     <Card className="w-full mt-4">
       <div className="flex justify-between items-center p-4">
         <h3 className="text-lg font-semibold">Vista previa del archivo</h3>
-        <button onClick={onClose} className="text-red-300 hover:text-red-500">
-          <X className="h-5 w-5" />
-        </button>
       </div>
 
       <ScrollArea className="h-96">
@@ -36,16 +37,31 @@ const ExcelPreview = ({
           <TableHeader>
             <TableRow>
               {headers.map((header) => (
-                <TableHead key={header}>{header}</TableHead>
+                <TableHead key={header} className={
+                  ["Sueldo Básico", "Adicionales", "Total bruto"].includes(header) 
+                    ? "text-right" 
+                    : ""
+                }>
+                  {header}
+                </TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((row: any, index: any) => (
+            {dataWithTotal.map((row: any, index: any) => (
               <TableRow key={index}>
                 {headers.map((header) => (
-                  <TableCell key={header}>
-                    {row[header]?.toString() || ""}
+                  <TableCell 
+                    key={header}
+                    className={
+                      ["Sueldo Básico", "Adicionales", "Total bruto"].includes(header) 
+                        ? "text-right" 
+                        : ""
+                    }
+                  >
+                    {["Sueldo Básico", "Adicionales", "Total bruto"].includes(header)
+                      ? Number(row[header]).toLocaleString('es-AR')
+                      : row[header]?.toString() || ""}
                   </TableCell>
                 ))}
               </TableRow>
