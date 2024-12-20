@@ -290,10 +290,7 @@ export const InputFile: React.FC<{ selectedMonth: number | null }> = ({
 
         {/* Vista previa */}
         {showPreview && previewData.length > 0 && (
-          <ExcelPreview
-            data={previewData}
-            onClose={() => setShowPreview(false)}
-          />
+          <ExcelPreview data={previewData} />
         )}
 
         {/* Alerta informativa */}
