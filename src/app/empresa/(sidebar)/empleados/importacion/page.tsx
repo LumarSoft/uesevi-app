@@ -1,6 +1,6 @@
 "use client";
 import ImportacionEmpleadosModule from "@/modules/company/empleados/importacion";
-import { fetchData } from "@/services/mysql/functions"; // Asegúrate de que la función esté preparada para recibir múltiples filas.
+import { fetchOneRow } from "@/services/mysql/functions"; // Asegúrate de que la función esté preparada para recibir múltiples filas.
 import { userStore } from "@/shared/stores/userStore";
 import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { useEffect, useState } from "react";
@@ -14,9 +14,7 @@ export default function ImportacionEmpleadosPage() {
   useEffect(() => {
     const fetchLastDeclarations = async () => {
       try {
-        const result = await fetchData(
-          `/company/${idCompany}` // Corrige la URL según sea necesario
-        );
+        const result = await fetchOneRow(`statements/company/:id`, idCompany);
         setLastDeclarations(result.data); // result.data debe ser un array
       } catch (error) {
         console.error("Error fetching declarations:", error);

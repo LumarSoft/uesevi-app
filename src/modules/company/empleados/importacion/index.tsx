@@ -4,33 +4,57 @@ import { InputFile } from "./components/InputFile";
 import { useState, useEffect } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 
-// Función para calcular meses pendientes de declaración
-function getMissingDeclarationMonths(
-  monthLastDeclaration: number | undefined,
-  yearLastDeclaration: number | undefined,
-  currentMonth: number,
-  currentYear: number
-): { year: number; month: number }[] {
-  const missingMonths: { year: number; month: number }[] = [];
+// Función para obtener todos los meses faltantes entre declaraciones
+function getMissingDeclarationMonths(declarations: IDeclaracion[]): { year: number; month: number }[] {
+  if (!declarations || declarations.length === 0) return [];
 
-  // Si no hay una última declaración registrada
-  if (!monthLastDeclaration || !yearLastDeclaration) {
-    return [{ year: currentYear, month: currentMonth - 1 }];
+  const missingMonths: { year: number; month: number }[] = [];
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1;
+  const currentYear = currentDate.getFullYear();
+
+  // Ordenar declaraciones por año y mes
+  const sortedDeclarations = [...declarations].sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year;
+    return a.mes - b.mes;
+  });
+
+  // Encontrar los huecos entre declaraciones
+  for (let i = 0; i < sortedDeclarations.length - 1; i++) {
+    const currentDecl = sortedDeclarations[i];
+    const nextDecl = sortedDeclarations[i + 1];
+
+    let year = currentDecl.year;
+    let month = currentDecl.mes + 1;
+
+    while (!(year === nextDecl.year && month === nextDecl.mes)) {
+      if (month > 12) {
+        month = 1;
+        year++;
+      }
+      
+      // Solo agregar si no es el mes actual
+      if (!(month === currentMonth && year === currentYear)) {
+        missingMonths.push({ year, month });
+      }
+      
+      month++;
+    }
   }
 
-  let year = yearLastDeclaration;
-  let month = monthLastDeclaration + 1;
+  // Verificar meses faltantes después de la última declaración
+  const lastDecl = sortedDeclarations[sortedDeclarations.length - 1];
+  let year = lastDecl.year;
+  let month = lastDecl.mes + 1;
 
-  // Iterar desde la última declaración hasta el mes anterior al actual, y las declaraciones faltantes agregarlas al array.
-  // Ejemplo: Si tengo declaraciones en agosto y octubre de 2024, me debe aparecer que debo septiembre y noviembre, teniendo en cuenta que estamos en diciembre (las declaraciones funcionan a mes vencido).
   while (!(month === currentMonth && year === currentYear)) {
     if (month > 12) {
       month = 1;
@@ -47,8 +71,18 @@ function getMissingDeclarationMonths(
 // Función para convertir número de mes a nombre de mes
 const getMonthName = (monthNumber: number): string => {
   const monthNames = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
   ];
   return monthNames[monthNumber - 1];
 };
@@ -58,62 +92,23 @@ export default function ImportacionEmpleadosModule({
 }: {
   lastDeclarations: IDeclaracion[] | null;
 }) {
-  // Obtenemos la última declaración registrada
-  const lastDeclaration = lastDeclarations?.[0];
-  
-  // Obtenemos el mes y año de la última declaración
-  const monthLastDeclaration = lastDeclaration?.mes;
-  const yearLastDeclaration = lastDeclaration?.year;
-
-  // Obtenemos el mes y año actual
-  const currentMonth = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
-
-  // Estados para manejar meses pendientes y selección
+  // Estados
   const [missingMonths, setMissingMonths] = useState<{ year: number; month: number }[]>([]);
-  const [missingMonthNames, setMissingMonthNames] = useState<string[]>([]);
-  const [isFirstDeclaration, setIsFirstDeclaration] = useState<boolean>(false);
-  const [isUpToDate, setIsUpToDate] = useState<boolean>(false);
-
-  // Nuevos estados para selección de mes
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
-  // Efecto para calcular meses pendientes
   useEffect(() => {
-    // Verificar si es la primera declaración
-    const isFirstTime = !monthLastDeclaration || !yearLastDeclaration;
-    setIsFirstDeclaration(isFirstTime);
+    if (lastDeclarations && lastDeclarations.length > 0) {
+      const pending = getMissingDeclarationMonths(lastDeclarations);
+      setMissingMonths(pending);
 
-    const pendingMonths = getMissingDeclarationMonths(
-      monthLastDeclaration,
-      yearLastDeclaration,
-      currentMonth,
-      currentYear
-    );
-
-    setMissingMonths(pendingMonths);
-
-    // Convertir números de mes a nombres de mes
-    const pendingMonthNames = pendingMonths.map((m) => getMonthName(m.month));
-    setMissingMonthNames(pendingMonthNames);
-
-    // Verificar si está al día
-    setIsUpToDate(
-      monthLastDeclaration === currentMonth - 1 &&
-      yearLastDeclaration === currentYear
-    );
-
-    // Establecer valores por defecto para selección
-    if (pendingMonths.length > 0) {
-      setSelectedMonth(pendingMonths[0].month);
+      // Establecer valores por defecto para selección
+      if (pending.length > 0) {
+        setSelectedMonth(pending[0].month);
+        setSelectedYear(pending[0].year);
+      }
     }
-  }, [monthLastDeclaration, yearLastDeclaration, currentMonth, currentYear]);
-
-  // Generar años para selector
-  const years = Array.from(
-    { length: 5 }, 
-    (_, i) => currentYear - i
-  );
+  }, [lastDeclarations]);
 
   return (
     <div className="flex h-full flex-col">
@@ -125,36 +120,43 @@ export default function ImportacionEmpleadosModule({
         </div>
 
         {/* Alerta de meses pendientes */}
-        {missingMonths.length > 0 && !isUpToDate && !isFirstDeclaration && (
+        {missingMonths.length > 0 && (
           <Alert variant="default">
             <Info className="h-4 w-4" />
             <AlertTitle>Declaraciones pendientes</AlertTitle>
             <AlertDescription>
               Tienes declaraciones pendientes de carga:{" "}
               <span className="font-semibold text-yellow-300">
-                {missingMonthNames.join(", ")}
+                {missingMonths.map(m => `${getMonthName(m.month)} ${m.year}`).join(", ")}
               </span>
             </AlertDescription>
           </Alert>
         )}
 
         {/* Selectores de mes */}
-        {missingMonths.length > 0 && !isUpToDate && (
+        {missingMonths.length > 0 && (
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Seleccionar Mes
               </label>
               <Select
-                value={selectedMonth ? selectedMonth.toString() : undefined}
-                onValueChange={(value) => setSelectedMonth(parseInt(value))}
+                value={selectedMonth ? `${selectedMonth}-${selectedYear}` : undefined}
+                onValueChange={(value) => {
+                  const [month, year] = value.split('-').map(Number);
+                  setSelectedMonth(month);
+                  setSelectedYear(year);
+                }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar mes" />
                 </SelectTrigger>
                 <SelectContent>
                   {missingMonths.map((m) => (
-                    <SelectItem key={`${m.year}-${m.month}`} value={m.month.toString()}>
+                    <SelectItem
+                      key={`${m.year}-${m.month}`}
+                      value={`${m.month}-${m.year}`}
+                    >
                       {getMonthName(m.month)} ({m.year})
                     </SelectItem>
                   ))}
