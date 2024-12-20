@@ -54,10 +54,13 @@ const getMonthName = (monthNumber: number): string => {
 };
 
 export default function ImportacionEmpleadosModule({
-  lastDeclaration,
+  lastDeclarations,
 }: {
-  lastDeclaration: IDeclaracion | null;
+  lastDeclarations: IDeclaracion[] | null;
 }) {
+  // Obtenemos la última declaración registrada
+  const lastDeclaration = lastDeclarations?.[0];
+  
   // Obtenemos el mes y año de la última declaración
   const monthLastDeclaration = lastDeclaration?.mes;
   const yearLastDeclaration = lastDeclaration?.year;
