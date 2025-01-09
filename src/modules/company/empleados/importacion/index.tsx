@@ -1,22 +1,67 @@
-import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { ChargeAlert } from "./components/ChargeAlert";
 import { InputFile } from "./components/InputFile";
-import { useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Info } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Info, AlertCircle, CheckCircle2 } from "lucide-react";
 import MonthSelect from "./components/MonthSelect";
 
+export interface IMissingStatements {
+  mes: number;
+  year: number;
+}
+
+export interface IStatementResponse {
+  status: "NO_STATEMENTS" | "UP_TO_DATE" | "PENDING_STATEMENTS";
+  message: string;
+  data: IMissingStatements[];
+}
+
+
 export default function ImportacionEmpleadosModule({
-  lastDeclaration,
+  statementsData,
 }: {
-  lastDeclaration: IDeclaracion | null;
+  statementsData: IStatementResponse | null;
 }) {
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
+  // Resetear selección cuando cambian los datos
+  useEffect(() => {
+    setSelectedMonth(null);
+    setSelectedYear(null);
+  }, [statementsData?.status]);
+
   const handleMonthSelect = (month: number, year: number) => {
     setSelectedMonth(month);
     setSelectedYear(year);
+  };
+
+
+  if (!statementsData) return null;
+
+  const renderStatusMessage = () => {
+    switch (statementsData.status) {
+      case "NO_STATEMENTS":
+        return (
+          <div className="rounded-lg border bg-yellow-50 p-4 flex items-center gap-3">
+            <AlertCircle className="h-6 w-6 text-yellow-600" />
+            <p className="text-yellow-700">No hay declaraciones juradas previas. Por favor, comience cargando el mes anterior.</p>
+          </div>
+        );
+      case "UP_TO_DATE":
+        return (
+          <div className="rounded-lg border bg-green-50 p-4 flex items-center gap-3">
+            <CheckCircle2 className="h-6 w-6 text-green-600" />
+            <p className="text-green-700">Todas las declaraciones juradas están al día. No hay períodos pendientes para cargar.</p>
+          </div>
+        );
+      case "PENDING_STATEMENTS":
+        return (
+          <div className="rounded-lg border bg-blue-50 p-4 flex items-center gap-3">
+            <Info className="h-6 w-6 text-blue-600" />
+            <p className="text-blue-700">Hay declaraciones juradas pendientes. Por favor, seleccione un período para cargar.</p>
+          </div>
+        );
+    }
   };
 
   return (
@@ -28,28 +73,38 @@ export default function ImportacionEmpleadosModule({
           </h2>
         </div>
 
-        <div className="rounded-lg border text-card-foreground shadow-2xl">
-          <div className="flex items-center gap-4 p-6">
-            <div className="rounded-full bg-yellow-100 p-2">
-              <Info className="h-6 w-6 text-yellow-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-xl">Seleccione un mes</h3>
-              <p className="text-lg">
-                Para cargar una declaración jurada, primero debe{" "}
-                <b className="text-yellow-600"> seleccionar el mes</b>{" "}
-                correspondiente.
-              </p>
+        {renderStatusMessage()}
+
+        {(statementsData.status === "NO_STATEMENTS" || statementsData.status === "PENDING_STATEMENTS") && (
+          <div className="rounded-lg border text-card-foreground shadow-2xl">
+            <div className="flex items-center gap-4 p-6">
+              <div className="rounded-full bg-yellow-100 p-2">
+                <Info className="h-6 w-6 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-xl">Seleccione un mes</h3>
+                <p className="text-lg">
+                  Para cargar una declaración jurada, primero debe{" "}
+                  <b className="text-yellow-600"> seleccionar el mes</b>{" "}
+                  correspondiente.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        <MonthSelect
-          lastDeclaration={lastDeclaration}
-          onMonthSelect={handleMonthSelect}
-        />
+        {(statementsData.status === "NO_STATEMENTS" || statementsData.status === "PENDING_STATEMENTS") && (
+          <MonthSelect
+            statementsData={statementsData}
+            onMonthSelect={handleMonthSelect}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+          />
+        )}
 
-        {selectedMonth && <InputFile month={selectedMonth} year={selectedYear} />}
+        {selectedMonth && selectedYear && (
+          <InputFile month={selectedMonth} year={selectedYear} />
+        )}
         <ChargeAlert />
       </div>
     </div>
