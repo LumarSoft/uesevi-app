@@ -21,9 +21,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import ExcelPreview from "./ExcelPreview";
 
-export const InputFile: React.FC<{ selectedMonth: number | null }> = ({
-  selectedMonth,
-}) => {
+export const InputFile = ({ month, year }: { month: number | null, year: number | null }) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -34,6 +32,11 @@ export const InputFile: React.FC<{ selectedMonth: number | null }> = ({
   const [showPreview, setShowPreview] = useState(false);
   // Función para enviar datos a la API y retornar el estado
   const sendJson = async (data: any[]): Promise<boolean> => {
+    if (month === null || year === null) {
+      toast.error("Por favor seleccione un mes y un año");
+      return false;
+    }
+
     const formData = new FormData();
 
     data.forEach((item, index) => {
@@ -43,11 +46,8 @@ export const InputFile: React.FC<{ selectedMonth: number | null }> = ({
     });
 
     formData.append("companyId", user.empresa.id);
-
-    // Agregar el mes seleccionado al formData
-    if (selectedMonth !== null) {
-      formData.append("selectedMonth", selectedMonth.toString());
-    }
+    formData.append("month", month.toString());
+    formData.append("year", year.toString());
 
     try {
       const result = await postData("employees/import", formData);
