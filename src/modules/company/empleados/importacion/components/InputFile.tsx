@@ -20,7 +20,7 @@ import { Upload, X, FileSpreadsheet, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
-export const InputFile: React.FC = () => {
+export const InputFile = ({ month, year }: { month: number | null, year: number | null }) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -30,6 +30,11 @@ export const InputFile: React.FC = () => {
 
   // Función para enviar datos a la API y retornar el estado
   const sendJson = async (data: any[]): Promise<boolean> => {
+    if (month === null || year === null) {
+      toast.error("Por favor seleccione un mes y un año");
+      return false;
+    }
+
     const formData = new FormData();
 
     data.forEach((item, index) => {
@@ -39,6 +44,8 @@ export const InputFile: React.FC = () => {
     });
 
     formData.append("companyId", user.empresa.id);
+    formData.append("month", month.toString());
+    formData.append("year", year.toString());
 
     try {
       const result = await postData("employees/import", formData);
