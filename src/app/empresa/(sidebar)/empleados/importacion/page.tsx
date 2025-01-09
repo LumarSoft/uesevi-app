@@ -21,7 +21,7 @@ export default function ImportacionEmpleadosPage() {
     };
 
     if (idCompany) {
-      fetchLastDeclarations();
+      fetchLastDeclaration();
     }
   }, [idCompany]);
 
