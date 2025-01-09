@@ -1,114 +1,68 @@
-import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 import { ChargeAlert } from "./components/ChargeAlert";
 import { InputFile } from "./components/InputFile";
 import { useState, useEffect } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Info } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Info, AlertCircle, CheckCircle2 } from "lucide-react";
+import MonthSelect from "./components/MonthSelect";
 
-// Función para obtener todos los meses faltantes entre declaraciones
-function getMissingDeclarationMonths(declarations: IDeclaracion[]): { year: number; month: number }[] {
-  if (!declarations || declarations.length === 0) return [];
-
-  const missingMonths: { year: number; month: number }[] = [];
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth() + 1;
-  const currentYear = currentDate.getFullYear();
-
-  // Ordenar declaraciones por año y mes
-  const sortedDeclarations = [...declarations].sort((a, b) => {
-    if (a.year !== b.year) return a.year - b.year;
-    return a.mes - b.mes;
-  });
-
-  // Encontrar los huecos entre declaraciones
-  for (let i = 0; i < sortedDeclarations.length - 1; i++) {
-    const currentDecl = sortedDeclarations[i];
-    const nextDecl = sortedDeclarations[i + 1];
-
-    let year = currentDecl.year;
-    let month = currentDecl.mes + 1;
-
-    while (!(year === nextDecl.year && month === nextDecl.mes)) {
-      if (month > 12) {
-        month = 1;
-        year++;
-      }
-      
-      // Solo agregar si no es el mes actual
-      if (!(month === currentMonth && year === currentYear)) {
-        missingMonths.push({ year, month });
-      }
-      
-      month++;
-    }
-  }
-
-  // Verificar meses faltantes después de la última declaración
-  const lastDecl = sortedDeclarations[sortedDeclarations.length - 1];
-  let year = lastDecl.year;
-  let month = lastDecl.mes + 1;
-
-  while (!(month === currentMonth && year === currentYear)) {
-    if (month > 12) {
-      month = 1;
-      year++;
-    }
-
-    missingMonths.push({ year, month });
-    month++;
-  }
-
-  return missingMonths;
+export interface IMissingStatements {
+  mes: number;
+  year: number;
 }
 
-// Función para convertir número de mes a nombre de mes
-const getMonthName = (monthNumber: number): string => {
-  const monthNames = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ];
-  return monthNames[monthNumber - 1];
-};
+export interface IStatementResponse {
+  status: "NO_STATEMENTS" | "UP_TO_DATE" | "PENDING_STATEMENTS";
+  message: string;
+  data: IMissingStatements[];
+}
+
 
 export default function ImportacionEmpleadosModule({
-  lastDeclarations,
+  statementsData,
 }: {
-  lastDeclarations: IDeclaracion[] | null;
+  statementsData: IStatementResponse | null;
 }) {
-  // Estados
-  const [missingMonths, setMissingMonths] = useState<{ year: number; month: number }[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
+  // Resetear selección cuando cambian los datos
   useEffect(() => {
-    if (lastDeclarations && lastDeclarations.length > 0) {
-      const pending = getMissingDeclarationMonths(lastDeclarations);
-      setMissingMonths(pending);
+    setSelectedMonth(null);
+    setSelectedYear(null);
+  }, [statementsData?.status]);
 
-      // Establecer valores por defecto para selección
-      if (pending.length > 0) {
-        setSelectedMonth(pending[0].month);
-        setSelectedYear(pending[0].year);
-      }
+  const handleMonthSelect = (month: number, year: number) => {
+    setSelectedMonth(month);
+    setSelectedYear(year);
+  };
+
+
+  if (!statementsData) return null;
+
+  const renderStatusMessage = () => {
+    switch (statementsData.status) {
+      case "NO_STATEMENTS":
+        return (
+          <div className="rounded-lg border bg-yellow-50 p-4 flex items-center gap-3">
+            <AlertCircle className="h-6 w-6 text-yellow-600" />
+            <p className="text-yellow-700">No hay declaraciones juradas previas. Por favor, comience cargando el mes anterior.</p>
+          </div>
+        );
+      case "UP_TO_DATE":
+        return (
+          <div className="rounded-lg border bg-green-50 p-4 flex items-center gap-3">
+            <CheckCircle2 className="h-6 w-6 text-green-600" />
+            <p className="text-green-700">Todas las declaraciones juradas están al día. No hay períodos pendientes para cargar.</p>
+          </div>
+        );
+      case "PENDING_STATEMENTS":
+        return (
+          <div className="rounded-lg border bg-blue-50 p-4 flex items-center gap-3">
+            <Info className="h-6 w-6 text-blue-600" />
+            <p className="text-blue-700">Hay declaraciones juradas pendientes. Por favor, seleccione un período para cargar.</p>
+          </div>
+        );
     }
-  }, [lastDeclarations]);
+  };
 
   return (
     <div className="flex h-full flex-col">
@@ -119,57 +73,38 @@ export default function ImportacionEmpleadosModule({
           </h2>
         </div>
 
-        {/* Alerta de meses pendientes */}
-        {missingMonths.length > 0 && (
-          <Alert variant="default">
-            <Info className="h-4 w-4" />
-            <AlertTitle>Declaraciones pendientes</AlertTitle>
-            <AlertDescription>
-              Tienes declaraciones pendientes de carga:{" "}
-              <span className="font-semibold text-yellow-300">
-                {missingMonths.map(m => `${getMonthName(m.month)} ${m.year}`).join(", ")}
-              </span>
-            </AlertDescription>
-          </Alert>
-        )}
+        {renderStatusMessage()}
 
-        {/* Selectores de mes */}
-        {missingMonths.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Seleccionar Mes
-              </label>
-              <Select
-                value={selectedMonth ? `${selectedMonth}-${selectedYear}` : undefined}
-                onValueChange={(value) => {
-                  const [month, year] = value.split('-').map(Number);
-                  setSelectedMonth(month);
-                  setSelectedYear(year);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar mes" />
-                </SelectTrigger>
-                <SelectContent>
-                  {missingMonths.map((m) => (
-                    <SelectItem
-                      key={`${m.year}-${m.month}`}
-                      value={`${m.month}-${m.year}`}
-                    >
-                      {getMonthName(m.month)} ({m.year})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        {(statementsData.status === "NO_STATEMENTS" || statementsData.status === "PENDING_STATEMENTS") && (
+          <div className="rounded-lg border text-card-foreground shadow-2xl">
+            <div className="flex items-center gap-4 p-6">
+              <div className="rounded-full bg-yellow-100 p-2">
+                <Info className="h-6 w-6 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-xl">Seleccione un mes</h3>
+                <p className="text-lg">
+                  Para cargar una declaración jurada, primero debe{" "}
+                  <b className="text-yellow-600"> seleccionar el mes</b>{" "}
+                  correspondiente.
+                </p>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Input para subir archivos */}
-        <InputFile selectedMonth={selectedMonth} />
+        {(statementsData.status === "NO_STATEMENTS" || statementsData.status === "PENDING_STATEMENTS") && (
+          <MonthSelect
+            statementsData={statementsData}
+            onMonthSelect={handleMonthSelect}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+          />
+        )}
 
-        {/* Componente para alertas */}
+        {selectedMonth && selectedYear && (
+          <InputFile month={selectedMonth} year={selectedYear} />
+        )}
         <ChargeAlert />
       </div>
     </div>
