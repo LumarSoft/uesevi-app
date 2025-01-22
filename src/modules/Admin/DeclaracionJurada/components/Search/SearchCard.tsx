@@ -15,6 +15,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 export default function SearchCard({
   companies,
@@ -29,6 +30,7 @@ export default function SearchCard({
   const [idEmployee, setIdEmployee] = useState<number | null>(null);
   const [employees, setEmployees] = useState<IEmpleado[] | []>([]);
   const [salaryEmployee, setSalaryEmployee] = useState([]);
+  const [cuit, setCuit] = useState<string>("");
 
   const fetchEmpleadosByEmpresa = async (company: number) => {
     try {
@@ -64,6 +66,10 @@ export default function SearchCard({
   const handleFilter = () => {
     let filter = filterDeclaraciones(company, statements, salaryEmployee);
 
+    if (cuit.trim() !== "") {
+      filter = filter.filter((item) => item.cuit_empresa?.includes(cuit));
+    }
+
     const filteredStatements = filter.filter((item): item is IDeclaracion => {
       return (item as IDeclaracion).subtotal !== undefined;
     });
@@ -83,6 +89,7 @@ export default function SearchCard({
     setCompany(null);
     setIdEmployee(null);
     setEmployees([]);
+    setCuit("");
     // Filtrar el estado inicial para solo IDeclaracion
     const filteredStatements = statements.filter(
       (item): item is IDeclaracion => {
@@ -102,19 +109,27 @@ export default function SearchCard({
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="flex-1 flex gap-4">
-          <ComboboxCompanies
-            companies={companies}
-            companyProp={company}
-            setCompany={setCompany}
+        <CardContent className="flex-1 flex flex-col gap-4">
+          {/* Input para CUIT */}
+          <Input
+            type="text"
+            value={cuit}
+            onChange={(e) => setCuit(e.target.value)}
+            placeholder="Buscar por CUIT"
           />
-          <ComboboxEmployee
-            employees={employees}
-            setEmployee={setIdEmployee}
-            idEmployee={idEmployee}
-          />
+          <div className="flex gap-4">
+            <ComboboxCompanies
+              companies={companies}
+              companyProp={company}
+              setCompany={setCompany}
+            />
+            <ComboboxEmployee
+              employees={employees}
+              setEmployee={setIdEmployee}
+              idEmployee={idEmployee}
+            />
+          </div>
         </CardContent>
-
         <CardFooter className="flex items-center justify-between gap-4">
           <Button
             variant="destructive"
