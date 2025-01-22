@@ -14,12 +14,14 @@ import Link from "next/link";
 
 const CardNoticias = ({ noticia }: { noticia: INoticias }) => {
   return (
-    <Card className="flex flex-col h-full bg-white shadow-md">
-      <CardHeader>
-        <CardTitle className="text-xl line-clamp-2">{noticia.titulo}</CardTitle>
+    <Card className="flex flex-col h-full bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-2xl font-bold text-center text-primary leading-tight tracking-tight hover:text-primary/90 transition-colors bg-blue-100 rounded-md">
+          {noticia.titulo}
+        </CardTitle>
       </CardHeader>
-      <CardContent className="flex-grow flex flex-col">
-        <div className="relative h-48 mb-4">
+      <CardContent className="flex-grow flex flex-col space-y-4 px-4">
+        <div className="relative aspect-video w-full overflow-hidden rounded-lg">
           <Image
             src={
               noticia.portada
@@ -28,17 +30,23 @@ const CardNoticias = ({ noticia }: { noticia: INoticias }) => {
             }
             alt={noticia.titulo}
             fill
-            className="rounded-lg object-cover"
+            className="object-cover transform hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority
             onError={(e) => {
               e.currentTarget.src = "/logo_uesevi.png";
             }}
           />
         </div>
-        <p className="text-sm flex-grow line-clamp-4">{noticia.cuerpo}</p>
+        <p className="text-sm text-gray-600 flex-grow line-clamp-4 leading-relaxed">
+          {noticia.cuerpo}
+        </p>
       </CardContent>
-      <CardFooter>
-        <Button variant="link" className="w-full">
-          <Link href={`/noticias/${noticia.id}`}>Leer mas</Link>
+      <CardFooter className="pt-2">
+        <Button variant="default" className="w-full rounded-lg font-semibold ">
+          <Link href={`/noticias/${noticia.id}`} className="w-full text-center">
+            Leer más
+          </Link>
         </Button>
       </CardFooter>
     </Card>

@@ -48,7 +48,7 @@ const LatestNews = ({ noticias }: { noticias: INoticias[] }) => {
             Ultimas noticias
           </h2>
           <FramerComponent
-            style="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8"
+            style="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 "
             animationVariants={container}
             animationInitial="hidden"
             animationWhileInView="show"
