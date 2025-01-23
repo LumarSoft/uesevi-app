@@ -99,8 +99,20 @@ export default function Footer() {
           </div>
         </div>
         <Separator className="my-8 bg-gray-700" />
-        <div className="text-center text-sm text-gray-400">
-          © {new Date().getFullYear()} UESEVI. Todos los derechos reservados.
+        <div className="text-center space-y-2">
+          <div className="text-sm text-gray-400">
+            © {new Date().getFullYear()} UESEVI. Todos los derechos reservados.
+          </div>
+          <p className="text-sm text-gray-500 font-semibold">
+            Powered by{" "}
+            <a
+              href="https://lumarsoft.com/es"
+              target="_blank"
+              className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 hover:underline"
+            >
+              LumarSoft
+            </a>
+          </p>
         </div>
       </div>
     </footer>
