@@ -14,6 +14,7 @@ import {
   BookCopy,
   MessageSquare,
   Calculator,
+  AlertTriangle,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 
@@ -129,5 +130,11 @@ export const NavItemsAdmin: NavItem[] = [
     icon: Calculator,
     href: "/admin/calculadora",
     color: "text-pink-500",
+  },
+  {
+    title: "Empresas deudoras",
+    icon: AlertTriangle,
+    href: "/admin/deudoras",
+    color: "text-amber-500",
   },
 ];
