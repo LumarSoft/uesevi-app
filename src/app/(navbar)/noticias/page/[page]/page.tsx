@@ -18,7 +18,6 @@ export default function NoticiasPage({
 async function AsyncNewsContent({ page }: { page: number }) {
   async function loadNews() {
     const newsResponse = await fetchData(`news/client/${page}`);
-    console.log(page);
 
     if (!newsResponse.ok || newsResponse.error) {
       console.error("Error al obtener las noticias:", newsResponse.error);
@@ -28,7 +27,6 @@ async function AsyncNewsContent({ page }: { page: number }) {
     // Simulación de retraso
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    console.log(newsResponse.data);
 
     return newsResponse.data;
   }
