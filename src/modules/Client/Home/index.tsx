@@ -14,7 +14,7 @@ const HomeModule = ({ noticias }: { noticias: INoticias[] }) => {
       <Coverage />
       <FormPreview />
       <ScalesPreview />
-      <LatestNews noticias={noticias} />
+      {noticias.length > 0 && <LatestNews noticias={noticias} />}
     </div>
   );
 };
