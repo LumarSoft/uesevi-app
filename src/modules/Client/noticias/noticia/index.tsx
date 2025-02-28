@@ -6,6 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import { File } from "lucide-react";
 
 export default function NoticiaModule({ newData }: { newData: INoticias }) {
   console.log(newData);
@@ -30,9 +31,14 @@ export default function NoticiaModule({ newData }: { newData: INoticias }) {
               </span>
             )}
             {newData.archivo && (
-              <Badge variant="outline" className="mb-2">
-                Archived
-              </Badge>
+              <a
+                className="flex gap-2 border w-fit px-4 py-2 rounded-full mt-5"
+                href={`${BASE_API_URL}/uploads/${newData.archivo}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Archivo <File />
+              </a>
             )}
             <h2 className="text-2xl font-semibold">{newData.titulo}</h2>
             <p className="mt-2 text-sm text-muted-foreground">
