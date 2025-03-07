@@ -24,16 +24,21 @@ export function Total({
   const fechaPago = statement.fecha_pago;
   let totalIntereses = 0;
   const employeeData = statement.empleados;
+  console.log(employeeData);
 
   let totalFaz = basicSalary * FAS_PERCENTAGE * employeeData.length;
 
-  let { totalAporteSolidario, totalSindicato } = employeeData.reduce(
+  let { totalAporteSolidario, totalSindicato, totalNoRemunerativo } = employeeData.reduce(
     (acc, employee) => {
-      const totalEmployee = Number(employee.monto) + Number(employee.adicional);
+      const montoEmpleado = Number(employee.monto);
+      const adicionalEmpleado = Number(employee.adicional);
+      const sumaNoRemunerativa = Number(employee.suma_no_remunerativa || 0);
+      
+      const totalEmployee = montoEmpleado + adicionalEmpleado;
 
       const aporteSolidario =
         employee.afiliado === "No"
-          ? Number(employee.monto) * APORTE_SOLIDARIO_PERCENTAGE
+          ? montoEmpleado * APORTE_SOLIDARIO_PERCENTAGE
           : 0;
 
       const sindicato =
@@ -42,9 +47,10 @@ export function Total({
       return {
         totalAporteSolidario: acc.totalAporteSolidario + aporteSolidario,
         totalSindicato: acc.totalSindicato + sindicato,
+        totalNoRemunerativo: acc.totalNoRemunerativo + sumaNoRemunerativa
       };
     },
-    { totalAporteSolidario: 0, totalSindicato: 0 }
+    { totalAporteSolidario: 0, totalSindicato: 0, totalNoRemunerativo: 0 }
   );
 
   const vencimiento = new Date(statement.vencimiento);
@@ -62,25 +68,26 @@ export function Total({
     );
   }
 
-  // Calcular el total sin ajuste
-  const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
+  // Calcular el total sin ajuste, incluyendo suma_no_remunerativa
+  const grandTotal = totalFaz + totalAporteSolidario + totalSindicato + totalNoRemunerativo;
 
   // Calcular el ajuste automático
   const importeDeclaracion = Number(statement.subtotal);
-  const ajuste = importeDeclaracion - grandTotal;
+  const ajuste = importeDeclaracion - (totalFaz + totalAporteSolidario + totalSindicato); // No incluir totalNoRemunerativo en el cálculo del ajuste
 
   // Crear un array de contribuciones para distribuir el ajuste
+  const totalSinAjusteYNoRemunerativo = totalFaz + totalAporteSolidario + totalSindicato;
   const contribuciones = [
-    { nombre: "FAS", valor: totalFaz, porcentaje: totalFaz / grandTotal },
+    { nombre: "FAS", valor: totalFaz, porcentaje: totalFaz / totalSinAjusteYNoRemunerativo },
     {
       nombre: "Aporte Solidario",
       valor: totalAporteSolidario,
-      porcentaje: totalAporteSolidario / grandTotal,
+      porcentaje: totalAporteSolidario / totalSinAjusteYNoRemunerativo,
     },
     {
       nombre: "Sindicato",
       valor: totalSindicato,
-      porcentaje: totalSindicato / grandTotal,
+      porcentaje: totalSindicato / totalSinAjusteYNoRemunerativo,
     },
   ];
 
@@ -98,8 +105,9 @@ export function Total({
   const totalAporteSolidarioAjustado = contribucionesAjustadas[1].valorAjustado;
   const totalSindicatoAjustado = contribucionesAjustadas[2].valorAjustado;
 
+  // Agregar el totalNoRemunerativo al grand total ajustado
   const grandTotalAjustado =
-    totalFazAjustado + totalAporteSolidarioAjustado + totalSindicatoAjustado;
+    totalFazAjustado + totalAporteSolidarioAjustado + totalSindicatoAjustado + totalNoRemunerativo;
 
   // Calcular intereses solo si la declaración está vencida
   if (diffDays > 0) {
@@ -114,7 +122,7 @@ export function Total({
         <CardTitle className="text-2xl font-bold">Resumen</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid 2xl:grid-cols-6 grid-cols-3 gap-4">
+        <div className="grid 2xl:grid-cols-7 grid-cols-3 gap-4">
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">FAS</h3>
             <p className="text-2xl font-bold">
@@ -135,6 +143,14 @@ export function Total({
             </h3>
             <p className="text-2xl font-bold">
               {formatCurrency(totalSindicatoAjustado)}
+            </p>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              No Remunerativo
+            </h3>
+            <p className="text-2xl font-bold">
+              {formatCurrency(totalNoRemunerativo)}
             </p>
           </div>
           <div className="space-y-2">
