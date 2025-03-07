@@ -96,7 +96,9 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
       return (
         <React.Fragment>
           {formatCurrency(
-            Number(row.original.monto) + Number(row.original.adicional)
+            Number(row.original.monto) +
+              Number(row.original.adicional) +
+              Number(row.original.suma_no_remunerativa)
           )}
         </React.Fragment>
       );

@@ -28,30 +28,31 @@ export function Total({
 
   let totalFaz = basicSalary * FAS_PERCENTAGE * employeeData.length;
 
-  let { totalAporteSolidario, totalSindicato, totalNoRemunerativo } = employeeData.reduce(
-    (acc, employee) => {
-      const montoEmpleado = Number(employee.monto);
-      const adicionalEmpleado = Number(employee.adicional);
-      const sumaNoRemunerativa = Number(employee.suma_no_remunerativa || 0);
-      
-      const totalEmployee = montoEmpleado + adicionalEmpleado;
+  let { totalAporteSolidario, totalSindicato, totalNoRemunerativo } =
+    employeeData.reduce(
+      (acc, employee) => {
+        const montoEmpleado = Number(employee.monto);
+        const adicionalEmpleado = Number(employee.adicional);
+        const sumaNoRemunerativa = Number(employee.suma_no_remunerativa || 0);
 
-      const aporteSolidario =
-        employee.afiliado === "No"
-          ? montoEmpleado * APORTE_SOLIDARIO_PERCENTAGE
-          : 0;
+        const totalEmployee = montoEmpleado + adicionalEmpleado;
 
-      const sindicato =
-        employee.afiliado === "Sí" ? totalEmployee * SINDICATO_PERCENTAGE : 0;
+        const aporteSolidario =
+          employee.afiliado === "No"
+            ? montoEmpleado * APORTE_SOLIDARIO_PERCENTAGE
+            : 0;
 
-      return {
-        totalAporteSolidario: acc.totalAporteSolidario + aporteSolidario,
-        totalSindicato: acc.totalSindicato + sindicato,
-        totalNoRemunerativo: acc.totalNoRemunerativo + sumaNoRemunerativa
-      };
-    },
-    { totalAporteSolidario: 0, totalSindicato: 0, totalNoRemunerativo: 0 }
-  );
+        const sindicato =
+          employee.afiliado === "Sí" ? totalEmployee * SINDICATO_PERCENTAGE : 0;
+
+        return {
+          totalAporteSolidario: acc.totalAporteSolidario + aporteSolidario,
+          totalSindicato: acc.totalSindicato + sindicato,
+          totalNoRemunerativo: acc.totalNoRemunerativo + sumaNoRemunerativa,
+        };
+      },
+      { totalAporteSolidario: 0, totalSindicato: 0, totalNoRemunerativo: 0 }
+    );
 
   const vencimiento = new Date(statement.vencimiento);
   let diffDays;
@@ -69,16 +70,23 @@ export function Total({
   }
 
   // Calcular el total sin ajuste, incluyendo suma_no_remunerativa
-  const grandTotal = totalFaz + totalAporteSolidario + totalSindicato + totalNoRemunerativo;
+  const grandTotal =
+    totalFaz + totalAporteSolidario + totalSindicato + totalNoRemunerativo;
 
   // Calcular el ajuste automático
   const importeDeclaracion = Number(statement.subtotal);
-  const ajuste = importeDeclaracion - (totalFaz + totalAporteSolidario + totalSindicato); // No incluir totalNoRemunerativo en el cálculo del ajuste
+  const ajuste =
+    importeDeclaracion - (totalFaz + totalAporteSolidario + totalSindicato); // No incluir totalNoRemunerativo en el cálculo del ajuste
 
   // Crear un array de contribuciones para distribuir el ajuste
-  const totalSinAjusteYNoRemunerativo = totalFaz + totalAporteSolidario + totalSindicato;
+  const totalSinAjusteYNoRemunerativo =
+    totalFaz + totalAporteSolidario + totalSindicato;
   const contribuciones = [
-    { nombre: "FAS", valor: totalFaz, porcentaje: totalFaz / totalSinAjusteYNoRemunerativo },
+    {
+      nombre: "FAS",
+      valor: totalFaz,
+      porcentaje: totalFaz / totalSinAjusteYNoRemunerativo,
+    },
     {
       nombre: "Aporte Solidario",
       valor: totalAporteSolidario,
@@ -107,7 +115,7 @@ export function Total({
 
   // Agregar el totalNoRemunerativo al grand total ajustado
   const grandTotalAjustado =
-    totalFazAjustado + totalAporteSolidarioAjustado + totalSindicatoAjustado + totalNoRemunerativo;
+    totalFazAjustado + totalAporteSolidarioAjustado + totalSindicatoAjustado;
 
   // Calcular intereses solo si la declaración está vencida
   if (diffDays > 0) {
@@ -143,14 +151,6 @@ export function Total({
             </h3>
             <p className="text-2xl font-bold">
               {formatCurrency(totalSindicatoAjustado)}
-            </p>
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              No Remunerativo
-            </h3>
-            <p className="text-2xl font-bold">
-              {formatCurrency(totalNoRemunerativo)}
             </p>
           </div>
           <div className="space-y-2">
