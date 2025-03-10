@@ -35,11 +35,11 @@ export function Total({
         const adicionalEmpleado = Number(employee.adicional);
         const sumaNoRemunerativa = Number(employee.suma_no_remunerativa || 0);
 
-        const totalEmployee = montoEmpleado + adicionalEmpleado;
+        const totalEmployee = montoEmpleado + adicionalEmpleado + sumaNoRemunerativa;
 
         const aporteSolidario =
           employee.afiliado === "No"
-            ? montoEmpleado * APORTE_SOLIDARIO_PERCENTAGE
+            ? (montoEmpleado + sumaNoRemunerativa) * APORTE_SOLIDARIO_PERCENTAGE
             : 0;
 
         const sindicato =
