@@ -3,6 +3,7 @@ import { InputFile } from "./components/InputFile";
 import { useState, useEffect, useRef } from "react";
 import { Info, AlertCircle, CheckCircle2 } from "lucide-react";
 import MonthSelect from "./components/MonthSelect";
+import UpdatedExcelDialog from "./components/UpdateExcelDialog";
 
 export interface IMissingStatements {
   mes: number;
@@ -48,7 +49,7 @@ export default function ImportacionEmpleadosModule({
       prevStatusRef.current = currentStatus;
     }
   }, [statementsData?.status]);
-  
+
   const handleMonthSelect = (month: number, year: number) => {
     if (typeof month === "number" && typeof year === "number") {
       setSelectedMonth(() => month);
@@ -95,15 +96,20 @@ export default function ImportacionEmpleadosModule({
         );
     }
   };
-  console.log(selectedMonth, selectedYear);
+
   return (
     <div className="flex h-full flex-col">
+      {/* Modal dialog that shows on first visit */}
+      <UpdatedExcelDialog />
+
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
             Cargar declaración jurada
           </h2>
         </div>
+
+        {/* Always show the alert at the top */}
 
         {renderStatusMessage()}
 
