@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getCookie, setCookie } from "cookies-next";
+import { getCookie } from "cookies-next";
 import { jwtVerify, SignJWT, type JWTPayload } from "jose";
 
 const JWT_SECRET = process.env.JWT_SECRET || "defaultsecret";
@@ -10,6 +10,13 @@ if (!JWT_SECRET || JWT_SECRET.length === 0) {
 }
 
 export async function middleware(req: NextRequest) {
+  const hostname = req.headers.get('host');
+  if (hostname?.startsWith('www.')) {
+    const newUrl = new URL(req.url);
+    newUrl.host = hostname.replace(/^www\./, '');
+    return NextResponse.redirect(newUrl, 301);
+  }
+  
   const pathname = req.nextUrl.pathname;
   const token = getCookie("auth-token", { req });
 
@@ -134,7 +141,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/empresa/:path*", "/loginempresa"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)", "/admin/:path*", "/empresa/:path*", "/loginempresa"],
 };
 
 async function generateNewToken(payload: JWTPayload): Promise<string> {
