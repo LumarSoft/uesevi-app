@@ -11,7 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { fetchData } from "@/services/mysql/functions";
 import { DebtorCompany } from "@/shared/types/DebtorCompany";
-import { SearchX } from "lucide-react"; // Importamos el ícono
+import { SearchX, ArrowUpDown } from "lucide-react"; // Added ArrowUpDown icon
+import { Button } from "@/components/ui/button"; // Added Button import
 
 export default function DeudorasSection() {
   const [debtorCompanies, setDebtorCompanies] = useState<DebtorCompany[]>([]);
@@ -19,12 +20,36 @@ export default function DeudorasSection() {
     []
   );
   const [nameFilter, setNameFilter] = useState("");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc"); // Added sort direction state
 
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat("es-AR", {
       style: "currency",
       currency: "ARS",
     }).format(amount);
+  };
+
+  // Function to sort companies
+  const sortCompanies = (
+    companies: DebtorCompany[],
+    direction: "asc" | "desc"
+  ) => {
+    return [...companies].sort((a, b) => {
+      // Eliminar espacios en blanco al principio y final antes de comparar
+      const nameA = a.nombre.trim();
+      const nameB = b.nombre.trim();
+      const comparison = nameA.localeCompare(nameB, "es", {
+        sensitivity: "base",
+      });
+      return direction === "asc" ? comparison : -comparison;
+    });
+  };
+
+  // Toggle sort direction
+  const toggleSort = () => {
+    const newDirection = sortDirection === "asc" ? "desc" : "asc";
+    setSortDirection(newDirection);
+    setFilteredCompanies(sortCompanies(filteredCompanies, newDirection));
   };
 
   useEffect(() => {
@@ -38,8 +63,10 @@ export default function DeudorasSection() {
         }
 
         if (Array.isArray(result.data)) {
-          setDebtorCompanies(result.data);
-          setFilteredCompanies(result.data);
+          // Sort companies when they are first loaded
+          const sortedCompanies = sortCompanies(result.data, sortDirection);
+          setDebtorCompanies(sortedCompanies);
+          setFilteredCompanies(sortedCompanies);
         } else {
           console.error("Expected an array but got:", result.data);
           setDebtorCompanies([]);
@@ -55,14 +82,16 @@ export default function DeudorasSection() {
 
   useEffect(() => {
     if (nameFilter === "") {
-      setFilteredCompanies(debtorCompanies);
+      // Apply sorting when filter is cleared
+      setFilteredCompanies(sortCompanies(debtorCompanies, sortDirection));
     } else {
       const filtered = debtorCompanies.filter((company) =>
         company.nombre.toLowerCase().includes(nameFilter.toLowerCase())
       );
-      setFilteredCompanies(filtered);
+      // Apply sorting to filtered results
+      setFilteredCompanies(sortCompanies(filtered, sortDirection));
     }
-  }, [nameFilter, debtorCompanies]);
+  }, [nameFilter, debtorCompanies, sortDirection]);
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNameFilter(event.target.value);
@@ -75,19 +104,36 @@ export default function DeudorasSection() {
       </CardHeader>
 
       <CardContent>
-        <div className="flex items-center py-4">
+        <div className="flex items-center justify-between py-4">
           <Input
             placeholder="Filtrar por nombre"
             value={nameFilter}
             onChange={handleFilterChange}
             className="max-w-sm"
           />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleSort}
+            className="ml-auto flex items-center gap-1"
+          >
+            Ordenar {sortDirection === "asc" ? "A-Z" : "Z-A"}
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
         </div>
 
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-bold">Nombre</TableHead>
+              <TableHead className="font-bold">
+                <div
+                  className="flex items-center cursor-pointer"
+                  onClick={toggleSort}
+                >
+                  Nombre
+                  <ArrowUpDown className="ml-2 h-4 w-4" />
+                </div>
+              </TableHead>
               <TableHead className="font-bold">CUIT</TableHead>
               <TableHead className="font-bold">Deuda Total</TableHead>
             </TableRow>
