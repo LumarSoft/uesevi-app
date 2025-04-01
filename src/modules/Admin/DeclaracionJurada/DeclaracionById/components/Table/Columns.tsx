@@ -91,7 +91,10 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
       return (
         <React.Fragment>
           {formatCurrency(
-            Number(row.original.monto) + Number(row.original.adicional) + Number(row.original.suma_no_remunerativa)
+            Number(row.original.monto) +
+              Number(row.original.adicional) +
+              Number(row.original.suma_no_remunerativa) +
+              Number(row.original.remunerativo_adicional)
           )}
         </React.Fragment>
       );
@@ -110,7 +113,12 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
     cell: ({ row }) => {
       // 2% del sueldo básico solo para no afiliados
       const aporteSolidario =
-        row.original.afiliado === "No" ? (Number(row.original.monto) + Number(row.original.suma_no_remunerativa)) * 0.02 : 0;
+        row.original.afiliado === "No"
+          ? (Number(row.original.monto) +
+              Number(row.original.suma_no_remunerativa) +
+              Number(row.original.remunerativo_adicional)) *
+            0.02
+          : 0;
       return <React.Fragment>{formatCurrency(aporteSolidario)}</React.Fragment>;
     },
   },
@@ -120,7 +128,11 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
       // 3% del (sueldo básico + adicionales) solo para afiliados
       const sindicato =
         row.original.afiliado === "Sí"
-          ? (Number(row.original.monto) + Number(row.original.adicional) + Number(row.original.suma_no_remunerativa)) * 0.03
+          ? (Number(row.original.monto) +
+              Number(row.original.adicional) +
+              Number(row.original.suma_no_remunerativa) +
+              Number(row.original.remunerativo_adicional)) *
+            0.03
           : 0;
       return <React.Fragment>{formatCurrency(sindicato)}</React.Fragment>;
     },
@@ -133,12 +145,21 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
 
       // 2% del sueldo básico solo para no afiliados
       const aporteSolidario =
-        row.original.afiliado === "No" ? (Number(row.original.monto) + Number(row.original.suma_no_remunerativa)) * 0.02 : 0;
+        row.original.afiliado === "No"
+          ? (Number(row.original.monto) +
+              Number(row.original.suma_no_remunerativa) +
+              Number(row.original.remunerativo_adicional)) *
+            0.02
+          : 0;
 
       // 3% del (sueldo básico + adicionales) solo para afiliados
       const sindicato =
         row.original.afiliado === "Sí"
-          ? (Number(row.original.monto) + Number(row.original.adicional) + Number(row.original.suma_no_remunerativa)) * 0.03
+          ? (Number(row.original.monto) +
+              Number(row.original.adicional) +
+              Number(row.original.suma_no_remunerativa) +
+              Number(row.original.remunerativo_adicional)) *
+            0.03
           : 0;
 
       const total = fas + aporteSolidario + sindicato;

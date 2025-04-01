@@ -26,15 +26,21 @@ export function Total({
   const employeeData = statement.empleados;
 
   let totalFaz = basicSalary * FAS_PERCENTAGE * employeeData.length;
-  
 
   let { totalAporteSolidario, totalSindicato } = employeeData.reduce(
     (acc, employee) => {
-      const totalEmployee = Number(employee.monto) + Number(employee.adicional) + Number(employee.suma_no_remunerativa);
+      const totalEmployee =
+        Number(employee.monto) +
+        Number(employee.adicional) +
+        Number(employee.suma_no_remunerativa) +
+        Number(employee.remunerativo_adicional);
 
       const aporteSolidario =
         employee.afiliado === "No"
-          ? (Number(employee.monto) + Number(employee.suma_no_remunerativa))* APORTE_SOLIDARIO_PERCENTAGE
+          ? (Number(employee.monto) +
+              Number(employee.suma_no_remunerativa) +
+              Number(employee.remunerativo_adicional)) *
+            APORTE_SOLIDARIO_PERCENTAGE
           : 0;
 
       const sindicato =
