@@ -87,6 +87,13 @@ export const InputFile = ({
           .replace(/[^\w_]/g, ""); // Eliminar caracteres no alfanuméricos excepto "_"
         newRow[newKey] = row[key];
       });
+      
+      requiredColumns.forEach((col) => {
+        if (col === "adicionales" && (newRow[col] === undefined || newRow[col] === "")) {
+          newRow[col] = 0;
+        }
+      });
+      
       return newRow;
     });
   };
@@ -100,7 +107,7 @@ export const InputFile = ({
     "categora",
     "sueldo_bsico",
     "adicionales",
-    "remunerativo_adicional",
+    "ad_remunerativo",
   ];
 
   // Definimos las categorías permitidas
@@ -205,19 +212,18 @@ export const InputFile = ({
             );
           }
 
-          // Validar que remunerativo_adicional sea un número y mayor a cero
           if (
-            row.remunerativo_adicional &&
-            isNaN(Number(row.remunerativo_adicional))
+            row.ad_remunerativo &&
+            isNaN(Number(row.ad_remunerativo))
           ) {
             errors.push(
-              `Fila ${rowNumber}: El remunerativo adicional debe ser un número`
+              `Fila ${rowNumber}: El adicional remunerativo debe ser un número`
             );
           } else if (
-            Number(row.remunerativo_adicional) <= 0
+            row.ad_remunerativo && Number(row.ad_remunerativo) <= 0
           ) {
             errors.push(
-              `Fila ${rowNumber}: El remunerativo adicional debe ser un número positivo mayor a cero`
+              `Fila ${rowNumber}: El adicional remunerativo debe ser un número positivo mayor a cero`
             );
           }
 
