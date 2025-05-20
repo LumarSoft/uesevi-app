@@ -13,7 +13,6 @@ export const DeclaracionModule = ({
   statement: IInfoDeclaracion;
   rate: any;
 }) => {
-  console.log(statement);
 
   const sueldoBasico = statement.sueldo_basico;
 
