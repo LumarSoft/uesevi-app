@@ -20,15 +20,18 @@ export default function SearchCard({
   companies,
   statements,
   setStatementsState,
+  reloadData,
 }: {
   companies: IEmpresa[];
   statements: IDeclaracion[]; // Cambia aquí
   setStatementsState: React.Dispatch<React.SetStateAction<IDeclaracion[]>>; // Cambia aquí
+  reloadData?: () => Promise<void>; // Nueva prop opcional para recargar datos
 }) {
   const [company, setCompany] = useState<number | null>(null);
   const [idEmployee, setIdEmployee] = useState<number | null>(null);
   const [employees, setEmployees] = useState<IEmpleado[] | []>([]);
   const [salaryEmployee, setSalaryEmployee] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchEmpleadosByEmpresa = async (company: number) => {
     try {
@@ -79,17 +82,32 @@ export default function SearchCard({
     setStatementsState(filteredStatements);
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
+    setIsLoading(true);
     setCompany(null);
     setIdEmployee(null);
     setEmployees([]);
-    // Filtrar el estado inicial para solo IDeclaracion
-    const filteredStatements = statements.filter(
-      (item): item is IDeclaracion => {
-        return (item as IDeclaracion).subtotal !== undefined; // Asegúrate de que `subtotal` está presente
+    sessionStorage.removeItem("searchState");
+    sessionStorage.removeItem("selectedCompany");
+    
+    try {
+      // Si existe la función para recargar datos, la llamamos
+      if (reloadData) {
+        await reloadData();
+      } else {
+        // Si no existe, usamos los datos que ya tenemos
+        const filteredStatements = statements.filter(
+          (item): item is IDeclaracion => {
+            return (item as IDeclaracion).subtotal !== undefined;
+          }
+        );
+        setStatementsState(filteredStatements);
       }
-    );
-    setStatementsState(filteredStatements);
+    } catch (error) {
+      console.error("Error al recargar datos:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -120,10 +138,16 @@ export default function SearchCard({
             variant="destructive"
             className="flex-1"
             onClick={handleClear}
+            disabled={isLoading}
           >
-            Limpiar
+            {isLoading ? "Cargando..." : "Limpiar"}
           </Button>
-          <Button variant="default" className="flex-1" onClick={handleFilter}>
+          <Button 
+            variant="default" 
+            className="flex-1" 
+            onClick={handleFilter}
+            disabled={isLoading}
+          >
             Buscar
           </Button>
         </CardFooter>
