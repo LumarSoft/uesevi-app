@@ -28,7 +28,32 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
   const { user } = userStore();
   const router = useRouter();
 
-  const sendJson = async (data: any[]) => {
+  // Definimos las columnas requeridas
+  const requiredColumns = [
+    "nombre",
+    "apellido",
+    "cuil",
+    "adherido_a_sindicato",
+    "categora",
+    "sueldo_bsico",
+    "adicionales",
+    "ad_remunerativo",
+  ];
+
+  // Definimos las categorías permitidas
+  const categoriasPermitidas = [
+    "Vigilador General",
+    "Vigilador Bombero",
+    "Administrativo",
+    "Vigilador Principal",
+    "Verificador Evento",
+    "Operador de monitoreo",
+    "Guía Técnico",
+    "Instalador de elementos de seguridad electrónica",
+    "Controlador de admisión y permanencia en gral.",
+  ];
+
+  const sendJson = async (data: any[]): Promise<boolean> => {
     const formData = new FormData();
 
     data.forEach((item, index) => {
@@ -44,9 +69,16 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
 
     try {
       const result = await postData("statements/rectifications", formData);
-      console.log(result);
+      if (result.ok) {
+        return true;
+      } else {
+        toast.error(result.message);
+        return false;
+      }
     } catch (error) {
       console.error("Error al enviar el formulario:", error);
+      toast.error("Error al enviar los datos a la API");
+      return false;
     }
   };
 
@@ -69,12 +101,19 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
           .replace(/[^\w_]/g, ""); // Eliminar caracteres no alfanuméricos excepto "_"
         newRow[newKey] = row[key];
       });
+      
+      requiredColumns.forEach((col) => {
+        if (col === "adicionales" && (newRow[col] === undefined || newRow[col] === "")) {
+          newRow[col] = 0;
+        }
+      });
+      
       return newRow;
     });
   };
 
   // Función para procesar y subir el archivo Excel
-  const uploadExcel = async (file: File) => {
+  const uploadExcel = async (file: File): Promise<boolean> => {
     try {
       const data = await new Promise<any[]>((resolve, reject) => {
         const fileReader = new FileReader();
@@ -99,14 +138,135 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
 
       const formattedData = formatKeys(data);
 
-      // Aca se lo enviamos a la funcion para enviar a la api y esperamos a que termine, cuando termine retornamos true
-      await sendJson(formattedData);
+      // Validación de datos
+      if (formattedData.length > 0) {
+        // Validar que todas las columnas requeridas estén presentes
+        const formattedColumns = Object.keys(formattedData[0]);
+        const missingColumns = requiredColumns.filter(
+          (col) => !formattedColumns.includes(col)
+        );
 
-      return true;
+        if (missingColumns.length > 0) {
+          toast.error(
+            `Faltan columnas requeridas en el archivo: ${missingColumns.join(
+              ", "
+            )}`
+          );
+          return false;
+        }
+
+        // Validar tipos de datos y valores
+        const errors: string[] = [];
+
+        formattedData.forEach((row, index) => {
+          // Ajustar el número de fila: índice + 2 (índice empieza en 0 + 1 para empezar en 1 + 1 por la fila de encabezado)
+          const rowNumber = index + 2;
+
+          // Validar CUIL (solo números)
+          if (row.cuil && !/^\d+$/.test(String(row.cuil))) {
+            errors.push(
+              `Fila ${rowNumber}: El CUIL debe contener solo números`
+            );
+          }
+
+          // Validar categoría (debe ser uno de los valores permitidos)
+          if (
+            row.categora &&
+            !categoriasPermitidas.includes(String(row.categora).trim())
+          ) {
+            errors.push(
+              `Fila ${rowNumber}: La categoría "${row.categora}" no es válida. Revise las opciones nuevamente`
+            );
+          }
+
+          // Validar campos numéricos
+          if (row.sueldo_bsico && isNaN(Number(row.sueldo_bsico))) {
+            errors.push(
+              `Fila ${rowNumber}: El sueldo básico debe ser un número`
+            );
+          } else if (row.sueldo_bsico && Number(row.sueldo_bsico) < 0) {
+            errors.push(
+              `Fila ${rowNumber}: El sueldo básico no puede ser negativo`
+            );
+          }
+
+          if (row.adicionales && isNaN(Number(row.adicionales))) {
+            errors.push(
+              `Fila ${rowNumber}: Los adicionales deben ser un número`
+            );
+          } else if (row.adicionales && Number(row.adicionales) < 0) {
+            errors.push(
+              `Fila ${rowNumber}: Los adicionales no pueden ser negativos`
+            );
+          }
+
+          if (
+            row.ad_remunerativo &&
+            isNaN(Number(row.ad_remunerativo))
+          ) {
+            errors.push(
+              `Fila ${rowNumber}: El adicional remunerativo debe ser un número`
+            );
+          } else if (
+            row.ad_remunerativo && Number(row.ad_remunerativo) <= 0
+          ) {
+            errors.push(
+              `Fila ${rowNumber}: El adicional remunerativo debe ser un número positivo mayor a cero`
+            );
+          }
+
+          // Validar que nombre y apellido no estén vacíos
+          if (!row.nombre || String(row.nombre).trim() === "") {
+            errors.push(`Fila ${rowNumber}: El nombre no puede estar vacío`);
+          }
+
+          if (!row.apellido || String(row.apellido).trim() === "") {
+            errors.push(`Fila ${rowNumber}: El apellido no puede estar vacío`);
+          }
+
+          // Validar adherido_a_sindicato (debe ser booleano o convertible a booleano)
+          const sindicatoValue = String(row.adherido_a_sindicato).toLowerCase();
+          if (
+            sindicatoValue !== "true" &&
+            sindicatoValue !== "false" &&
+            sindicatoValue !== "1" &&
+            sindicatoValue !== "0" &&
+            sindicatoValue !== "si" &&
+            sindicatoValue !== "no"
+          ) {
+            errors.push(
+              `Fila ${rowNumber}: Adherido a sindicato debe ser Sí/No, True/False o 1/0`
+            );
+          }
+        });
+
+        // Si hay errores, mostrarlos y detener el proceso
+        if (errors.length > 0) {
+          // Limitar a mostrar máximo 5 errores para no saturar la pantalla
+          const displayErrors = errors.slice(0, 5);
+          const remainingErrors = errors.length - 5;
+
+          let errorMessage = displayErrors.join("\n");
+          if (remainingErrors > 0) {
+            errorMessage += `\n...y ${remainingErrors} errores más.`;
+          }
+
+          toast.error(errorMessage, {
+            autoClose: 10000, // Dar más tiempo para leer los errores
+          });
+          return false;
+        }
+      } else {
+        toast.error("El archivo no contiene datos");
+        return false;
+      }
+
+      // Aquí se lo enviamos a la función para enviar a la API y esperamos a que termine
+      return await sendJson(formattedData); // Retorna el resultado de sendJson
     } catch (error) {
       console.error(error);
       toast.error("Ocurrió un error al subir el archivo");
-      return false;
+      return false; // Retorna false si hay un error
     }
   };
 
@@ -275,7 +435,7 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
         </Button>
         <Button
           onClick={handleUpload}
-          disabled={loading || !file}
+          disabled={loading || !file || isUploading}
           className="min-w-[120px]"
         >
           {loading ? (
@@ -283,6 +443,8 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               Procesando
             </span>
+          ) : isUploading ? (
+            "Subiendo..."
           ) : (
             "Cargar archivo"
           )}
