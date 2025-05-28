@@ -129,6 +129,15 @@ export function LoginEmpresaModule() {
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
               </button>
             </div>
+            <div className="text-right">
+              <Button
+                variant="link"
+                className="p-0 h-auto text-sm text-blue-600 hover:text-blue-800"
+                onClick={() => router.push("/cambiarcontrasenia")}
+              >
+                ¿Olvidaste tu contraseña?
+              </Button>
+            </div>
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={loading}>
