@@ -31,11 +31,16 @@ export const ComboboxCompanies = ({
   const [open, setOpen] = React.useState(false);
 
   useEffect(() => {
+    if (companyProp === null) {
+      sessionStorage.removeItem("selectedCompany");
+      return;
+    }
+    
     const savedCompany = sessionStorage.getItem("selectedCompany");
-    if (savedCompany) {
+    if (savedCompany && !companyProp) {
       setCompany(Number(savedCompany));
     }
-  }, [setCompany]);
+  }, [companyProp, setCompany]);
 
   const handleSelect = (companyId: number | null) => {
     if (companyId !== null) {
