@@ -30,6 +30,16 @@ export default function SearchCard({
   const [employees, setEmployees] = useState<IEmpleado[] | []>([]);
   const [salaryEmployee, setSalaryEmployee] = useState([]);
 
+  useEffect(() => {
+    const savedState = sessionStorage.getItem("searchState");
+    if (savedState) {
+      const { company: savedCompany } = JSON.parse(savedState);
+      if (savedCompany !== null) {
+        setCompany(savedCompany);
+      }
+    }
+  }, []);
+
   const fetchEmpleadosByEmpresa = async (company: number) => {
     try {
       const result = await fetchData(`employees/company/historic/${company}`);
@@ -83,10 +93,11 @@ export default function SearchCard({
     setCompany(null);
     setIdEmployee(null);
     setEmployees([]);
-    // Filtrar el estado inicial para solo IDeclaracion
+    sessionStorage.removeItem("searchState");
+    sessionStorage.removeItem("selectedCompany");
     const filteredStatements = statements.filter(
       (item): item is IDeclaracion => {
-        return (item as IDeclaracion).subtotal !== undefined; // Asegúrate de que `subtotal` está presente
+        return (item as IDeclaracion).subtotal !== undefined;
       }
     );
     setStatementsState(filteredStatements);

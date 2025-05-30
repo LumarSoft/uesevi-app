@@ -23,9 +23,12 @@ export default function DeclaracionesModule({
     const savedState = sessionStorage.getItem("searchState");
     if (savedState) {
       const { filteredStatements } = JSON.parse(savedState);
-      setStatementsState(filteredStatements);
+      const validFilteredStatements = filteredStatements.filter((filtered: IDeclaracion) =>
+        statements.some((original) => original.id === filtered.id)
+      );
+      setStatementsState(validFilteredStatements);
     }
-  }, []);
+  }, [statements]);
 
   const changeState = (updatedItem: IDeclaracion) => {
     const newData = statementsState.map((item) =>
@@ -37,6 +40,21 @@ export default function DeclaracionesModule({
   const deleteStatement = (id: number) => {
     const newData = statementsState.filter((item) => item.id !== id);
     setStatementsState(newData);
+    
+    const savedState = sessionStorage.getItem("searchState");
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      const updatedFilteredStatements = parsedState.filteredStatements.filter(
+        (item: IDeclaracion) => item.id !== id
+      );
+      sessionStorage.setItem(
+        "searchState",
+        JSON.stringify({
+          ...parsedState,
+          filteredStatements: updatedFilteredStatements,
+        })
+      );
+    }
   };
 
   const columns = createColumns(changeState, deleteStatement);
