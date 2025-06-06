@@ -1,32 +1,33 @@
 "use client";
 
 import NoticiaModule from "@/modules/Client/noticias/noticia";
-import { fetchOneRow } from "@/services/mysql/functions";
+import { useNoticia } from "@/shared/hooks/useNoticias";
 import { Loader } from "@/shared/components/Loader/Loader";
-import { INoticias } from "@/shared/types/Querys/INoticias";
-import { useEffect, useState } from "react";
 
 export default function NoticiaPage({
   params: { id },
 }: {
   params: { id: number };
 }) {
-  const [data, setData] = useState<INoticias | null>(null);
+  const { noticia: data, loading, error } = useNoticia(Number(id));
 
-  useEffect(() => {
-    const fetch = async () => {
-      const response = await fetchOneRow("news/:id", id);
-      if (response.data) {
-        setData(response.data as INoticias);
-      }
-    };
-    fetch();
-  }, [id]);
-
-  if (!data) {
+  if (loading) {
     return (
       <div>
         <Loader />
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="container mx-auto py-8 md:py-20 mt-14">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
+          <p className="text-gray-600">
+            {error || "No se pudo cargar la noticia"}
+          </p>
+        </div>
       </div>
     );
   }

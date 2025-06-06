@@ -1,23 +1,20 @@
 "use client";
 import HomeModule from "@/modules/Client/Home";
-import { fetchData } from "@/services/mysql/functions";
-import { useEffect, useState } from "react";
+import { useLatestNoticias } from "@/shared/hooks/useNoticias";
+import { Loader } from "@/shared/components/Loader/Loader";
 
 export default function Home() {
-  const [lastNews, setlastNews] = useState<any[]>([]);
+  const { noticias: lastNews, loading, error } = useLatestNoticias();
 
-  useEffect(() => {
-    async function loadLastNews() {
-      try {
-        const newsResponse = await fetchData("news/last-three");
-        setlastNews(newsResponse.data);
-      } catch (error) {
-        console.error("Error al obtener las noticias:", error);
-      }
-    }
+  if (loading) {
+    return <Loader />;
+  }
 
-    loadLastNews();
-  }, []);
+  if (error) {
+    console.error("Error al obtener las noticias:", error);
+    // Aún mostramos la página de inicio aunque haya error en las noticias
+    return <HomeModule noticias={[]} />;
+  }
 
   return <HomeModule noticias={lastNews} />;
 }
