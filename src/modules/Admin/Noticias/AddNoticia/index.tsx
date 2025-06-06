@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { File } from "lucide-react";
+import { File, Upload, X, Image as ImageIcon, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { postData } from "@/services/mysql/functions";
 import {
@@ -23,6 +23,136 @@ import {
 } from "@/components/ui/select";
 import { toast } from "react-toastify";
 
+// Constantes para optimización
+const MAX_IMAGES = 5;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const PREVIEW_MAX_WIDTH = 200;
+const PREVIEW_MAX_HEIGHT = 200;
+
+// Función para redimensionar imagen
+const resizeImage = (file: File): Promise<string> => {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    img.onload = () => {
+      const { width, height } = img;
+      let { width: newWidth, height: newHeight } = img;
+      
+      // Calcular nuevas dimensiones manteniendo la proporción
+      if (width > PREVIEW_MAX_WIDTH || height > PREVIEW_MAX_HEIGHT) {
+        const ratio = Math.min(PREVIEW_MAX_WIDTH / width, PREVIEW_MAX_HEIGHT / height);
+        newWidth = width * ratio;
+        newHeight = height * ratio;
+      }
+      
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      
+      ctx?.drawImage(img, 0, 0, newWidth, newHeight);
+      
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          resolve(url);
+        } else {
+          resolve(URL.createObjectURL(file));
+        }
+      }, file.type, 0.8); // Calidad del 80%
+    };
+    
+    img.src = URL.createObjectURL(file);
+  });
+};
+
+// Componente de preview de imagen optimizado
+const ImagePreview = ({ file, index, onRemove }: { 
+  file: File; 
+  index: number; 
+  onRemove: (index: number) => void; 
+}) => {
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const processImage = async () => {
+      try {
+        const url = await resizeImage(file);
+        setImageUrl(url);
+        setIsLoading(false);
+      } catch (err) {
+        setError(true);
+        setIsLoading(false);
+      }
+    };
+
+    processImage();
+
+    // Cleanup function to revoke URL when component unmounts
+    return () => {
+      if (imageUrl) {
+        URL.revokeObjectURL(imageUrl);
+      }
+    };
+  }, [file]);
+
+  if (error) {
+    return (
+      <div className="relative group">
+        <div className="w-full h-20 bg-red-100 border border-red-300 rounded-md flex items-center justify-center">
+          <AlertCircle className="h-6 w-6 text-red-500" />
+        </div>
+        <button
+          type="button"
+          onClick={() => onRemove(index)}
+          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+        >
+          <X className="h-3 w-3" />
+        </button>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-20 bg-gray-200 rounded-md animate-pulse"></div>
+    );
+  }
+
+  return (
+    <div className="relative group">
+      <img
+        src={imageUrl}
+        alt={`Preview ${index + 1}`}
+        className="w-full h-20 object-cover rounded-md border"
+        loading="lazy"
+      />
+      <button
+        type="button"
+        onClick={() => onRemove(index)}
+        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <X className="h-3 w-3" />
+      </button>
+      <div className="absolute bottom-1 left-1 bg-black/50 text-white text-xs px-1 rounded">
+        {file.name.substring(0, 10)}...
+      </div>
+    </div>
+  );
+};
+
+// Función para verificar si es un archivo de forma robusta
+const isFileObject = (obj: any): obj is File => {
+  return obj && 
+         typeof obj === 'object' && 
+         typeof obj.size === 'number' && 
+         typeof obj.type === 'string' && 
+         typeof obj.name === 'string' &&
+         typeof obj.lastModified === 'number';
+};
+
 export default function AddNoticiaModule() {
   const [headline, setHeadline] = useState("");
   const [epigraph, setEpigraph] = useState("");
@@ -31,21 +161,115 @@ export default function AddNoticiaModule() {
   const [images, setImages] = useState<File[]>([]);
   const [pdf, setPdf] = useState<File | null>(null);
   const [addressee, setAddressee] = useState("");
+  const [dragOver, setDragOver] = useState(false);
+  const [dragOverPdf, setDragOverPdf] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      setImages(Array.from(files)); // Convierte los archivos a un array
-    } else {
-      setImages([]);
+  const validateFiles = useCallback((files: File[]) => {
+    const validFiles = files.filter(file => {
+      if (!file.type.startsWith('image/')) {
+        toast.error(`${file.name} no es una imagen válida`);
+        return false;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`${file.name} es demasiado grande (máximo 5MB)`);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length + images.length > MAX_IMAGES) {
+      toast.error(`Máximo ${MAX_IMAGES} imágenes permitidas`);
+      return validFiles.slice(0, MAX_IMAGES - images.length);
     }
-  };
+
+    return validFiles;
+  }, [images.length]);
+
+  const handleImageChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    setIsProcessing(true);
+    const fileArray = Array.from(files);
+    const validFiles = validateFiles(fileArray);
+    
+    if (validFiles.length > 0) {
+      setImages(prev => [...prev, ...validFiles]);
+    }
+    
+    setIsProcessing(false);
+    // Limpiar el input
+    e.target.value = '';
+  }, [validateFiles]);
+
+  const handleImageDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
+    setIsProcessing(true);
+    
+    const files = Array.from(e.dataTransfer.files);
+    const validFiles = validateFiles(files);
+    
+    if (validFiles.length > 0) {
+      setImages(prev => [...prev, ...validFiles]);
+    }
+    
+    setIsProcessing(false);
+  }, [validateFiles]);
+
+  const handleImageDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(true);
+  }, []);
+
+  const handleImageDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
+  }, []);
+
+  const removeImage = useCallback((indexToRemove: number) => {
+    setImages(prev => prev.filter((_, index) => index !== indexToRemove));
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("El archivo PDF es demasiado grande (máximo 5MB)");
+        return;
+      }
       setPdf(file);
     }
+  };
+
+  const handlePdfDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOverPdf(false);
+    
+    const file = e.dataTransfer.files[0];
+    
+    if (file && file.type === 'application/pdf') {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("El archivo PDF es demasiado grande (máximo 5MB)");
+        return;
+      }
+      setPdf(file);
+    }
+  };
+
+  const handlePdfDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOverPdf(true);
+  };
+
+  const handlePdfDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOverPdf(false);
+  };
+
+  const removePdf = () => {
+    setPdf(null);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -53,27 +277,78 @@ export default function AddNoticiaModule() {
 
     if (!headline || !epigraph || !body || !addressee) {
       toast.error("Por favor, rellene todos los campos");
+      return;
     }
 
-    const formData = new FormData();
-    formData.append("headline", headline);
-    formData.append("epigraph", epigraph);
-    formData.append("body", body);
-    formData.append("body2", secondBody);
-    formData.append("addressee", addressee);
-    if (pdf) {
-      formData.append("pdf", pdf);
+    // Verificar que tenemos archivos válidos
+    const validImages = images.filter(img => isFileObject(img));
+    
+    if (images.length !== validImages.length) {
+      toast.error("Hay imágenes corruptas, por favor vuelva a seleccionarlas");
+      return;
     }
-    images.forEach((image) => {
-      formData.append("images", image); // Usa el mismo nombre para el campo de las imágenes
-    });
 
-    const response = await postData("news", formData);
+    try {
+      const formData = new FormData();
+      formData.append("headline", headline);
+      formData.append("epigraph", epigraph);
+      formData.append("body", body);
+      formData.append("body2", secondBody);
+      formData.append("addressee", addressee);
+      
+      if (pdf && isFileObject(pdf)) {
+        formData.append("pdf", pdf);
+      }
+      
+      // Añadir solo archivos válidos
+      validImages.forEach((image, index) => {
+        formData.append("images", image);
+      });
 
-    if (response.ok === true) {
-      toast.success("Noticia añadida correctamente");
+      console.log("Enviando FormData con:", {
+        headline,
+        epigraph,
+        body,
+        secondBody,
+        addressee,
+        imagesCount: validImages.length,
+        pdfSize: pdf ? pdf.size : 0
+      });
+
+      const response = await postData("news", formData);
+
+      if (response.ok === true) {
+        toast.success("Noticia añadida correctamente");
+        // Limpiar el formulario
+        setHeadline("");
+        setEpigraph("");
+        setBody("");
+        setSecondBody("");
+        setImages([]);
+        setPdf(null);
+        setAddressee("");
+      } else {
+        toast.error(response.message || "Error al guardar la noticia");
+      }
+    } catch (error) {
+      console.error("Error en handleSubmit:", error);
+      toast.error("Error al enviar los datos");
     }
   };
+
+  // Memoizar la vista previa del carousel para evitar re-renders innecesarios
+  const carouselImages = useMemo(() => {
+    return images.map((img, index) => (
+      <CarouselItem key={`${img.name}-${index}`}>
+        <img
+          src={URL.createObjectURL(img)}
+          alt={`News Image ${index + 1}`}
+          className="rounded-md object-cover aspect-[16/9]"
+          loading="lazy"
+        />
+      </CarouselItem>
+    ));
+  }, [images]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 w-full ">
@@ -126,24 +401,108 @@ export default function AddNoticiaModule() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="images">Imágenes (No obligatorio)</Label>
-          <Input
-            id="images"
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            multiple // Permite la selección de múltiples archivos
-          />
+          <Label>Imágenes (No obligatorio) - Máximo {MAX_IMAGES}</Label>
+          {isProcessing && (
+            <div className="text-sm text-blue-600 flex items-center gap-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              Procesando imágenes...
+            </div>
+          )}
+          <div
+            className={`border-2 border-dashed rounded-lg p-6 transition-colors cursor-pointer ${
+              dragOver 
+                ? 'border-primary bg-primary/5' 
+                : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+            } ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
+            onDrop={handleImageDrop}
+            onDragOver={handleImageDragOver}
+            onDragLeave={handleImageDragLeave}
+            onClick={() => !isProcessing && document.getElementById('images')?.click()}
+          >
+            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+              <ImageIcon className="h-8 w-8" />
+              <div className="text-center">
+                <p className="text-sm font-medium">
+                  {dragOver ? 'Suelta las imágenes aquí' : 'Arrastra imágenes aquí o haz clic para seleccionar'}
+                </p>
+                <p className="text-xs">Formatos: JPG, PNG, GIF (máximo 5MB cada una)</p>
+                <p className="text-xs text-muted-foreground/70">
+                  {images.length}/{MAX_IMAGES} imágenes seleccionadas
+                </p>
+              </div>
+            </div>
+            <Input
+              id="images"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              multiple
+              className="hidden"
+              disabled={isProcessing}
+            />
+          </div>
+          
+          {images.length > 0 && (
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              {images.map((img, index) => (
+                <ImagePreview
+                  key={`${img.name}-${img.size}-${index}`}
+                  file={img}
+                  index={index}
+                  onRemove={removeImage}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="file">Archivo PDF (No obligatorio)</Label>
-          <Input
-            id="file"
-            type="file"
-            accept="application/pdf"
-            onChange={handleFileChange}
-          />
+          <Label>Archivo PDF (No obligatorio)</Label>
+          <div
+            className={`border-2 border-dashed rounded-lg p-6 transition-colors cursor-pointer ${
+              dragOverPdf 
+                ? 'border-primary bg-primary/5' 
+                : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+            }`}
+            onDrop={handlePdfDrop}
+            onDragOver={handlePdfDragOver}
+            onDragLeave={handlePdfDragLeave}
+            onClick={() => document.getElementById('file')?.click()}
+          >
+            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+              <File className="h-8 w-8" />
+              <div className="text-center">
+                <p className="text-sm font-medium">
+                  {dragOverPdf ? 'Suelta el PDF aquí' : 'Arrastra un PDF aquí o haz clic para seleccionar'}
+                </p>
+                <p className="text-xs">Solo archivos PDF (máximo 5MB)</p>
+              </div>
+            </div>
+            <Input
+              id="file"
+              type="file"
+              accept="application/pdf"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </div>
+          
+          {pdf && (
+            <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
+              <File className="h-5 w-5 text-red-600" />
+              <span className="flex-1 text-sm font-medium">{pdf.name}</span>
+              <span className="text-xs text-muted-foreground">
+                {(pdf.size / 1024 / 1024).toFixed(2)} MB
+              </span>
+              <button
+                type="button"
+                onClick={removePdf}
+                className="text-red-500 hover:text-red-700"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -157,7 +516,9 @@ export default function AddNoticiaModule() {
           />
         </div>
 
-        <Button>Guardar</Button>
+        <Button disabled={isProcessing}>
+          {isProcessing ? 'Procesando...' : 'Guardar'}
+        </Button>
       </form>
 
       <div className="bg-muted p-8 flex flex-col justify-center items-center">
@@ -192,15 +553,7 @@ export default function AddNoticiaModule() {
               images.length > 1 ? (
                 <Carousel className="mt-6">
                   <CarouselContent>
-                    {images.map((img, index) => (
-                      <CarouselItem key={index}>
-                        <img
-                          src={URL.createObjectURL(img)}
-                          alt={`News Image ${index + 1}`}
-                          className="rounded-md object-cover aspect-[16/9]"
-                        />
-                      </CarouselItem>
-                    ))}
+                    {carouselImages}
                   </CarouselContent>
                 </Carousel>
               ) : (
@@ -208,6 +561,7 @@ export default function AddNoticiaModule() {
                   src={URL.createObjectURL(images[0])}
                   alt="News Image"
                   className="rounded-md object-cover aspect-[16/9] mt-6"
+                  loading="lazy"
                 />
               )
             ) : (
