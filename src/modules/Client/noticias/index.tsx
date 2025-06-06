@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/pagination";
 import { FramerComponent } from "@/shared/Framer/FramerComponent";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle, Search } from "lucide-react";
+import {  Search } from "lucide-react";
 
 const NoticiasPageModule = ({
   news,

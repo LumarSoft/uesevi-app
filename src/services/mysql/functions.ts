@@ -6,18 +6,51 @@ const BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
 // Función para manejar la respuesta de la API
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
-    const errorDetails = await response.json();
+    let errorDetails;
+    const contentType = response.headers.get("content-type");
+    
+    try {
+      if (contentType && contentType.includes("application/json")) {
+        errorDetails = await response.json();
+      } else {
+        // Si no es JSON, probablemente sea HTML (página de error)
+        const htmlText = await response.text();
+        console.error("Server returned HTML instead of JSON:", htmlText);
+        errorDetails = { 
+          message: `Server error (${response.status}): ${response.statusText}`,
+          details: htmlText.substring(0, 200) + "..." 
+        };
+      }
+    } catch (parseError) {
+      console.error("Error parsing response:", parseError);
+      errorDetails = { 
+        message: `Server error (${response.status}): ${response.statusText}`,
+        details: "Could not parse server response"
+      };
+    }
+
     return {
       ok: false,
       status: "error",
       statusCode: response.status,
       message: errorDetails.message || "Error desconocido",
-      data: null, // Asegúrate de devolver 'data' incluso en caso de error
+      data: null,
     };
   }
 
-  const responseData = await response.json();
-  return responseData;
+  try {
+    const responseData = await response.json();
+    return responseData;
+  } catch (parseError) {
+    console.error("Error parsing successful response:", parseError);
+    return {
+      ok: false,
+      status: "error",
+      statusCode: 500,
+      message: "Error parsing server response",
+      data: null,
+    };
+  }
 };
 
 // Función para obtener datos
@@ -69,16 +102,31 @@ export const fetchOneRow = async (endpoint: string, id: number) => {
 // Función para enviar datos (POST)
 export const postData = async (endpoint: string, postData: FormData) => {
   try {
+    console.log(`Enviando POST a: ${BASE_API_URL}/${endpoint}`);
+    
+    // Log FormData contents (excluding files for readability)
+    const formDataEntries = Array.from(postData.entries());
+    const logData = formDataEntries.map(([key, value]) => {
+      if (value instanceof File) {
+        return [key, `File: ${value.name} (${value.size} bytes, ${value.type})`];
+      }
+      return [key, value];
+    });
+    console.log("FormData contents:", Object.fromEntries(logData));
+
     const response = await fetch(`${BASE_API_URL}/${endpoint}`, {
       method: "POST",
       body: postData, // No agregues el header 'Content-Type'
     });
-    return await handleResponse(response);
+
+    const result = await handleResponse(response);
+    console.log("POST response:", result);
+    return result;
   } catch (error: any) {
     console.error("Error al enviar datos:", error);
 
     const statusCode = error.response?.status || 500;
-    const message = error.response?.data?.message || "Error desconocido";
+    const message = error.response?.data?.message || error.message || "Error desconocido";
 
     return {
       ok: false,
@@ -97,12 +145,26 @@ export const updateData = async (
 ) => {
   try {
     const url = endpoint.replace(":id", id.toString());
+    console.log(`Enviando PUT a: ${BASE_API_URL}/${url}`);
+    
+    // Log FormData contents (excluding files for readability)
+    const formDataEntries = Array.from(updateData.entries());
+    const logData = formDataEntries.map(([key, value]) => {
+      if (value instanceof File) {
+        return [key, `File: ${value.name} (${value.size} bytes, ${value.type})`];
+      }
+      return [key, value];
+    });
+    console.log("FormData contents:", Object.fromEntries(logData));
 
     const response = await fetch(`${BASE_API_URL}/${url}`, {
       method: "PUT",
       body: updateData, // No agregues el header 'Content-Type'
     });
-    return await handleResponse(response);
+
+    const result = await handleResponse(response);
+    console.log("PUT response:", result);
+    return result;
   } catch (error: any) {
     console.error("Error al actualizar datos:", error);
     return {
