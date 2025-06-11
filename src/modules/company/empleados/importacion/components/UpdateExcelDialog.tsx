@@ -9,24 +9,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { shouldShowUpdateNotification, markVersionAsSeen, EXCEL_SCHEMA_VERSION } from "../constants/excelSchema";
 
 export const UpdatedExcelDialog = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // Check if the user has seen this notification before
-    const hasSeenNotification = localStorage.getItem(
-      "excelUpdateNotificationSeen"
-    );
-
-    if (!hasSeenNotification) {
+    // Solo mostrar si realmente hay una nueva versión del esquema
+    if (shouldShowUpdateNotification()) {
       setOpen(true);
     }
   }, []);
 
   const handleClose = () => {
     setOpen(false);
-    localStorage.setItem("excelUpdateNotificationSeen", "true");
+    markVersionAsSeen();
   };
 
   return (
@@ -39,7 +36,7 @@ export const UpdatedExcelDialog = () => {
           </DialogTitle>
           <DialogDescription className="text-base pt-2 text-gray-700">
             Se ha actualizado el formato de la planilla con campos adicionales
-            obligatorios.
+            obligatorios. (Versión: {EXCEL_SCHEMA_VERSION})
           </DialogDescription>
         </DialogHeader>
 

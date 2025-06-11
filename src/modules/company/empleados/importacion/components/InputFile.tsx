@@ -19,6 +19,7 @@ import { Progress } from "@/components/ui/progress";
 import { Upload, X, FileSpreadsheet, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { REQUIRED_COLUMNS, CATEGORIAS_PERMITIDAS } from "../constants/excelSchema";
 
 export const InputFile = ({
   month,
@@ -88,7 +89,7 @@ export const InputFile = ({
         newRow[newKey] = row[key];
       });
       
-      requiredColumns.forEach((col) => {
+      REQUIRED_COLUMNS.forEach((col) => {
         if (col === "adicionales" && (newRow[col] === undefined || newRow[col] === "")) {
           newRow[col] = 0;
         }
@@ -97,31 +98,6 @@ export const InputFile = ({
       return newRow;
     });
   };
-
-  // Definimos las columnas requeridas
-  const requiredColumns = [
-    "nombre",
-    "apellido",
-    "cuil",
-    "adherido_a_sindicato",
-    "categora",
-    "sueldo_bsico",
-    "adicionales",
-    "ad_remunerativo",
-  ];
-
-  // Definimos las categorías permitidas
-  const categoriasPermitidas = [
-    "Vigilador General",
-    "Vigilador Bombero",
-    "Administrativo",
-    "Vigilador Principal",
-    "Verificador Evento",
-    "Operador de monitoreo",
-    "Guía Técnico",
-    "Instalador de elementos de seguridad electrónica",
-    "Controlador de admisión y permanencia en gral.",
-  ];
 
   // Función para procesar y subir el archivo Excel
   const uploadExcel = async (file: File): Promise<boolean> => {
@@ -154,7 +130,7 @@ export const InputFile = ({
       if (formattedData.length > 0) {
         // Validar que todas las columnas requeridas estén presentes
         const formattedColumns = Object.keys(formattedData[0]);
-        const missingColumns = requiredColumns.filter(
+        const missingColumns = REQUIRED_COLUMNS.filter(
           (col) => !formattedColumns.includes(col)
         );
 
@@ -184,7 +160,7 @@ export const InputFile = ({
           // Validar categoría (debe ser uno de los valores permitidos)
           if (
             row.categora &&
-            !categoriasPermitidas.includes(String(row.categora).trim())
+            !CATEGORIAS_PERMITIDAS.includes(String(row.categora).trim())
           ) {
             errors.push(
               `Fila ${rowNumber}: La categoría "${row.categora}" no es válida. Revise las opciones nuevamente`
