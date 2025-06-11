@@ -20,6 +20,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, FileSpreadsheet, Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import { REQUIRED_COLUMNS, CATEGORIAS_PERMITIDAS } from "../../../../empleados/importacion/constants/excelSchema";
 export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -27,31 +28,6 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
   const [dragActive, setDragActive] = useState(false);
   const { user } = userStore();
   const router = useRouter();
-
-  // Definimos las columnas requeridas
-  const requiredColumns = [
-    "nombre",
-    "apellido",
-    "cuil",
-    "adherido_a_sindicato",
-    "categora",
-    "sueldo_bsico",
-    "adicionales",
-    "ad_remunerativo",
-  ];
-
-  // Definimos las categorías permitidas
-  const categoriasPermitidas = [
-    "Vigilador General",
-    "Vigilador Bombero",
-    "Administrativo",
-    "Vigilador Principal",
-    "Verificador Evento",
-    "Operador de monitoreo",
-    "Guía Técnico",
-    "Instalador de elementos de seguridad electrónica",
-    "Controlador de admisión y permanencia en gral.",
-  ];
 
   const sendJson = async (data: any[]): Promise<boolean> => {
     const formData = new FormData();
@@ -102,7 +78,7 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
         newRow[newKey] = row[key];
       });
       
-      requiredColumns.forEach((col) => {
+      REQUIRED_COLUMNS.forEach((col) => {
         if (col === "adicionales" && (newRow[col] === undefined || newRow[col] === "")) {
           newRow[col] = 0;
         }
@@ -142,7 +118,7 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
       if (formattedData.length > 0) {
         // Validar que todas las columnas requeridas estén presentes
         const formattedColumns = Object.keys(formattedData[0]);
-        const missingColumns = requiredColumns.filter(
+        const missingColumns = REQUIRED_COLUMNS.filter(
           (col) => !formattedColumns.includes(col)
         );
 
@@ -172,7 +148,7 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
           // Validar categoría (debe ser uno de los valores permitidos)
           if (
             row.categora &&
-            !categoriasPermitidas.includes(String(row.categora).trim())
+            !CATEGORIAS_PERMITIDAS.includes(String(row.categora).trim())
           ) {
             errors.push(
               `Fila ${rowNumber}: La categoría "${row.categora}" no es válida. Revise las opciones nuevamente`
