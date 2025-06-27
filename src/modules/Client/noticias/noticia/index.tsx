@@ -322,17 +322,7 @@ export default function NoticiaModule({ newData }: { newData: INoticias }) {
             </div>
           )}
           
-          <div className="text-xs text-muted-foreground border-t pt-4 flex justify-end m-4">
-            <span>
-              Publicado: {new Date(newData.created).toLocaleDateString("es-ES")}
-            </span>
-            {newData.modified !== newData.created && (
-              <span className="ml-4">
-                Actualizado:{" "}
-                {new Date(newData.modified).toLocaleDateString("es-ES")}
-              </span>
-            )}
-          </div>
+        
 
           {/* Mensaje cuando no hay imágenes */}
           {!hasCoverImage && additionalImages.length === 0 && (
