@@ -63,17 +63,17 @@ const ImageModal = ({
         </button>
       )}
 
-      {/* Imagen principal */}
-      <div className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center">
+      {/* Contenedor de imagen principal ajustado para galería */}
+      <div className="relative max-w-[90vw] max-h-[90vh] w-[90vw] h-[90vh] flex items-center justify-center">
         <Image
           src={getImageUrl(images[currentIndex])}
           alt={`Imagen ${currentIndex + 1}`}
-          width={1200}
-          height={800}
-          className="max-w-full max-h-full object-contain"
+          fill
+          className="object-contain"
           quality={90}
           priority
           onError={handleImageError}
+          unoptimized
         />
       </div>
 
