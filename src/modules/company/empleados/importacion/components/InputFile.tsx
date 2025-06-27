@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
-import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
 import { useRouter } from "next/navigation";
 import { Progress } from "@/components/ui/progress";
@@ -35,40 +34,6 @@ export const InputFile = ({
   const router = useRouter();
   const [dragActive, setDragActive] = useState(false);
 
-  // Función para enviar datos a la API y retornar el estado
-  const sendJson = async (data: any[]): Promise<boolean> => {
-    if (month === null || year === null) {
-      toast.error("Por favor seleccione un mes y un año");
-      return false;
-    }
-
-    const formData = new FormData();
-
-    data.forEach((item, index) => {
-      Object.entries(item).forEach(([key, value]) => {
-        formData.append(`employees[${index}][${key}]`, value as any);
-      });
-    });
-
-    formData.append("companyId", user.empresa.id);
-    formData.append("month", month.toString());
-    formData.append("year", year.toString());
-
-    try {
-      const result = await postData("employees/import", formData);
-      if (result.ok) {
-        return true;
-      } else {
-        toast.error(result.message);
-        return false;
-      }
-    } catch (error) {
-      console.error("Error al enviar el formulario:", error);
-      toast.error("Error al enviar los datos a la API");
-      return false; // Indica que hubo un error
-    }
-  };
-
   // Función para cambiar el archivo seleccionado
   const changeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -83,9 +48,9 @@ export const InputFile = ({
       const newRow: { [key: string]: any } = {};
       Object.keys(row).forEach((key) => {
         const newKey = key
-          .toLowerCase() // Convertir a minúsculas (opcional)
-          .replace(/\s+/g, "_") // Reemplazar espacios por "_"
-          .replace(/[^\w_]/g, ""); // Eliminar caracteres no alfanuméricos excepto "_"
+          .toLowerCase()
+          .replace(/\s+/g, "_")
+          .replace(/[^\w_]/g, "");
         newRow[newKey] = row[key];
       });
       
@@ -99,7 +64,7 @@ export const InputFile = ({
     });
   };
 
-  // Función para procesar y subir el archivo Excel
+  // Función para procesar el archivo Excel y redirigir a preview
   const uploadExcel = async (file: File): Promise<boolean> => {
     try {
       const data = await new Promise<any[]>((resolve, reject) => {
@@ -126,9 +91,8 @@ export const InputFile = ({
 
       const formattedData = formatKeys(data);
 
-      // Validación de datos
+      // Validación de datos (mismo código de validación que antes)
       if (formattedData.length > 0) {
-        // Validar que todas las columnas requeridas estén presentes
         const formattedColumns = Object.keys(formattedData[0]);
         const missingColumns = REQUIRED_COLUMNS.filter(
           (col) => !formattedColumns.includes(col)
@@ -147,17 +111,14 @@ export const InputFile = ({
         const errors: string[] = [];
 
         formattedData.forEach((row, index) => {
-          // Ajustar el número de fila: índice + 2 (índice empieza en 0 + 1 para empezar en 1 + 1 por la fila de encabezado)
           const rowNumber = index + 2;
 
-          // Validar CUIL (solo números)
           if (row.cuil && !/^\d+$/.test(String(row.cuil))) {
             errors.push(
               `Fila ${rowNumber}: El CUIL debe contener solo números`
             );
           }
 
-          // Validar categoría (debe ser uno de los valores permitidos)
           if (
             row.categora &&
             !CATEGORIAS_PERMITIDAS.includes(String(row.categora).trim())
@@ -167,7 +128,6 @@ export const InputFile = ({
             );
           }
 
-          // Validar campos numéricos
           if (row.sueldo_bsico && isNaN(Number(row.sueldo_bsico))) {
             errors.push(
               `Fila ${rowNumber}: El sueldo básico debe ser un número`
@@ -203,7 +163,6 @@ export const InputFile = ({
             );
           }
 
-          // Validar que nombre y apellido no estén vacíos
           if (!row.nombre || String(row.nombre).trim() === "") {
             errors.push(`Fila ${rowNumber}: El nombre no puede estar vacío`);
           }
@@ -212,7 +171,6 @@ export const InputFile = ({
             errors.push(`Fila ${rowNumber}: El apellido no puede estar vacío`);
           }
 
-          // Validar adherido_a_sindicato (debe ser booleano o convertible a booleano)
           const sindicatoValue = String(row.adherido_a_sindicato).toLowerCase();
           if (
             sindicatoValue !== "true" &&
@@ -228,9 +186,7 @@ export const InputFile = ({
           }
         });
 
-        // Si hay errores, mostrarlos y detener el proceso
         if (errors.length > 0) {
-          // Limitar a mostrar máximo 5 errores para no saturar la pantalla
           const displayErrors = errors.slice(0, 5);
           const remainingErrors = errors.length - 5;
 
@@ -240,7 +196,7 @@ export const InputFile = ({
           }
 
           toast.error(errorMessage, {
-            autoClose: 10000, // Dar más tiempo para leer los errores
+            autoClose: 10000,
           });
           return false;
         }
@@ -249,40 +205,45 @@ export const InputFile = ({
         return false;
       }
 
-      // Aquí se lo enviamos a la función para enviar a la API y esperamos a que termine
-      return await sendJson(formattedData); // Retorna el resultado de sendJson
+      // Guardar datos en sessionStorage y redirigir a la página de preview
+      sessionStorage.setItem('empleados_preview_data', JSON.stringify(formattedData));
+      sessionStorage.setItem('empleados_preview_month', month?.toString() || '');
+      sessionStorage.setItem('empleados_preview_year', year?.toString() || '');
+      
+      toast.success(`Archivo procesado correctamente. ${formattedData.length} empleados cargados.`);
+      router.push('/empresa/empleados/preview');
+      return true;
+
     } catch (error) {
       console.error(error);
       toast.error("Ocurrió un error al subir el archivo");
-      return false; // Retorna false si hay un error
+      return false;
     }
   };
 
-  // Función para manejar la subida del archivo
+  // Función para manejar la carga del archivo y redirigir a preview
   const handleUpload = async () => {
     if (!file) {
       return toast.error("Por favor seleccione un archivo");
     }
 
     if (isUploading) {
-      return toast.warning("Ya se está subiendo un archivo. Por favor espere.");
+      return toast.warning("Ya se está procesando un archivo. Por favor espere.");
     }
 
     setLoading(true);
     setIsUploading(true);
 
-    const isFinish = await uploadExcel(file);
+    const isProcessed = await uploadExcel(file);
 
     setLoading(false);
     setIsUploading(false);
 
-    if (isFinish) {
-      toast.success("Archivo subido correctamente");
-      return router.push("/empresa/declaraciones");
-    } else {
+    if (!isProcessed) {
       toast.error("Hubo un problema al procesar el archivo");
     }
   };
+
   // Manejadores de drag and drop
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -363,9 +324,6 @@ export const InputFile = ({
                   <p className="text-lg font-medium">
                     Arrastre su archivo aquí o haga clic para seleccionar
                   </p>
-                  {/* <p className="text-sm text-gray-500 mt-2">
-                    Tamaño máximo: 10MB
-                  </p> */}
                 </div>
               </>
             ) : (
@@ -398,7 +356,8 @@ export const InputFile = ({
           <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-600" />
           <AlertDescription className="text-blue-700">
             Asegúrese de que su archivo Excel tenga los encabezados correctos y
-            siga el formato establecido.
+            siga el formato establecido. Después del procesamiento, podrá revisar
+            y editar los datos antes de la importación final.
           </AlertDescription>
         </Alert>
 
@@ -432,9 +391,9 @@ export const InputFile = ({
               Procesando
             </span>
           ) : isUploading ? (
-            "Subiendo..."
+            "Procesando..."
           ) : (
-            "Cargar archivo"
+            "Procesar archivo"
           )}
         </Button>
       </CardFooter>

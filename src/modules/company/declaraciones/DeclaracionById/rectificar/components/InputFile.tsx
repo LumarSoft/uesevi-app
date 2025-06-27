@@ -237,8 +237,13 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
         return false;
       }
 
-      // Aquí se lo enviamos a la función para enviar a la API y esperamos a que termine
-      return await sendJson(formattedData); // Retorna el resultado de sendJson
+      // Guardar datos en sessionStorage para el preview
+      sessionStorage.setItem('empleados_rectificar_data', JSON.stringify(formattedData));
+      sessionStorage.setItem('empleados_rectificar_statementId', statement.id.toString());
+      sessionStorage.setItem('empleados_rectificar_year', statement.year.toString());
+      sessionStorage.setItem('empleados_rectificar_month', statement.mes.toString());
+      
+      return true; // Retorna true para proceder al preview
     } catch (error) {
       console.error(error);
       toast.error("Ocurrió un error al subir el archivo");
@@ -265,8 +270,8 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
     setIsUploading(false);
 
     if (isFinish) {
-      toast.success("Archivo subido correctamente");
-      return router.push("/empresa/declaraciones");
+      toast.success("Archivo procesado correctamente");
+      return router.push(`/empresa/declaraciones/${statement.id}/rectificar/preview`);
     } else {
       toast.error("Hubo un problema al procesar el archivo");
     }
