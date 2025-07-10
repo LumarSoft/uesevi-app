@@ -63,17 +63,17 @@ const ImageModal = ({
         </button>
       )}
 
-      {/* Imagen principal */}
-      <div className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center">
+      {/* Contenedor de imagen principal ajustado para galería */}
+      <div className="relative max-w-[90vw] max-h-[90vh] w-[90vw] h-[90vh] flex items-center justify-center">
         <Image
           src={getImageUrl(images[currentIndex])}
           alt={`Imagen ${currentIndex + 1}`}
-          width={1200}
-          height={800}
-          className="max-w-full max-h-full object-contain"
+          fill
+          className="object-contain"
           quality={90}
           priority
           onError={handleImageError}
+          unoptimized
         />
       </div>
 
@@ -322,17 +322,7 @@ export default function NoticiaModule({ newData }: { newData: INoticias }) {
             </div>
           )}
           
-          <div className="text-xs text-muted-foreground border-t pt-4 flex justify-end m-4">
-            <span>
-              Publicado: {new Date(newData.created).toLocaleDateString("es-ES")}
-            </span>
-            {newData.modified !== newData.created && (
-              <span className="ml-4">
-                Actualizado:{" "}
-                {new Date(newData.modified).toLocaleDateString("es-ES")}
-              </span>
-            )}
-          </div>
+        
 
           {/* Mensaje cuando no hay imágenes */}
           {!hasCoverImage && additionalImages.length === 0 && (
