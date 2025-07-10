@@ -60,11 +60,11 @@ const CardNoticias = ({ noticia }: { noticia: INoticias }) => {
         </p>
       </CardContent>
       <CardFooter className="pt-2">
-        <Button variant="default" className="w-full rounded-lg font-semibold ">
           <Link href={`/noticias/${noticia.id}`} className="w-full text-center">
+        <Button variant="default" className="w-full rounded-lg font-semibold ">
             Leer más
-          </Link>
         </Button>
+          </Link>
       </CardFooter>
     </Card>
   );
