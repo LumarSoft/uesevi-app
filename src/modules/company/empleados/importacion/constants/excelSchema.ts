@@ -1,4 +1,4 @@
-export const EXCEL_SCHEMA_VERSION = "2025-06-12"; // Fecha de la última actualización del formato
+export const EXCEL_SCHEMA_VERSION = "2025-07-31"; // Fecha de la última actualización del formato
 
 export const REQUIRED_COLUMNS = [
   "nombre",
@@ -8,7 +8,7 @@ export const REQUIRED_COLUMNS = [
   "categora",
   "sueldo_bsico",
   "adicionales",
-  "ad_remunerativo",
+  "suma_no_remunerativa",
 ];
 
 export const CATEGORIAS_PERMITIDAS = [
