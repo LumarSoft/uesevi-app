@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CATEGORIAS_PERMITIDAS } from "@/modules/company/empleados/importacion/constants/excelSchema";
+import { ThemeProvider } from "next-themes";
 
 // Tipo para los datos de empleado
 interface EmpleadoData {
@@ -372,33 +373,35 @@ export default function EmpleadosPreviewTablePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-full">
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <div>
-              <h1 className="text-3xl font-bold flex items-center gap-3">
-                <Users className="h-8 w-8 text-blue-600" />
-                Editor de Empleados
-              </h1>
-              <p className="text-gray-600 mt-2">
-                Edite la información de los empleados antes de confirmar la importación.
-                {month && year && (
-                  <span className="font-medium"> Período: {month}/{year}</span>
-                )}
-              </p>
+    <ThemeProvider attribute="class" defaultTheme="system">
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="container mx-auto px-4 py-6 max-w-full">
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <div>
+                <h1 className="text-3xl font-bold flex items-center gap-3">
+                  <Users className="h-8 w-8 text-blue-600" />
+                  Editor de Empleados
+                </h1>
+                <p className="text-gray-600 mt-2">
+                  Edite la información de los empleados antes de confirmar la importación.
+                  {month && year && (
+                    <span className="font-medium"> Período: {month}/{year}</span>
+                  )}
+                </p>
+              </div>
             </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleClose}
+              className="h-10 w-10"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleClose}
-            className="h-10 w-10"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -444,8 +447,8 @@ export default function EmpleadosPreviewTablePage() {
       <Alert className="mb-6">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          <strong>Importante:</strong> Puede editar cualquier campo directamente en la tabla. 
-          Los cambios se guardan automáticamente y se sincronizarán con la ventana principal.
+          <strong>Paso obligatorio:</strong> Revise y edite los datos si es necesario. 
+          Los cambios se guardan automáticamente. <strong>La confirmación de importación solo se puede realizar desde esta pantalla.</strong>
         </AlertDescription>
       </Alert>
 
@@ -661,6 +664,8 @@ export default function EmpleadosPreviewTablePage() {
           </Card>
         </div>
       )}
-    </div>
+        </div>
+      </div>
+    </ThemeProvider>
   );
 } 
