@@ -264,45 +264,8 @@ export const PreviewEmpleados = () => {
     return errors;
   };
 
-  // Función para enviar los datos finales (sin editar)
-  const handleDirectSubmit = async () => {
-    const errors = validateData(empleadosData);
-
-    if (errors.length > 0) {
-      const displayErrors = errors.slice(0, 5);
-      const remainingErrors = errors.length - 5;
-
-      let errorMessage = displayErrors.join("\n");
-      if (remainingErrors > 0) {
-        errorMessage += `\n...y ${remainingErrors} errores más.`;
-      }
-
-      toast.error(errorMessage, {
-        autoClose: 10000,
-      });
-      return;
-    }
-
-    setLoading(true);
-    setIsUploading(true);
-
-    const isSuccess = await sendJson(empleadosData);
-
-    setLoading(false);
-    setIsUploading(false);
-
-    if (isSuccess) {
-      // Limpiar sessionStorage después del envío exitoso
-      sessionStorage.removeItem('empleados_preview_data');
-      sessionStorage.removeItem('empleados_preview_month');
-      sessionStorage.removeItem('empleados_preview_year');
-      
-      toast.success("Empleados importados correctamente");
-      router.push("/empresa/declaraciones");
-    } else {
-      toast.error("Hubo un problema al enviar los datos");
-    }
-  };
+  // Función eliminada - Ya no se permite envío directo
+  // Los usuarios deben pasar obligatoriamente por la tabla de edición
 
   // Función para volver a la importación
   const handleBackToImport = () => {
@@ -315,9 +278,8 @@ export const PreviewEmpleados = () => {
 
   // Función para abrir la tabla en nueva pestaña
   const handleOpenTableInNewTab = () => {
+    // Si ya hay una ventana abierta, no hacer nada (el botón estará deshabilitado)
     if (isTableWindowOpen && tableWindowRef && !tableWindowRef.closed) {
-      // Si ya hay una ventana abierta, enfocarla
-      tableWindowRef.focus();
       return;
     }
 
@@ -620,7 +582,7 @@ export const PreviewEmpleados = () => {
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
           <strong>Resumen de la declaración:</strong> A continuación se muestran los totales calculados para todos los empleados. 
-          Si necesita revisar o editar los datos, haga clic en &quot;Ver/Editar Tabla&quot;.
+          <strong>Para continuar con la importación, debe obligatoriamente revisar y confirmar los datos desde la tabla de edición.</strong>
         </AlertDescription>
       </Alert>
 
@@ -675,53 +637,34 @@ export const PreviewEmpleados = () => {
       {/* Acciones */}
       <Card>
         <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold">¿Qué desea hacer?</h3>
-              <p className="text-sm text-muted-foreground">
-                Puede confirmar la importación directamente o revisar/editar los datos en la tabla.
-              </p>
-              {isTableWindowOpen && (
-                <p className="text-sm text-orange-600 font-medium">
-                  ⚠️ Hay una ventana de edición abierta. Ciérrela antes de confirmar desde aquí.
+                      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Continuar con la importación</h3>
+                <p className="text-sm text-muted-foreground">
+                  <strong>Paso obligatorio:</strong> Debe revisar y editar los datos en la tabla antes de confirmar la importación.
                 </p>
-              )}
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Button
-                variant="outline"
-                onClick={handleOpenTableInNewTab}
-                className="min-w-[180px]"
-                disabled={loading || isUploading}
-              >
-                <Edit3 className="h-4 w-4 mr-2" />
-                {isTableWindowOpen ? 'Enfocar Tabla' : 'Ver/Editar Tabla'}
-                <ExternalLink className="h-4 w-4 ml-2" />
-              </Button>
-              
-              <Button
-                onClick={() => {
-                  console.log('Botón clickeado - loading:', loading, 'isUploading:', isUploading, 'isTableWindowOpen:', isTableWindowOpen);
-                  handleDirectSubmit();
-                }}
-                disabled={loading || isUploading || isTableWindowOpen}
-                className="min-w-[180px] bg-green-600 hover:bg-green-700 disabled:bg-gray-400"
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Importando...
-                  </span>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    {isTableWindowOpen ? 'Ventana de Edición Abierta' : 'Confirmar Importación'}
-                  </>
+                <p className="text-sm text-amber-600 font-medium">
+                  ⚠️ Debe revisar los datos en la tabla de edición para confirmar la importación.
+                </p>
+                {isTableWindowOpen && (
+                  <p className="text-sm text-orange-600 font-medium">
+                    📋 Pestaña de edición abierta en otra ventana
+                  </p>
                 )}
-              </Button>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <Button
+                  onClick={handleOpenTableInNewTab}
+                  className="min-w-[200px] bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400"
+                  disabled={loading || isUploading || isTableWindowOpen}
+                >
+                  <Edit3 className="h-4 w-4 mr-2" />
+                  {isTableWindowOpen ? 'Pestaña de Edición Abierta' : 'Ir a Tabla de Edición'}
+                  <ExternalLink className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
             </div>
-          </div>
         </CardContent>
       </Card>
 
