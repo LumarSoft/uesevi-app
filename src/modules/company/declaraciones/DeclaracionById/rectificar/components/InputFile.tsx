@@ -177,17 +177,17 @@ export const InputFile = ({ statement }: { statement: IInfoDeclaracion }) => {
           }
 
           if (
-            row.ad_remunerativo &&
-            isNaN(Number(row.ad_remunerativo))
+            row.suma_no_remunerativa &&
+            isNaN(Number(row.suma_no_remunerativa))
           ) {
             errors.push(
-              `Fila ${rowNumber}: El adicional remunerativo debe ser un número`
+              `Fila ${rowNumber}: El suma_no_remunerativa debe ser un número`
             );
           } else if (
-            row.ad_remunerativo && Number(row.ad_remunerativo) <= 0
+            row.suma_no_remunerativa && Number(row.suma_no_remunerativa) <= 0
           ) {
             errors.push(
-              `Fila ${rowNumber}: El adicional remunerativo debe ser un número positivo mayor a cero`
+              `Fila ${rowNumber}: El suma_no_remunerativa debe ser un número positivo mayor a cero`
             );
           }
 
