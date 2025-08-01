@@ -161,12 +161,9 @@ const MyDocument: React.FC<{
   basicSalary: any;
 }> = ({ data, rate, basicSalary }) => {
   const calcularTotalBruto = (empleado: Empleado): number => {
-    return (
-      Number(empleado.monto) +
-      Number(empleado.adicional) +
-      Number(empleado.suma_no_remunerativa || 0) +
-      Number(empleado.remunerativo_adicional || 0)
-    );
+    return Number(empleado.monto) + 
+           Number(empleado.adicional) + 
+           Number(empleado.suma_no_remunerativa);
   };
 
   const calcularFAS = (basicSalary: number): number => {
@@ -174,22 +171,17 @@ const MyDocument: React.FC<{
   };
 
   const calcularAporteSolidario = (empleado: Empleado): number => {
-    return empleado.afiliado === "No"
-      ? (Number(empleado.monto) +
-          Number(empleado.suma_no_remunerativa || 0) +
-          Number(empleado.remunerativo_adicional || 0)) *
-          0.02
-      : 0;
+    const totalBruto = Number(empleado.monto) + 
+                       Number(empleado.adicional) + 
+                       Number(empleado.suma_no_remunerativa);
+    return empleado.afiliado === "No" ? totalBruto * 0.02 : 0;
   };
 
   const calcularSindicato = (empleado: Empleado): number => {
-    return empleado.afiliado === "Sí"
-      ? (Number(empleado.monto) +
-          Number(empleado.adicional) +
-          Number(empleado.suma_no_remunerativa || 0) +
-          Number(empleado.remunerativo_adicional || 0)) *
-          0.03
-      : 0;
+    const totalBruto = Number(empleado.monto) + 
+                       Number(empleado.adicional) + 
+                       Number(empleado.suma_no_remunerativa);
+    return empleado.afiliado === "Sí" ? totalBruto * 0.03 : 0;
   };
 
   const calcularTotal = (empleado: Empleado, basicSalary: number): number => {
@@ -208,18 +200,13 @@ const MyDocument: React.FC<{
 
   const { totalAporteSolidario, totalSindicato } = data.empleados.reduce(
     (acc, employee) => {
-      const totalEmployee =
-        Number(employee.monto) +
-        Number(employee.adicional) +
-        Number(employee.suma_no_remunerativa || 0) +
-        Number(employee.remunerativo_adicional || 0);
+      const totalEmployee = Number(employee.monto) + 
+                           Number(employee.adicional) + 
+                           Number(employee.suma_no_remunerativa);
 
       const aporteSolidario =
         employee.afiliado === "No"
-          ? (Number(employee.monto) +
-              Number(employee.suma_no_remunerativa || 0) +
-              Number(employee.remunerativo_adicional || 0)) *
-            APORTE_SOLIDARIO_PERCENTAGE
+          ? totalEmployee * APORTE_SOLIDARIO_PERCENTAGE
           : 0;
 
       const sindicato =
