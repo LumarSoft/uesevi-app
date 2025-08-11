@@ -160,10 +160,12 @@ const MyDocument: React.FC<{
   rate: any;
   basicSalary: any;
 }> = ({ data, rate, basicSalary }) => {
+  // Cálculos exactos siguiendo la lógica de Columns.tsx
   const calcularTotalBruto = (empleado: Empleado): number => {
     return Number(empleado.monto) + 
            Number(empleado.adicional) + 
-           Number(empleado.suma_no_remunerativa);
+           Number(empleado.suma_no_remunerativa) + 
+           Number(empleado.remunerativo_adicional);
   };
 
   const calcularFAS = (basicSalary: number): number => {
@@ -171,17 +173,20 @@ const MyDocument: React.FC<{
   };
 
   const calcularAporteSolidario = (empleado: Empleado): number => {
-    const totalBruto = Number(empleado.monto) + 
-                       Number(empleado.adicional) + 
-                       Number(empleado.suma_no_remunerativa);
-    return empleado.afiliado === "No" ? totalBruto * 0.02 : 0;
+    // 2% del sueldo básico solo para no afiliados (sin incluir adicional)
+    const baseParaAporte = Number(empleado.monto) +
+                          Number(empleado.suma_no_remunerativa) +
+                          Number(empleado.remunerativo_adicional);
+    return empleado.afiliado === "No" ? baseParaAporte * 0.02 : 0;
   };
 
   const calcularSindicato = (empleado: Empleado): number => {
-    const totalBruto = Number(empleado.monto) + 
-                       Number(empleado.adicional) + 
-                       Number(empleado.suma_no_remunerativa);
-    return empleado.afiliado === "Sí" ? totalBruto * 0.03 : 0;
+    // 3% del (sueldo básico + adicionales) solo para afiliados
+    const baseParaSindicato = Number(empleado.monto) + 
+                             Number(empleado.adicional) + 
+                             Number(empleado.suma_no_remunerativa) + 
+                             Number(empleado.remunerativo_adicional);
+    return empleado.afiliado === "Sí" ? baseParaSindicato * 0.03 : 0;
   };
 
   const calcularTotal = (empleado: Empleado, basicSalary: number): number => {
@@ -195,18 +200,23 @@ const MyDocument: React.FC<{
   const APORTE_SOLIDARIO_PERCENTAGE = 0.02;
   const SINDICATO_PERCENTAGE = 0.03;
 
-  // Cálculos del resumen
-  const totalFaz = basicSalary * FAS_PERCENTAGE * data.empleados.length;
+  // Cálculos del resumen - replicando exactamente la lógica de Total.tsx
+  let totalFaz = basicSalary * FAS_PERCENTAGE * data.empleados.length;
 
-  const { totalAporteSolidario, totalSindicato } = data.empleados.reduce(
+  let { totalAporteSolidario, totalSindicato } = data.empleados.reduce(
     (acc, employee) => {
-      const totalEmployee = Number(employee.monto) + 
-                           Number(employee.adicional) + 
-                           Number(employee.suma_no_remunerativa);
+      const totalEmployee =
+        Number(employee.monto) +
+        Number(employee.adicional) +
+        Number(employee.suma_no_remunerativa) +
+        Number(employee.remunerativo_adicional);
 
       const aporteSolidario =
         employee.afiliado === "No"
-          ? totalEmployee * APORTE_SOLIDARIO_PERCENTAGE
+          ? (Number(employee.monto) +
+              Number(employee.suma_no_remunerativa) +
+              Number(employee.remunerativo_adicional)) *
+            APORTE_SOLIDARIO_PERCENTAGE
           : 0;
 
       const sindicato =
@@ -220,7 +230,44 @@ const MyDocument: React.FC<{
     { totalAporteSolidario: 0, totalSindicato: 0 }
   );
 
+  // Calcular el total sin ajuste
   const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
+
+  // Calcular el ajuste automático
+  const importeDeclaracion = Number(data.subtotal);
+  const ajuste = importeDeclaracion - grandTotal;
+
+  // Crear un array de contribuciones para distribuir el ajuste
+  const contribuciones = [
+    { nombre: "FAS", valor: totalFaz, porcentaje: totalFaz / grandTotal },
+    {
+      nombre: "Aporte Solidario",
+      valor: totalAporteSolidario,
+      porcentaje: totalAporteSolidario / grandTotal,
+    },
+    {
+      nombre: "Sindicato",
+      valor: totalSindicato,
+      porcentaje: totalSindicato / grandTotal,
+    },
+  ];
+
+  // Distribuir el ajuste de manera precisa
+  const contribucionesAjustadas = contribuciones.map((contribucion) => {
+    const ajusteContribucion = ajuste * contribucion.porcentaje;
+    return {
+      ...contribucion,
+      valorAjustado: contribucion.valor + ajusteContribucion,
+    };
+  });
+
+  // Extraer valores ajustados
+  const totalFazAjustado = contribucionesAjustadas[0].valorAjustado;
+  const totalAporteSolidarioAjustado = contribucionesAjustadas[1].valorAjustado;
+  const totalSindicatoAjustado = contribucionesAjustadas[2].valorAjustado;
+
+  const grandTotalAjustado =
+    totalFazAjustado + totalAporteSolidarioAjustado + totalSindicatoAjustado;
 
   // Cálculo de intereses
   const vencimiento = new Date(data.vencimiento);
@@ -237,11 +284,12 @@ const MyDocument: React.FC<{
     );
   }
 
+  // Calcular intereses solo si la declaración está vencida
   let totalIntereses = 0;
   if (diffDays > 0) {
     const tasaInteres = parseFloat(rate.porcentaje);
     const interes = tasaInteres * diffDays;
-    totalIntereses = (grandTotal * interes) / 100;
+    totalIntereses = (grandTotalAjustado * interes) / 100;
   }
 
   return (
@@ -317,31 +365,37 @@ const MyDocument: React.FC<{
             <View style={styles.summaryItem}>
               <Text style={styles.summaryLabel}>FAS</Text>
               <Text style={styles.summaryValue}>
-                {formatCurrency(totalFaz)}
+                {formatCurrency(totalFazAjustado)}
               </Text>
             </View>
             <View style={styles.summaryItem}>
               <Text style={styles.summaryLabel}>Aporte Solidario</Text>
               <Text style={styles.summaryValue}>
-                {formatCurrency(totalAporteSolidario)}
+                {formatCurrency(totalAporteSolidarioAjustado)}
               </Text>
             </View>
             <View style={styles.summaryItem}>
               <Text style={styles.summaryLabel}>Sindicato</Text>
               <Text style={styles.summaryValue}>
-                {formatCurrency(totalSindicato)}
+                {formatCurrency(totalSindicatoAjustado)}
               </Text>
             </View>
             <View style={styles.summaryItem}>
               <Text style={styles.summaryLabel}>TOTAL</Text>
               <Text style={styles.summaryValuePrimary}>
-                {formatCurrency(grandTotal)}
+                {formatCurrency(grandTotalAjustado)}
               </Text>
             </View>
             <View style={styles.summaryItem}>
               <Text style={styles.summaryLabel}>Intereses</Text>
               <Text style={styles.summaryValueDanger}>
                 {formatCurrency(totalIntereses)}
+              </Text>
+            </View>
+            <View style={styles.summaryItem}>
+              <Text style={styles.summaryLabel}>Total a pagar</Text>
+              <Text style={styles.summaryValueDanger}>
+                {formatCurrency(grandTotalAjustado + totalIntereses)}
               </Text>
             </View>
           </View>
@@ -431,7 +485,7 @@ const MyDocument: React.FC<{
                   <Text>{formatCurrency(calcularTotalBruto(empleado))}</Text>
                 </View>
                 <View style={styles.tableCol}>
-                  <Text>{formatCurrency(calcularFAS(data.sueldo_basico))}</Text>
+                  <Text>{formatCurrency(calcularFAS(basicSalary))}</Text>
                 </View>
                 <View style={styles.tableCol}>
                   <Text>
@@ -444,7 +498,7 @@ const MyDocument: React.FC<{
                 <View style={styles.tableCol}>
                   <Text>
                     {formatCurrency(
-                      calcularTotal(empleado, data.sueldo_basico)
+                      calcularTotal(empleado, basicSalary)
                     )}
                   </Text>
                 </View>
