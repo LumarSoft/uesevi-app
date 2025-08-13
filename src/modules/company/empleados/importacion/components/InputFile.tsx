@@ -160,7 +160,9 @@ export const InputFile = ({
           // Validar categoría (debe ser uno de los valores permitidos)
           if (
             row.categora &&
-            !CATEGORIAS_PERMITIDAS.includes(String(row.categora).trim())
+            !CATEGORIAS_PERMITIDAS.some(categoria => 
+              categoria.toLowerCase() === String(row.categora).trim().toLowerCase()
+            )
           ) {
             errors.push(
               `Fila ${rowNumber}: La categoría "${row.categora}" no es válida. Revise las opciones nuevamente`
