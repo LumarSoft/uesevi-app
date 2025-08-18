@@ -1,12 +1,29 @@
+"use client";
 import Header from "@/shared/components/Header/Header";
 import Sidebar from "@/shared/components/SidebarAdmin/Sidebar";
 import { ThemeProvider } from "next-themes";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import {
+  isAuthenticatedWithRole,
+  clearAuthToken,
+} from "@/shared/utils/tokenUtils";
 
 export default function SidebarLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticatedWithRole("admin")) {
+      clearAuthToken();
+      router.replace("/admin/login");
+      return;
+    }
+  }, [router]);
+
   return (
     <ThemeProvider attribute="class" defaultTheme="system">
       <Header />
