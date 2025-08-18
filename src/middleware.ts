@@ -89,6 +89,19 @@ export async function middleware(req: NextRequest) {
 
   if (pathname.startsWith("/admin")) {
     if (pathname === "/admin/login") {
+      if (token) {
+        try {
+          const { payload } = await jwtVerify(
+            token,
+            new TextEncoder().encode(JWT_SECRET)
+          );
+          if (payload.rol === "admin") {
+            return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+          }
+        } catch (error) {
+          console.error("Error al verificar token en /admin/login:", (error as Error).message);
+        }
+      }
       return NextResponse.next();
     }
 
