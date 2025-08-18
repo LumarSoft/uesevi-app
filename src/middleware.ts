@@ -1,5 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getCookie } from "cookies-next";
 import { jwtVerify, SignJWT, type JWTPayload } from "jose";
 
 const JWT_SECRET = process.env.JWT_SECRET || "defaultsecret";
@@ -18,7 +17,7 @@ export async function middleware(req: NextRequest) {
   }
   
   const pathname = req.nextUrl.pathname;
-  const token = getCookie("auth-token", { req });
+  const token = req.cookies.get("auth-token")?.value;
 
   if (pathname === "/loginempresa") {
     if (token) {

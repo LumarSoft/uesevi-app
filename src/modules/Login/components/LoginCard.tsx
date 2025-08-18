@@ -44,7 +44,14 @@ export const LoginCard = () => {
         }
 
         userStore.getState().setAuth(token, user as any);
-        setCookie("auth-token", token);
+        const cookieDomain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN;
+        setCookie("auth-token", token, {
+          path: "/",
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 60,
+          ...(cookieDomain ? { domain: cookieDomain } : {}),
+        });
 
         router.replace("/admin/dashboard");
       } else {
