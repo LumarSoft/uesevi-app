@@ -60,7 +60,14 @@ export function LoginEmpresaModule() {
 
       const { user, token } = data;
       userStore.getState().setAuth(token, user);
-      setCookie("auth-token", token);
+      const cookieDomain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN;
+      setCookie("auth-token", token, {
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60,
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
+      });
 
       router.replace("/empresa/empleados/importacion");
     } catch (error: any) {
