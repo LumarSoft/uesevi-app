@@ -66,21 +66,32 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center py-4 gap-4">
         <Input
           placeholder="Filtrar por nombre y apellido"
-          value={(table.getColumn("nombre_completo")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("nombre_completo")?.getFilterValue() as string) ??
+            ""
+          }
           onChange={(event) =>
-            table.getColumn("nombre_completo")?.setFilterValue(event.target.value)
+            table
+              .getColumn("nombre_completo")
+              ?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <div className="ml-4">
-          <ComboboxEmpresas
-            empresas={empresas}
-            onChangeFilterCombobox={onChangeFilterCombobox}
-          />
-        </div>
+        <Input
+          placeholder="Filtrar por CUIL"
+          value={(table.getColumn("cuil")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("cuil")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <ComboboxEmpresas
+          empresas={empresas}
+          onChangeFilterCombobox={onChangeFilterCombobox}
+        />
       </div>
       <div className="rounded-md border">
         <Table>
