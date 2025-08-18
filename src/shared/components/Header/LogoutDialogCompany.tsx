@@ -18,9 +18,17 @@ export const LogoutDialogCompany = () => {
   const logout = userStore((state) => state.logout);
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/logout", { method: "POST" });
+    } catch (e) {
+      const cookieDomain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN as string | undefined;
+      deleteCookie("auth-token", {
+        path: "/",
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
+      });
+    }
     logout();
-    deleteCookie("auth-token");
     router.push("/loginempresa");
     setIsDialogOpen(false);
   };

@@ -3,6 +3,7 @@ import { jwtVerify, SignJWT, type JWTPayload } from "jose";
 
 const JWT_SECRET = process.env.JWT_SECRET || "defaultsecret";
 const JWT_EXPIRATION_TIME = process.env.JWT_EXPIRATION_TIME || "1h";
+const COOKIE_DOMAIN = process.env.NEXT_PUBLIC_COOKIE_DOMAIN;
 
 if (!JWT_SECRET || JWT_SECRET.length === 0) {
   throw new Error("JWT_SECRET no está definido o es vacío.");
@@ -67,8 +68,11 @@ export async function middleware(req: NextRequest) {
         const response = NextResponse.next();
         response.cookies.set("auth-token", newToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production", // Asegúrate de que solo se setee en producción
-          maxAge: 60 * 60, // 1 hora
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 60 * 60,
+          sameSite: "lax",
+          path: "/",
+          ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } as any : {}),
         });
         console.log("Token refrescado exitosamente");
         return response;
@@ -129,8 +133,11 @@ export async function middleware(req: NextRequest) {
         const response = NextResponse.next();
         response.cookies.set("auth-token", newToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production", // Asegúrate de que solo se setee en producción
-          maxAge: 60 * 60, // 1 hora
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 60 * 60,
+          sameSite: "lax",
+          path: "/",
+          ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } as any : {}),
         });
         console.log("Token refrescado exitosamente");
         return response;
