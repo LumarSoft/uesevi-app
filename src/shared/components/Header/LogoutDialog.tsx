@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { deleteCookie } from "cookies-next";
+import { clearAuthToken } from "@/shared/utils/tokenUtils";
 
 export const LogoutDialog = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -20,7 +20,7 @@ export const LogoutDialog = () => {
 
   const handleLogout = () => {
     logout();
-    deleteCookie("auth-token");
+    clearAuthToken();
     router.replace("/admin/login");
     setIsDialogOpen(false);
   };

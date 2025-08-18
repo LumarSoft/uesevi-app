@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
-import { setCookie } from "cookies-next";
+
 import LoadingSpinner from "./LoadingSpinner";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
@@ -44,7 +44,7 @@ export const LoginCard = () => {
         }
 
         userStore.getState().setAuth(token, user as any);
-        setCookie("auth-token", token);
+        localStorage.setItem("auth-token", token);
 
         router.replace("/admin/dashboard");
       } else {

@@ -16,7 +16,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
-import { setCookie } from "cookies-next";
+
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/modules/Login/components/LoadingSpinner";
 
@@ -60,7 +60,7 @@ export function LoginEmpresaModule() {
 
       const { user, token } = data;
       userStore.getState().setAuth(token, user);
-      setCookie("auth-token", token);
+      localStorage.setItem("auth-token", token);
 
       router.replace("/empresa/empleados/importacion");
     } catch (error: any) {
