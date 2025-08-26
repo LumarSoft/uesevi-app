@@ -245,9 +245,6 @@ export function DataTable<TData, TValue>({
       const apellido = (row.original as any).apellido || "";
       const nombre = (row.original as any).nombre || "";
 
-      // Normalizar los valores de la base de datos
-      const apellidoNormalizado = normalizarTexto(apellido);
-      const nombreNormalizado = normalizarTexto(nombre);
       const searchValueNormalizado = normalizarTexto(searchValue);
 
       // Crear diferentes combinaciones para búsqueda (con y sin comas)
@@ -404,10 +401,6 @@ export function DataTable<TData, TValue>({
     }
   }, [activeFilters.search, orderedRows.length]);
 
-  const onChangeFilterCombobox = (currentValue: string) => {
-    table.getColumn("nombre_empresa")?.setFilterValue(currentValue);
-  };
-
   return (
     <div>
       <div className="flex items-center py-4 gap-4">
@@ -429,7 +422,7 @@ export function DataTable<TData, TValue>({
           disabled={!searchTerm.trim()}
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          🔍 Buscar
+          Buscar
         </Button>
         {searchTerm && (
           <Button
@@ -451,7 +444,7 @@ export function DataTable<TData, TValue>({
             <span className="text-lg">🔍</span>
             <strong>Búsqueda activa:</strong>
             <span className="font-mono bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded text-blue-800 dark:text-blue-200">
-              "{activeFilters.search}"
+              &quot;{activeFilters.search}&quot;
             </span>
             <span className="text-blue-600 dark:text-blue-400">
               ({orderedRows.length} resultados encontrados)
@@ -470,8 +463,8 @@ export function DataTable<TData, TValue>({
         <div className="text-sm mb-3 p-4 bg-amber-500/10 dark:bg-amber-400/10 border border-amber-200 dark:border-amber-700 rounded-lg shadow-sm">
           <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
             <span className="text-lg">✏️</span>
-            <strong>Escribiendo...</strong> Haz clic en "Buscar" o presiona
-            Enter para ejecutar la búsqueda
+            <strong>Escribiendo...</strong> Haz clic en &quot;Buscar&quot; o
+            presiona Enter para ejecutar la búsqueda
           </div>
         </div>
       ) : (
@@ -479,7 +472,7 @@ export function DataTable<TData, TValue>({
           <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
             <span className="text-lg">💡</span>
             <strong>Tip:</strong> Busca por nombre, CUIL o empresa. Haz clic en
-            "Buscar" o presiona Enter
+            &quot;Buscar&quot; o presiona Enter
           </div>
         </div>
       )}
