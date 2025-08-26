@@ -9,16 +9,12 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
   {
     id: "nombre_completo",
     accessorFn: (row) => {
-      // Manejar el caso donde el nombre viene como "Apellido, Nombre"
-      if (row.nombre && row.nombre.includes(',')) {
-        return row.nombre.trim();
+      // Crear nombre completo en formato "Apellido, Nombre"
+      if (row.apellido && row.nombre) {
+        return `${row.apellido}, ${row.nombre}`;
       }
-      // Manejar el caso donde hay campos separados
-      if (row.apellido) {
-        return `${row.nombre} ${row.apellido}`;
-      }
-      // Solo nombre disponible
-      return row.nombre || '';
+      // Fallback si solo hay nombre
+      return row.nombre || row.apellido || '';
     },
     header: ({ column }) => {
       return (
@@ -32,61 +28,121 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
       );
     },
     filterFn: (row, id, value) => {
-      let nombreCompleto = '';
-      
-      // Obtener el nombre completo según el formato de datos
-      if (row.original.nombre && row.original.nombre.includes(',')) {
-        nombreCompleto = row.original.nombre.trim();
-      } else if (row.original.apellido) {
-        nombreCompleto = `${row.original.nombre} ${row.original.apellido}`;
-      } else {
-        nombreCompleto = row.original.nombre || '';
-      }
+      if (!value || value.trim() === '') return true;
       
       const searchValue = value.toLowerCase().trim();
+      const apellido = (row.original.apellido || '').toLowerCase();
+      const nombre = (row.original.nombre || '').toLowerCase();
       
-      if (!searchValue) return true;
-      
-      // Normalizar el texto para búsqueda
-      const textoNormalizado = nombreCompleto.toLowerCase();
+      // Crear diferentes combinaciones para búsqueda
+      const combinaciones = [
+        `${apellido} ${nombre}`,           // "Apellido Nombre"
+        `${nombre} ${apellido}`,           // "Nombre Apellido"
+        `${apellido}, ${nombre}`,          // "Apellido, Nombre"
+        `${nombre}, ${apellido}`,          // "Nombre, Apellido"
+        apellido,                          // Solo apellido
+        nombre,                            // Solo nombre
+      ];
       
       // Dividir el texto de búsqueda en palabras
-      const palabrasBusqueda = searchValue.split(/\s+/);
+      const palabrasBusqueda = searchValue.split(/\s+/).filter((p: string) => p.length > 0);
       
-      // Si es formato "Apellido, Nombre", también crear versión "Nombre Apellido"
-      let textoAlternativo = '';
-      if (nombreCompleto.includes(',')) {
-        const partes = nombreCompleto.split(',').map(p => p.trim());
-        if (partes.length === 2) {
-          textoAlternativo = `${partes[1]} ${partes[0]}`.toLowerCase();
-        }
-      }
-      
-      // Función para verificar si todas las palabras de búsqueda están al inicio de palabras diferentes
-      const verificarCoincidencia = (texto: string) => {
-        const palabrasTexto = texto.split(/[\s,]+/).filter(p => p.length > 0);
-        const palabrasUsadas = new Set<number>();
+      // Función para calcular puntuación de coincidencia
+      const calcularPuntuacion = (texto: string) => {
+        let puntuacion = 0;
+        const textoLower = texto.toLowerCase();
         
-        return palabrasBusqueda.every((palabraBusqueda: string) => {
-          // Buscar una palabra del texto que empiece con esta palabra de búsqueda
-          // y que no haya sido usada antes
-          const indiceEncontrado = palabrasTexto.findIndex((palabraTexto: string, index: number) => 
-            !palabrasUsadas.has(index) && palabraTexto.startsWith(palabraBusqueda)
-          );
-          
-          if (indiceEncontrado !== -1) {
-            palabrasUsadas.add(indiceEncontrado);
-            return true;
+        // Coincidencia exacta (máxima puntuación)
+        if (textoLower === searchValue) {
+          puntuacion += 1000;
+        }
+        
+        // Coincidencia al inicio (alta puntuación)
+        if (textoLower.startsWith(searchValue)) {
+          puntuacion += 500;
+        }
+        
+        // Coincidencia al final (media puntuación)
+        if (textoLower.endsWith(searchValue)) {
+          puntuacion += 300;
+        }
+        
+        // Verificar si todas las palabras de búsqueda están presentes
+        let todasLasPalabras = true;
+        let palabrasEncontradas = 0;
+        
+        for (const palabra of palabrasBusqueda) {
+          if (textoLower.includes(palabra)) {
+            palabrasEncontradas++;
+            // Puntuación adicional por cada palabra encontrada
+            if (textoLower.startsWith(palabra)) {
+              puntuacion += 100; // Palabra al inicio
+            } else if (textoLower.includes(` ${palabra}`)) {
+              puntuacion += 80;  // Palabra después de espacio
+            } else {
+              puntuacion += 50;  // Palabra en cualquier lugar
+            }
+          } else {
+            todasLasPalabras = false;
           }
-          return false;
-        });
+        }
+        
+        // Bonus por encontrar todas las palabras
+        if (todasLasPalabras) {
+          puntuacion += 200;
+        }
+        
+        // Bonus por orden correcto de palabras
+        if (palabrasEncontradas === palabrasBusqueda.length) {
+          let ordenCorrecto = true;
+          let ultimaPosicion = -1;
+          
+          for (const palabra of palabrasBusqueda) {
+            const posicion = textoLower.indexOf(palabra);
+            if (posicion <= ultimaPosicion) {
+              ordenCorrecto = false;
+              break;
+            }
+            ultimaPosicion = posicion;
+          }
+          
+          if (ordenCorrecto) {
+            puntuacion += 150;
+          }
+        }
+        
+        return puntuacion;
       };
       
-      // Verificar en el texto original y en el alternativo
-      const resultadoOriginal = verificarCoincidencia(textoNormalizado);
-      const resultadoAlternativo = textoAlternativo && verificarCoincidencia(textoAlternativo);
+      // Calcular puntuación para cada combinación
+      const puntuaciones = combinaciones.map((combinacion: string) => ({
+        texto: combinacion,
+        puntuacion: calcularPuntuacion(combinacion)
+      }));
       
-      return resultadoOriginal || resultadoAlternativo;
+      // Obtener la máxima puntuación
+      const maxPuntuacion = Math.max(...puntuaciones.map((p: { puntuacion: number }) => p.puntuacion));
+      
+      // Guardar la puntuación en el row para ordenamiento posterior
+      (row as any).searchScore = maxPuntuacion;
+      
+      // Retornar true si hay alguna coincidencia (puntuación > 0)
+      return maxPuntuacion > 0;
+    },
+    sortingFn: (rowA, rowB) => {
+      // Ordenar por puntuación de búsqueda (descendente) si está disponible
+      const scoreA = (rowA.original as any).searchScore || 0;
+      const scoreB = (rowB.original as any).searchScore || 0;
+      
+      if (scoreA !== scoreB) {
+        return scoreB - scoreA; // Orden descendente (mayor puntuación primero)
+      }
+      
+      // Si las puntuaciones son iguales, ordenar alfabéticamente
+      const nombreA = `${rowA.original.apellido || ''} ${rowA.original.nombre || ''}`.toLowerCase();
+      const nombreB = `${rowB.original.apellido || ''} ${rowB.original.nombre || ''}`.toLowerCase();
+      
+      return nombreA.localeCompare(nombreB);
     },
   },
   {
@@ -101,6 +157,20 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
+    },
+    filterFn: (row, id, value) => {
+      if (!value || value.trim() === '') return true;
+      
+      const searchValue = value.trim();
+      const cuil = String(row.original.cuil || '');
+      
+      // Coincidencia exacta
+      if (cuil === searchValue) return true;
+      
+      // Coincidencia parcial (contiene el valor de búsqueda)
+      if (cuil.includes(searchValue)) return true;
+      
+      return false;
     },
   },
   {
