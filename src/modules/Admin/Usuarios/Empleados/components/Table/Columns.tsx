@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
+import { HistorialDialog } from "../Dialog/HistorialDialog";
 
 export const createColumns = (): ColumnDef<IEmpleado>[] => [
   {
@@ -230,6 +231,17 @@ export const createColumns = (): ColumnDef<IEmpleado>[] => [
     },
     cell: ({ row }) => {
       return <span>{row.original.sindicato_activo ? "Si" : "No"}</span>;
+    },
+  },
+  {
+    id: "acciones",
+    header: "Acciones",
+    cell: ({ row }) => {
+      return (
+        <div className="flex items-center gap-2">
+          <HistorialDialog empleado={row.original} />
+        </div>
+      );
     },
   },
 ];
