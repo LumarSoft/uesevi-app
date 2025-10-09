@@ -8,6 +8,15 @@ export default function Declaraciones() {
   const [dataCompanies, setDataCompanies] = useState([]);
   const [dataStatements, setDataStatements] = useState([]);
 
+  const fetchStatements = async () => {
+    try {
+      const statementsResult = await fetchData("statements");
+      setDataStatements(statementsResult.data);
+    } catch (error) {
+      console.error("Error fetching statements:", error);
+    }
+  };
+
   useEffect(() => {
     const fetch = async () => {
       const companiesResult = await fetchData("companies");
@@ -33,6 +42,7 @@ export default function Declaraciones() {
     <DeclaracionesModule
       companies={dataCompanies}
       statements={dataStatements}
+      refreshStatements={fetchStatements}
     />
   );
 }

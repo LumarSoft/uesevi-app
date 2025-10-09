@@ -10,9 +10,11 @@ import { useEffect, useState } from "react";
 export default function DeclaracionesModule({
   companies,
   statements,
+  refreshStatements,
 }: {
   companies: IEmpresa[];
   statements: IDeclaracion[];
+  refreshStatements: () => Promise<void>;
 }) {
   const [statementsState, setStatementsState] =
     useState<IDeclaracion[]>(statements);
@@ -27,6 +29,9 @@ export default function DeclaracionesModule({
           statements.some((original) => original.id === filtered.id)
       );
       setStatementsState(validFilteredStatements);
+    } else {
+      // Si no hay filtros guardados, usar todos los statements
+      setStatementsState(statements);
     }
   }, [statements]);
 
@@ -71,6 +76,7 @@ export default function DeclaracionesModule({
           companies={companies}
           statements={statements}
           setStatementsState={setStatementsState}
+          refreshStatements={refreshStatements}
         />
         <DataTable columns={columns} data={statementsState || []} />
       </div>
