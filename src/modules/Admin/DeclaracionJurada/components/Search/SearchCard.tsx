@@ -49,15 +49,6 @@ export default function SearchCard({
     }
   };
 
-  const fetchSalaries = async () => {
-    try {
-      const result = await fetchData(`statements/salaries/${idEmployee}`);
-      setSalaryEmployee(result.data);
-    } catch (error) {
-      console.error("Error fetching salarios:", error);
-    }
-  };
-
   useEffect(() => {
     setIdEmployee(null);
     if (company !== null) {
@@ -66,27 +57,63 @@ export default function SearchCard({
   }, [company]);
 
   useEffect(() => {
+    const fetchSalaries = async () => {
+      try {
+        const result = await fetchData(`statements/salaries/${idEmployee}`);
+        setSalaryEmployee(result.data);
+      } catch (error) {
+        console.error("Error fetching salarios:", error);
+      }
+    };
+
     if (idEmployee !== null) {
       fetchSalaries();
     }
   }, [idEmployee]);
 
-  const handleFilter = () => {
-    let filter = filterDeclaraciones(company, statements, salaryEmployee);
+  const handleFilter = async () => {
+    if (company !== null) {
+      // Si hay una empresa seleccionada, usar el endpoint específico
+      try {
+        const result = await fetchData(
+          `statements/company/${company}/filtered`
+        );
+        const filteredStatements = result.data.filter(
+          (item: any): item is IDeclaracion => {
+            return (item as IDeclaracion).subtotal !== undefined;
+          }
+        );
 
-    const filteredStatements = filter.filter((item): item is IDeclaracion => {
-      return (item as IDeclaracion).subtotal !== undefined;
-    });
+        sessionStorage.setItem(
+          "searchState",
+          JSON.stringify({
+            company,
+            filteredStatements,
+          })
+        );
 
-    sessionStorage.setItem(
-      "searchState",
-      JSON.stringify({
-        company,
-        filteredStatements,
-      })
-    );
+        setStatementsState(filteredStatements);
+      } catch (error) {
+        console.error("Error fetching filtered statements:", error);
+      }
+    } else {
+      // Si no hay empresa seleccionada, usar el filtrado local original
+      let filter = filterDeclaraciones(company, statements, salaryEmployee);
 
-    setStatementsState(filteredStatements);
+      const filteredStatements = filter.filter((item): item is IDeclaracion => {
+        return (item as IDeclaracion).subtotal !== undefined;
+      });
+
+      sessionStorage.setItem(
+        "searchState",
+        JSON.stringify({
+          company,
+          filteredStatements,
+        })
+      );
+
+      setStatementsState(filteredStatements);
+    }
   };
 
   const handleClear = () => {

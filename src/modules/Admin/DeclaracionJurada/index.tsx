@@ -5,7 +5,6 @@ import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { DataTable } from "./components/Table/Data-Table";
 import { createColumns } from "./components/Table/columns";
 import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
-import { IContratos } from "@/shared/types/Querys/IContratos";
 import { useEffect, useState } from "react";
 
 export default function DeclaracionesModule({
@@ -23,8 +22,9 @@ export default function DeclaracionesModule({
     const savedState = sessionStorage.getItem("searchState");
     if (savedState) {
       const { filteredStatements } = JSON.parse(savedState);
-      const validFilteredStatements = filteredStatements.filter((filtered: IDeclaracion) =>
-        statements.some((original) => original.id === filtered.id)
+      const validFilteredStatements = filteredStatements.filter(
+        (filtered: IDeclaracion) =>
+          statements.some((original) => original.id === filtered.id)
       );
       setStatementsState(validFilteredStatements);
     }
@@ -40,7 +40,7 @@ export default function DeclaracionesModule({
   const deleteStatement = (id: number) => {
     const newData = statementsState.filter((item) => item.id !== id);
     setStatementsState(newData);
-    
+
     const savedState = sessionStorage.getItem("searchState");
     if (savedState) {
       const parsedState = JSON.parse(savedState);
