@@ -32,45 +32,56 @@ const PREVIEW_MAX_HEIGHT = 200;
 // Función para redimensionar imagen
 const resizeImage = (file: File): Promise<string> => {
   return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
     const img = new Image();
-    
+
     img.onload = () => {
       const { width, height } = img;
       let { width: newWidth, height: newHeight } = img;
-      
+
       // Calcular nuevas dimensiones manteniendo la proporción
       if (width > PREVIEW_MAX_WIDTH || height > PREVIEW_MAX_HEIGHT) {
-        const ratio = Math.min(PREVIEW_MAX_WIDTH / width, PREVIEW_MAX_HEIGHT / height);
+        const ratio = Math.min(
+          PREVIEW_MAX_WIDTH / width,
+          PREVIEW_MAX_HEIGHT / height
+        );
         newWidth = width * ratio;
         newHeight = height * ratio;
       }
-      
+
       canvas.width = newWidth;
       canvas.height = newHeight;
-      
+
       ctx?.drawImage(img, 0, 0, newWidth, newHeight);
-      
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          resolve(url);
-        } else {
-          resolve(URL.createObjectURL(file));
-        }
-      }, file.type, 0.8); // Calidad del 80%
+
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            resolve(url);
+          } else {
+            resolve(URL.createObjectURL(file));
+          }
+        },
+        file.type,
+        0.8
+      ); // Calidad del 80%
     };
-    
+
     img.src = URL.createObjectURL(file);
   });
 };
 
 // Componente de preview de imagen optimizado
-const ImagePreview = ({ file, index, onRemove }: { 
-  file: File; 
-  index: number; 
-  onRemove: (index: number) => void; 
+const ImagePreview = ({
+  file,
+  index,
+  onRemove,
+}: {
+  file: File;
+  index: number;
+  onRemove: (index: number) => void;
 }) => {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
@@ -145,12 +156,14 @@ const ImagePreview = ({ file, index, onRemove }: {
 
 // Función para verificar si es un archivo de forma robusta
 const isFileObject = (obj: any): obj is File => {
-  return obj && 
-         typeof obj === 'object' && 
-         typeof obj.size === 'number' && 
-         typeof obj.type === 'string' && 
-         typeof obj.name === 'string' &&
-         typeof obj.lastModified === 'number';
+  return (
+    obj &&
+    typeof obj === "object" &&
+    typeof obj.size === "number" &&
+    typeof obj.type === "string" &&
+    typeof obj.name === "string" &&
+    typeof obj.lastModified === "number"
+  );
 };
 
 export default function AddNoticiaModule() {
@@ -160,76 +173,91 @@ export default function AddNoticiaModule() {
   const [secondBody, setSecondBody] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [pdf, setPdf] = useState<File | null>(null);
-  const [addressee, setAddressee] = useState("");
+  const [addressee, setAddressee] = useState<string | null>("");
   const [dragOver, setDragOver] = useState(false);
   const [dragOverPdf, setDragOverPdf] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const validateFiles = useCallback((files: File[]) => {
-    const validFiles = files.filter(file => {
-      if (!file.type.startsWith('image/')) {
-        toast.error(`${file.name} no es una imagen válida`);
-        return false;
+  const validateFiles = useCallback(
+    (files: File[]) => {
+      const validFiles = files.filter((file) => {
+        if (!file.type.startsWith("image/")) {
+          toast.error(`${file.name} no es una imagen válida`);
+          return false;
+        }
+        if (file.size > MAX_FILE_SIZE) {
+          toast.error(`${file.name} es demasiado grande (máximo 5MB)`);
+          return false;
+        }
+        return true;
+      });
+
+      if (validFiles.length + images.length > MAX_IMAGES) {
+        toast.error(`Máximo ${MAX_IMAGES} imágenes permitidas`);
+        return validFiles.slice(0, MAX_IMAGES - images.length);
       }
-      if (file.size > MAX_FILE_SIZE) {
-        toast.error(`${file.name} es demasiado grande (máximo 5MB)`);
-        return false;
+
+      return validFiles;
+    },
+    [images.length]
+  );
+
+  const handleImageChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      if (!files) return;
+
+      setIsProcessing(true);
+      const fileArray = Array.from(files);
+      const validFiles = validateFiles(fileArray);
+
+      if (validFiles.length > 0) {
+        setImages((prev) => [...prev, ...validFiles]);
       }
-      return true;
-    });
 
-    if (validFiles.length + images.length > MAX_IMAGES) {
-      toast.error(`Máximo ${MAX_IMAGES} imágenes permitidas`);
-      return validFiles.slice(0, MAX_IMAGES - images.length);
-    }
+      setIsProcessing(false);
+      // Limpiar el input
+      e.target.value = "";
+    },
+    [validateFiles]
+  );
 
-    return validFiles;
-  }, [images.length]);
+  const handleImageDrop = useCallback(
+    async (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragOver(false);
+      setIsProcessing(true);
 
-  const handleImageChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
+      const files = Array.from(e.dataTransfer.files);
+      const validFiles = validateFiles(files);
 
-    setIsProcessing(true);
-    const fileArray = Array.from(files);
-    const validFiles = validateFiles(fileArray);
-    
-    if (validFiles.length > 0) {
-      setImages(prev => [...prev, ...validFiles]);
-    }
-    
-    setIsProcessing(false);
-    // Limpiar el input
-    e.target.value = '';
-  }, [validateFiles]);
+      if (validFiles.length > 0) {
+        setImages((prev) => [...prev, ...validFiles]);
+      }
 
-  const handleImageDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragOver(false);
-    setIsProcessing(true);
-    
-    const files = Array.from(e.dataTransfer.files);
-    const validFiles = validateFiles(files);
-    
-    if (validFiles.length > 0) {
-      setImages(prev => [...prev, ...validFiles]);
-    }
-    
-    setIsProcessing(false);
-  }, [validateFiles]);
+      setIsProcessing(false);
+    },
+    [validateFiles]
+  );
 
-  const handleImageDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragOver(true);
-  }, []);
+  const handleImageDragOver = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragOver(true);
+    },
+    []
+  );
 
-  const handleImageDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragOver(false);
-  }, []);
+  const handleImageDragLeave = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragOver(false);
+    },
+    []
+  );
 
   const removeImage = useCallback((indexToRemove: number) => {
-    setImages(prev => prev.filter((_, index) => index !== indexToRemove));
+    setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,10 +274,10 @@ export default function AddNoticiaModule() {
   const handlePdfDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragOverPdf(false);
-    
+
     const file = e.dataTransfer.files[0];
-    
-    if (file && file.type === 'application/pdf') {
+
+    if (file && file.type === "application/pdf") {
       if (file.size > MAX_FILE_SIZE) {
         toast.error("El archivo PDF es demasiado grande (máximo 5MB)");
         return;
@@ -281,8 +309,8 @@ export default function AddNoticiaModule() {
     }
 
     // Verificar que tenemos archivos válidos
-    const validImages = images.filter(img => isFileObject(img));
-    
+    const validImages = images.filter((img) => isFileObject(img));
+
     if (images.length !== validImages.length) {
       toast.error("Hay imágenes corruptas, por favor vuelva a seleccionarlas");
       return;
@@ -294,12 +322,15 @@ export default function AddNoticiaModule() {
       formData.append("epigraph", epigraph);
       formData.append("body", body);
       formData.append("body2", secondBody);
-      formData.append("addressee", addressee);
-      
+
+      // Si el destinatario es "todos", enviamos una cadena especial que el backend interpretará como null
+      const finalAddressee = addressee === "todos" ? "null" : addressee;
+      formData.append("addressee", finalAddressee);
+
       if (pdf && isFileObject(pdf)) {
         formData.append("pdf", pdf);
       }
-      
+
       // Añadir solo archivos válidos
       validImages.forEach((image, index) => {
         formData.append("images", image);
@@ -312,7 +343,7 @@ export default function AddNoticiaModule() {
         secondBody,
         addressee,
         imagesCount: validImages.length,
-        pdfSize: pdf ? pdf.size : 0
+        pdfSize: pdf ? pdf.size : 0,
       });
 
       const response = await postData("news", formData);
@@ -365,6 +396,7 @@ export default function AddNoticiaModule() {
             <SelectContent>
               <SelectItem value="afiliados">Afiliados</SelectItem>
               <SelectItem value="empresas">Empresas</SelectItem>
+              <SelectItem value="todos">Todos</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -410,22 +442,28 @@ export default function AddNoticiaModule() {
           )}
           <div
             className={`border-2 border-dashed rounded-lg p-6 transition-colors cursor-pointer ${
-              dragOver 
-                ? 'border-primary bg-primary/5' 
-                : 'border-muted-foreground/25 hover:border-muted-foreground/50'
-            } ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
+              dragOver
+                ? "border-primary bg-primary/5"
+                : "border-muted-foreground/25 hover:border-muted-foreground/50"
+            } ${isProcessing ? "opacity-50 pointer-events-none" : ""}`}
             onDrop={handleImageDrop}
             onDragOver={handleImageDragOver}
             onDragLeave={handleImageDragLeave}
-            onClick={() => !isProcessing && document.getElementById('images')?.click()}
+            onClick={() =>
+              !isProcessing && document.getElementById("images")?.click()
+            }
           >
             <div className="flex flex-col items-center gap-2 text-muted-foreground">
               <ImageIcon className="h-8 w-8" />
               <div className="text-center">
                 <p className="text-sm font-medium">
-                  {dragOver ? 'Suelta las imágenes aquí' : 'Arrastra imágenes aquí o haz clic para seleccionar'}
+                  {dragOver
+                    ? "Suelta las imágenes aquí"
+                    : "Arrastra imágenes aquí o haz clic para seleccionar"}
                 </p>
-                <p className="text-xs">Formatos: JPG, PNG, GIF (máximo 5MB cada una)</p>
+                <p className="text-xs">
+                  Formatos: JPG, PNG, GIF (máximo 5MB cada una)
+                </p>
                 <p className="text-xs text-muted-foreground/70">
                   {images.length}/{MAX_IMAGES} imágenes seleccionadas
                 </p>
@@ -441,7 +479,7 @@ export default function AddNoticiaModule() {
               disabled={isProcessing}
             />
           </div>
-          
+
           {images.length > 0 && (
             <div className="grid grid-cols-2 gap-2 mt-3">
               {images.map((img, index) => (
@@ -460,20 +498,22 @@ export default function AddNoticiaModule() {
           <Label>Archivo PDF (No obligatorio)</Label>
           <div
             className={`border-2 border-dashed rounded-lg p-6 transition-colors cursor-pointer ${
-              dragOverPdf 
-                ? 'border-primary bg-primary/5' 
-                : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+              dragOverPdf
+                ? "border-primary bg-primary/5"
+                : "border-muted-foreground/25 hover:border-muted-foreground/50"
             }`}
             onDrop={handlePdfDrop}
             onDragOver={handlePdfDragOver}
             onDragLeave={handlePdfDragLeave}
-            onClick={() => document.getElementById('file')?.click()}
+            onClick={() => document.getElementById("file")?.click()}
           >
             <div className="flex flex-col items-center gap-2 text-muted-foreground">
               <File className="h-8 w-8" />
               <div className="text-center">
                 <p className="text-sm font-medium">
-                  {dragOverPdf ? 'Suelta el PDF aquí' : 'Arrastra un PDF aquí o haz clic para seleccionar'}
+                  {dragOverPdf
+                    ? "Suelta el PDF aquí"
+                    : "Arrastra un PDF aquí o haz clic para seleccionar"}
                 </p>
                 <p className="text-xs">Solo archivos PDF (máximo 5MB)</p>
               </div>
@@ -486,7 +526,7 @@ export default function AddNoticiaModule() {
               className="hidden"
             />
           </div>
-          
+
           {pdf && (
             <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
               <File className="h-5 w-5 text-red-600" />
@@ -517,7 +557,7 @@ export default function AddNoticiaModule() {
         </div>
 
         <Button disabled={isProcessing}>
-          {isProcessing ? 'Procesando...' : 'Guardar'}
+          {isProcessing ? "Procesando..." : "Guardar"}
         </Button>
       </form>
 
@@ -552,9 +592,7 @@ export default function AddNoticiaModule() {
             {images.length > 0 ? (
               images.length > 1 ? (
                 <Carousel className="mt-6">
-                  <CarouselContent>
-                    {carouselImages}
-                  </CarouselContent>
+                  <CarouselContent>{carouselImages}</CarouselContent>
                 </Carousel>
               ) : (
                 <img
