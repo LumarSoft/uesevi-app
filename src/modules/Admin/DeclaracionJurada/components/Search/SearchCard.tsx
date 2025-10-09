@@ -20,10 +20,12 @@ export default function SearchCard({
   companies,
   statements,
   setStatementsState,
+  refreshStatements,
 }: {
   companies: IEmpresa[];
   statements: IDeclaracion[]; // Cambia aquí
   setStatementsState: React.Dispatch<React.SetStateAction<IDeclaracion[]>>; // Cambia aquí
+  refreshStatements: () => Promise<void>;
 }) {
   const [company, setCompany] = useState<number | null>(null);
   const [idEmployee, setIdEmployee] = useState<number | null>(null);
@@ -116,18 +118,26 @@ export default function SearchCard({
     }
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
     setCompany(null);
     setIdEmployee(null);
     setEmployees([]);
     sessionStorage.removeItem("searchState");
     sessionStorage.removeItem("selectedCompany");
-    const filteredStatements = statements.filter(
-      (item): item is IDeclaracion => {
-        return (item as IDeclaracion).subtotal !== undefined;
-      }
-    );
-    setStatementsState(filteredStatements);
+
+    // Hacer nueva consulta para obtener datos actualizados
+    try {
+      await refreshStatements();
+    } catch (error) {
+      console.error("Error refreshing statements:", error);
+      // Fallback: usar los datos actuales si falla la consulta
+      const filteredStatements = statements.filter(
+        (item): item is IDeclaracion => {
+          return (item as IDeclaracion).subtotal !== undefined;
+        }
+      );
+      setStatementsState(filteredStatements);
+    }
   };
 
   return (
