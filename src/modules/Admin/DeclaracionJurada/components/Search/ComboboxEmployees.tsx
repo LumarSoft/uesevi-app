@@ -24,7 +24,7 @@ export const ComboboxEmployee = ({
       >
         <option value="">Seleccionar empleado</option>{" "}
         {/* Opción predeterminada */}
-        {employees.map((employee) => (
+        {(employees ?? []).map((employee) => (
           <option key={employee.id} value={employee.empleado_id}>
             {employee.nombre} {employee.apellido}
           </option>
