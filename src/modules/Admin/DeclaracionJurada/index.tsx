@@ -40,6 +40,22 @@ export default function DeclaracionesModule({
       item.id === updatedItem.id ? updatedItem : item
     );
     setStatementsState(newData);
+
+    const savedState = sessionStorage.getItem("searchState");
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      const updatedFilteredStatements = parsedState.filteredStatements.map(
+        (item: IDeclaracion) =>
+          item.id === updatedItem.id ? updatedItem : item
+      );
+      sessionStorage.setItem(
+        "searchState",
+        JSON.stringify({
+          ...parsedState,
+          filteredStatements: updatedFilteredStatements,
+        })
+      );
+    }
   };
 
   const deleteStatement = (id: number) => {
