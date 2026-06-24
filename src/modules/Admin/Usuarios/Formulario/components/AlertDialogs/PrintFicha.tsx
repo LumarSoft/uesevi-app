@@ -195,7 +195,11 @@ export const PrintFicha = ({ data }: { data: IFormulario }) => {
       });
 
       const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      // Copia a un Uint8Array con ArrayBuffer propio para compatibilidad de
+      // tipos con BlobPart (TS 5.7+ tipa Uint8Array como genérico).
+      const blob = new Blob([new Uint8Array(pdfBytes)], {
+        type: "application/pdf",
+      });
       saveAs(blob, `Ficha_Afiliacion_${toUpperCase(data.nombre)}.pdf`);
     } catch (error) {
       console.error("Error al generar el PDF:", error);
