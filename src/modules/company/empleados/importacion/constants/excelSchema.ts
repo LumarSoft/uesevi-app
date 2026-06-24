@@ -11,6 +11,11 @@ export const REQUIRED_COLUMNS = [
   "suma_no_remunerativa",
 ];
 
+/**
+ * Fallback de categorías. La validación de importación usa las categorías
+ * REALES del sistema (GET /category) y solo recurre a esta lista si la API no
+ * responde. Mantener sincronizada con la tabla `categorias` por las dudas.
+ */
 export const CATEGORIAS_PERMITIDAS = [
   "Vigilador General",
   "Vigilador Bombero",

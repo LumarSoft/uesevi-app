@@ -12,6 +12,7 @@ import {
   Empleado,
 } from "@/shared/types/Querys/IInfoDeclaracion";
 import { Button } from "@/components/ui/button";
+import { calcularAporteSolidario as calcularAporteSolidarioUtil } from "@/shared/utils/aportes";
 
 interface PDFGeneratorProps {
   data: IInfoDeclaracion;
@@ -173,11 +174,11 @@ const MyDocument: React.FC<{
   };
 
   const calcularAporteSolidario = (empleado: Empleado): number => {
-    // 2% del sueldo básico solo para no afiliados (sin incluir adicional)
-    const baseParaAporte = Number(empleado.monto) +
-                          Number(empleado.suma_no_remunerativa) +
-                          Number(empleado.remunerativo_adicional);
-    return empleado.afiliado === "No" ? baseParaAporte * 0.02 : 0;
+    // 2% del sueldo básico de la categoría, solo para no afiliados.
+    return calcularAporteSolidarioUtil(
+      empleado.afiliado !== "No",
+      empleado.sueldo_basico
+    );
   };
 
   const calcularSindicato = (empleado: Empleado): number => {
@@ -197,7 +198,6 @@ const MyDocument: React.FC<{
   };
 
   const FAS_PERCENTAGE = 0.01;
-  const APORTE_SOLIDARIO_PERCENTAGE = 0.02;
   const SINDICATO_PERCENTAGE = 0.03;
 
   // Cálculos del resumen - replicando exactamente la lógica de Total.tsx
@@ -211,13 +211,7 @@ const MyDocument: React.FC<{
         Number(employee.suma_no_remunerativa) +
         Number(employee.remunerativo_adicional);
 
-      const aporteSolidario =
-        employee.afiliado === "No"
-          ? (Number(employee.monto) +
-              Number(employee.suma_no_remunerativa) +
-              Number(employee.remunerativo_adicional)) *
-            APORTE_SOLIDARIO_PERCENTAGE
-          : 0;
+      const aporteSolidario = calcularAporteSolidario(employee);
 
       const sindicato =
         employee.afiliado === "Sí" ? totalEmployee * SINDICATO_PERCENTAGE : 0;
