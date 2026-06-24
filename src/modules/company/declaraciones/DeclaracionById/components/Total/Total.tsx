@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
+import { calcularAporteSolidario } from "@/shared/utils/aportes";
 
 const FAS_PERCENTAGE = 0.01; // 1%
 const APORTE_SOLIDARIO_PERCENTAGE = 0.02; // 2%
@@ -46,11 +47,7 @@ export function Total({
         sumaNoRemunerativa +
         remunerativoAdicional;
 
-      const aporteSolidario =
-        employee.afiliado === "No"
-          ? (montoEmpleado + sumaNoRemunerativa + remunerativoAdicional) *
-            APORTE_SOLIDARIO_PERCENTAGE
-          : 0;
+      const aporteSolidario = calcularAporteSolidario(employee.afiliado !== "No", Number(employee.sueldo_basico));
 
       const sindicato =
         employee.afiliado === "Sí" ? totalEmployee * SINDICATO_PERCENTAGE : 0;
