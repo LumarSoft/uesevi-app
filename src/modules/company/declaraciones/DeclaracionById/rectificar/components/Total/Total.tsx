@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
+import { calcularAporteSolidario } from "@/shared/utils/aportes";
 
 export function Total({ statement }: { statement: IInfoDeclaracion }) {
 
@@ -12,8 +13,11 @@ export function Total({ statement }: { statement: IInfoDeclaracion }) {
   employeeData.forEach((employee) => {
     const totalEmployee = employee.sueldo_basico + Number(employee.adicional);
     const fas = totalEmployee * 0.01;
-    const aporteSolidario =
-      employee.afiliado === "No" ? totalEmployee * 0.02 : 0;
+    // Aporte solidario: 2% del sueldo básico de la categoría, solo no afiliados.
+    const aporteSolidario = calcularAporteSolidario(
+      employee.afiliado !== "No",
+      employee.sueldo_basico
+    );
     const sindicato = employee.afiliado === "Sí" ? totalEmployee * 0.03 : 0;
 
     totalFas += fas;

@@ -1,6 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import { Terminal } from "lucide-react";
+import { DescargarPlantillaButton } from "@/shared/components/DescargarPlantillaButton";
 
 import React from "react";
 
@@ -39,11 +39,7 @@ export const ChargeAlert = () => {
           <li>El CUIL NO puede ser 00-0000000-0</li>
         </ul>
       </AlertDescription>
-      <a href="/importar-ejemplo.xlsx" download>
-        <Button className="bg-yellow-600 hover:bg-yellow-700 transition mt-3">
-          Descargar ejemplo de archivo
-        </Button>
-      </a>
+      <DescargarPlantillaButton className="bg-yellow-600 hover:bg-yellow-700 transition mt-3" />
     </div>
   );
 };
