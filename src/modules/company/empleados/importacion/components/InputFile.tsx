@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
-import { postData } from "@/services/mysql/functions";
+import { postData, fetchData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
 import { useRouter } from "next/navigation";
 import { Progress } from "@/components/ui/progress";
@@ -143,6 +143,17 @@ export const InputFile = ({
           return false;
         }
 
+        // Validar la categoría contra las categorías REALES del sistema
+        // (GET /category). Si la API no responde, se usa la lista local como
+        // fallback para no bloquear la carga.
+        const categoriasResult = await fetchData("category");
+        const categoriasValidas: string[] =
+          categoriasResult?.ok && Array.isArray(categoriasResult.data)
+            ? categoriasResult.data
+                .map((c: any) => c?.nombre)
+                .filter((n: any): n is string => Boolean(n))
+            : CATEGORIAS_PERMITIDAS;
+
         // Validar tipos de datos y valores
         const errors: string[] = [];
 
@@ -157,10 +168,10 @@ export const InputFile = ({
             );
           }
 
-          // Validar categoría (debe ser uno de los valores permitidos)
+          // Validar categoría (debe ser una de las categorías del sistema)
           if (
             row.categora &&
-            !CATEGORIAS_PERMITIDAS.some(categoria => 
+            !categoriasValidas.some(categoria =>
               categoria.toLowerCase() === String(row.categora).trim().toLowerCase()
             )
           ) {

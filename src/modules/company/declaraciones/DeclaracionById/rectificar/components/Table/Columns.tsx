@@ -3,6 +3,7 @@
 import React from "react";
 import { Empleado } from "@/shared/types/Querys/IInfoDeclaracion";
 import { ColumnDef } from "@tanstack/react-table";
+import { calcularAporteSolidario } from "@/shared/utils/aportes";
 
 // Función para formatear números como moneda
 const formatCurrency = (value: number) => {
@@ -99,10 +100,11 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
   {
     header: "Aporte solidario",
     cell: ({ row }) => {
-      const aporteSolidario =
-        row.original.afiliado === "No"
-          ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.02
-          : 0;
+      // 2% del sueldo básico de la categoría, solo para no afiliados
+      const aporteSolidario = calcularAporteSolidario(
+        row.original.afiliado !== "No",
+        row.original.sueldo_basico
+      );
       return <React.Fragment>{formatCurrency(aporteSolidario)}</React.Fragment>;
     },
   },
@@ -122,10 +124,11 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
       //aporte extraordinario?
       const fas =
         (row.original.sueldo_basico + Number(row.original.adicional)) * 0.01;
-      const aporteSolidario =
-        row.original.afiliado === "No"
-          ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.02
-          : 0;
+      // 2% del sueldo básico de la categoría, solo para no afiliados
+      const aporteSolidario = calcularAporteSolidario(
+        row.original.afiliado !== "No",
+        row.original.sueldo_basico
+      );
       const sindicato =
         row.original.afiliado === "Sí"
           ? (row.original.sueldo_basico + Number(row.original.adicional)) * 0.03
