@@ -22,33 +22,33 @@ export default function MonthCell({ cell }: Props) {
 
   if (sinDdjj) {
     return (
-      <div className="min-w-[110px] px-2 py-1 text-center">
-        <span className="text-sm text-gray-400">Sin DDJJ</span>
+      <div className="w-full px-2 py-1 text-center">
+        <span className="text-base text-gray-400">Sin DDJJ</span>
       </div>
     );
   }
 
   return (
-    <div className="min-w-[120px] px-2 py-1">
+    <div className="w-full px-2 py-1">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         className="group flex w-full flex-col items-start rounded px-1 py-0.5 text-left hover:bg-muted/60"
         title="Ver desglose"
       >
-        <span className={`text-sm font-semibold ${estadoColor[cell.estado]}`}>
+        <span className={`text-base font-semibold ${estadoColor[cell.estado]}`}>
           {formatCurrency(cell.monto)}
           <ChevronDown
-            className={`ml-1 inline h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`}
+            className={`ml-1 inline h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`}
           />
         </span>
-        <span className="text-xs text-muted-foreground">
+        <span className="text-sm text-muted-foreground">
           {cell.fecha_pago ? formatFecha(cell.fecha_pago) : "—"}
         </span>
       </button>
 
       {open && (
-        <div className="mt-1 space-y-0.5 rounded bg-muted/50 p-2 text-xs">
+        <div className="mt-1 space-y-0.5 rounded bg-muted/50 p-2 text-sm">
           <Linea label="FAS" value={cell.fas} />
           <Linea label="Ap. Solidario" value={cell.solidario} />
           <Linea label="Cuota Sindical" value={cell.sindical} />
