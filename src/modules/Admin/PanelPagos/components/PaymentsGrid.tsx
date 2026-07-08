@@ -22,17 +22,31 @@ interface Props {
   loading?: boolean;
 }
 
+// Anchos fijos (px) de las columnas que NO son de mes.
+const EMPRESA_W = 220;
+const TOTAL_W = 120;
+const PEND_W = 80;
+const MONTH_MIN_W = 130; // ancho mínimo por mes (dispara scroll cuando hay muchos)
+
 export default function PaymentsGrid({ rows, from, to, loading }: Props) {
   const router = useRouter();
   const meses: number[] = [];
   for (let m = from; m <= to; m++) meses.push(m);
 
+  // Ancho mínimo de la tabla: con table-fixed + w-full, si el contenedor es más
+  // ancho, el espacio sobrante se reparte entre las columnas de mes (crecen);
+  // si es más angosto, se respeta este mínimo y aparece scroll horizontal.
+  const minWidth = EMPRESA_W + TOTAL_W + PEND_W + meses.length * MONTH_MIN_W;
+
   return (
     <div className="overflow-x-auto rounded-md border">
-      <Table>
+      <Table className="w-full table-fixed" style={{ minWidth }}>
         <TableHeader>
           <TableRow className="bg-muted/50">
-            <TableHead className="sticky left-0 z-10 min-w-[200px] bg-muted/50 font-bold">
+            <TableHead
+              className="sticky left-0 z-10 bg-muted/50 font-bold"
+              style={{ width: EMPRESA_W }}
+            >
               Empresa
             </TableHead>
             {meses.map((m) => (
@@ -40,8 +54,12 @@ export default function PaymentsGrid({ rows, from, to, loading }: Props) {
                 {mesCorto(m)}
               </TableHead>
             ))}
-            <TableHead className="text-right font-bold">Total año</TableHead>
-            <TableHead className="text-center font-bold">Pend.</TableHead>
+            <TableHead className="text-right font-bold" style={{ width: TOTAL_W }}>
+              Total año
+            </TableHead>
+            <TableHead className="text-center font-bold" style={{ width: PEND_W }}>
+              Pend.
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -59,12 +77,15 @@ export default function PaymentsGrid({ rows, from, to, loading }: Props) {
               >
                 <TableCell
                   className="sticky left-0 z-10 bg-background font-medium"
+                  style={{ width: EMPRESA_W }}
                   onClick={() => router.push(`/admin/panel-pagos/${row.empresa_id}`)}
                 >
-                  <div className="flex items-center gap-2">
-                    {row.nombre}
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="truncate" title={row.nombre}>
+                      {row.nombre}
+                    </span>
                     {row.estado_empresa === "Inactivo" && (
-                      <Badge variant="secondary" className="text-[10px]">
+                      <Badge variant="secondary" className="shrink-0 text-[10px]">
                         Inactiva
                       </Badge>
                     )}
