@@ -25,8 +25,8 @@ interface Props {
 // Anchos fijos (px) de las columnas que NO son de mes.
 const EMPRESA_W = 220;
 const TOTAL_W = 120;
-const PEND_W = 80;
-const MONTH_MIN_W = 130; // ancho mínimo por mes (dispara scroll cuando hay muchos)
+const PEND_W = 100;
+const MONTH_MIN_W = 140; // ancho mínimo por mes (dispara scroll cuando hay muchos)
 
 export default function PaymentsGrid({ rows, from, to, loading }: Props) {
   const router = useRouter();
@@ -107,11 +107,11 @@ export default function PaymentsGrid({ rows, from, to, loading }: Props) {
                 </TableCell>
                 <TableCell className="text-center">
                   {row.meses_pendientes === 0 ? (
-                    <Badge className="bg-emerald-500 hover:bg-emerald-600">
+                    <Badge className="bg-emerald-500 hover:bg-emerald-600 whitespace-nowrap">
                       Al día
                     </Badge>
                   ) : (
-                    <Badge variant="destructive">+{row.meses_pendientes}</Badge>
+                    <Badge variant="destructive" className="whitespace-nowrap">+{row.meses_pendientes}</Badge>
                   )}
                 </TableCell>
               </TableRow>

@@ -29,7 +29,7 @@ export default function PanelPagosSection() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [from, setFrom] = useState(DEFAULT_FROM);
   const [to, setTo] = useState(DEFAULT_TO);
-  const [search, setSearch] = useState("");
+  const [selectedEmpresaId, setSelectedEmpresaId] = useState<number | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [estado, setEstado] = useState<EstadoFiltro>("todos");
   const [gestionOpen, setGestionOpen] = useState(false);
@@ -85,13 +85,19 @@ export default function PanelPagosSection() {
     setTo(m < from ? from : m);
   };
 
-  // Filtro (nombre + estado) y orden en cliente.
+  // Opciones del combobox: una por empresa activa en el resultado actual.
+  const empresaOptions = useMemo(
+    () =>
+      rows.map((r) => ({ id: r.empresa_id, nombre: r.nombre, cuit: r.cuit })),
+    [rows]
+  );
+
+  // Filtro (empresa seleccionada + estado) y orden en cliente.
   const visibleRows = useMemo(() => {
     let list = [...rows];
 
-    if (search.trim()) {
-      const q = search.trim().toLowerCase();
-      list = list.filter((r) => r.nombre.toLowerCase().includes(q));
+    if (selectedEmpresaId !== null) {
+      list = list.filter((r) => r.empresa_id === selectedEmpresaId);
     }
 
     if (estado === "aldia") {
@@ -108,7 +114,7 @@ export default function PanelPagosSection() {
     });
 
     return list;
-  }, [rows, search, estado, sortDir]);
+  }, [rows, selectedEmpresaId, estado, sortDir]);
 
   return (
     <Card className="shadow-lg">
@@ -155,8 +161,9 @@ export default function PanelPagosSection() {
           to={to}
           onFromChange={handleFromChange}
           onToChange={handleToChange}
-          search={search}
-          onSearchChange={setSearch}
+          empresaOptions={empresaOptions}
+          selectedEmpresaId={selectedEmpresaId}
+          onSelectedEmpresaChange={setSelectedEmpresaId}
           sortDir={sortDir}
           onToggleSort={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
           estado={estado}
