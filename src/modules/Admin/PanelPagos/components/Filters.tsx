@@ -1,6 +1,5 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowUpDown, Building2 } from "lucide-react";
 import { AÑOS_DISPONIBLES, mesLargo } from "../helpers";
+import EmpresaCombobox, { EmpresaOption } from "./EmpresaCombobox";
 
 export type EstadoFiltro = "todos" | "aldia" | "pendientes";
 
@@ -21,8 +21,11 @@ interface Props {
   to: number;
   onFromChange: (m: number) => void;
   onToChange: (m: number) => void;
-  search: string;
-  onSearchChange: (v: string) => void;
+  /** Lista de empresas disponibles para el combobox */
+  empresaOptions: EmpresaOption[];
+  /** ID de empresa seleccionada en el combobox; null = todas */
+  selectedEmpresaId: number | null;
+  onSelectedEmpresaChange: (id: number | null) => void;
   sortDir: "asc" | "desc";
   onToggleSort: () => void;
   estado: EstadoFiltro;
@@ -104,14 +107,14 @@ export default function Filters(props: Props) {
         </Button>
       </div>
 
-      {/* Fila 2: buscador, orden, filtro estado */}
+      {/* Fila 2: combobox empresa, orden, filtro estado */}
       <div className="flex flex-wrap items-center gap-3">
-        <Input
-          placeholder="Buscar empresa por nombre…"
-          value={props.search}
-          onChange={(e) => props.onSearchChange(e.target.value)}
-          className="max-w-sm"
+        <EmpresaCombobox
+          options={props.empresaOptions}
+          value={props.selectedEmpresaId}
+          onChange={props.onSelectedEmpresaChange}
         />
+
         <Button
           variant="outline"
           size="sm"
