@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Calculator,
   AlertTriangle,
+  Wallet,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 
@@ -136,5 +137,11 @@ export const NavItemsAdmin: NavItem[] = [
     icon: AlertTriangle,
     href: "/admin/deudoras",
     color: "text-amber-500",
+  },
+  {
+    title: "Panel de Pagos",
+    icon: Wallet,
+    href: "/admin/panel-pagos",
+    color: "text-emerald-500",
   },
 ];
