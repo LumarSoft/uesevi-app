@@ -15,6 +15,12 @@ export interface IInfoDeclaracion {
   ajuste: number;
   importe: number;
   subtotal: number;
+  // Desglose persistido en la tabla `auxiliar` al presentar/rectificar la DDJJ
+  // (misma fuente que el Panel de Pagos). Null en declaraciones legacy.
+  desglose_fas?: number | string | null;
+  desglose_solidario?: number | string | null;
+  desglose_sindical?: number | string | null;
+  desglose_total?: number | string | null;
 }
 
 export interface Empleado {
