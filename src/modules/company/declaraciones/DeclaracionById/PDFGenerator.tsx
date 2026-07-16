@@ -13,6 +13,7 @@ import {
 } from "@/shared/types/Querys/IInfoDeclaracion";
 import { Button } from "@/components/ui/button";
 import { calcularAporteSolidario as calcularAporteSolidarioUtil } from "@/shared/utils/aportes";
+import { resolverDesglose } from "@/shared/utils/desglose";
 
 interface PDFGeneratorProps {
   data: IInfoDeclaracion;
@@ -197,71 +198,13 @@ const MyDocument: React.FC<{
     return fas + aporteSolidario + sindicato;
   };
 
-  const FAS_PERCENTAGE = 0.01;
-  const SINDICATO_PERCENTAGE = 0.03;
-
-  // Cálculos del resumen - replicando exactamente la lógica de Total.tsx
-  let totalFaz = basicSalary * FAS_PERCENTAGE * data.empleados.length;
-
-  let { totalAporteSolidario, totalSindicato } = data.empleados.reduce(
-    (acc, employee) => {
-      const totalEmployee =
-        Number(employee.monto) +
-        Number(employee.adicional) +
-        Number(employee.suma_no_remunerativa) +
-        Number(employee.remunerativo_adicional);
-
-      const aporteSolidario = calcularAporteSolidario(employee);
-
-      const sindicato =
-        employee.afiliado === "Sí" ? totalEmployee * SINDICATO_PERCENTAGE : 0;
-
-      return {
-        totalAporteSolidario: acc.totalAporteSolidario + aporteSolidario,
-        totalSindicato: acc.totalSindicato + sindicato,
-      };
-    },
-    { totalAporteSolidario: 0, totalSindicato: 0 }
-  );
-
-  // Calcular el total sin ajuste
-  const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
-
-  // Calcular el ajuste automático
-  const importeDeclaracion = Number(data.subtotal);
-  const ajuste = importeDeclaracion - grandTotal;
-
-  // Crear un array de contribuciones para distribuir el ajuste
-  const contribuciones = [
-    { nombre: "FAS", valor: totalFaz, porcentaje: totalFaz / grandTotal },
-    {
-      nombre: "Aporte Solidario",
-      valor: totalAporteSolidario,
-      porcentaje: totalAporteSolidario / grandTotal,
-    },
-    {
-      nombre: "Sindicato",
-      valor: totalSindicato,
-      porcentaje: totalSindicato / grandTotal,
-    },
-  ];
-
-  // Distribuir el ajuste de manera precisa
-  const contribucionesAjustadas = contribuciones.map((contribucion) => {
-    const ajusteContribucion = ajuste * contribucion.porcentaje;
-    return {
-      ...contribucion,
-      valorAjustado: contribucion.valor + ajusteContribucion,
-    };
-  });
-
-  // Extraer valores ajustados
-  const totalFazAjustado = contribucionesAjustadas[0].valorAjustado;
-  const totalAporteSolidarioAjustado = contribucionesAjustadas[1].valorAjustado;
-  const totalSindicatoAjustado = contribucionesAjustadas[2].valorAjustado;
-
-  const grandTotalAjustado =
-    totalFazAjustado + totalAporteSolidarioAjustado + totalSindicatoAjustado;
+  // Resumen: desglose desde la tabla auxiliar (fuente de verdad, igual que el
+  // Panel de Pagos); solo se recalcula para declaraciones legacy sin desglose.
+  const desglose = resolverDesglose(data, basicSalary);
+  const totalFazAjustado = desglose.fas;
+  const totalAporteSolidarioAjustado = desglose.solidario;
+  const totalSindicatoAjustado = desglose.sindical;
+  const grandTotalAjustado = desglose.total;
 
   // Cálculo de intereses
   const vencimiento = new Date(data.vencimiento);
