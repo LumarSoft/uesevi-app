@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { SummaryResponse } from "@/shared/types/PaymentsPanel";
-import { formatCurrency, mesLargo } from "../helpers";
+import { formatCurrency, mesLargo, mesAnterior } from "../helpers";
 import { Wallet, TrendingUp, AlertCircle } from "lucide-react";
 
 interface Props {
@@ -24,6 +24,11 @@ export default function SummaryCards({ summary, month, year, loading }: Props) {
   const acumulado = summary?.acumulado_anio;
   const pendientes = summary?.empresas_pendientes;
 
+  // Período efectivamente cobrado (mes vencido). El backend lo devuelve en
+  // summary.periodo; si no viene, lo derivamos del mes seleccionado - 1.
+  const periodoMes = summary?.periodo?.mes ?? mesAnterior(month);
+  const periodoYear = summary?.periodo?.year ?? (month === 1 ? year - 1 : year);
+
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       {/* Cobrado del mes (se reinicia) */}
@@ -31,7 +36,8 @@ export default function SummaryCards({ summary, month, year, loading }: Props) {
         <CardContent className="pt-6">
           <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase text-muted-foreground">
             <Wallet className="h-4 w-4 text-sky-500" />
-            Cobrado del mes — {mesLargo(month)} {year} (se reinicia)
+            Cobrado en {mesLargo(month)} — período {mesLargo(periodoMes)}{" "}
+            {periodoYear} (mes vencido)
           </div>
           <p className="mb-3 text-2xl font-bold">
             {loading ? "…" : formatCurrency(cobrado?.total)}
@@ -67,7 +73,7 @@ export default function SummaryCards({ summary, month, year, loading }: Props) {
         <CardContent className="pt-6">
           <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase text-muted-foreground">
             <AlertCircle className="h-4 w-4 text-amber-500" />
-            Empresas pendientes — {mesLargo(month)} {year}
+            Empresas pendientes — período {mesLargo(periodoMes)} {periodoYear}
           </div>
           <p className="mb-3 text-3xl font-bold">
             {loading

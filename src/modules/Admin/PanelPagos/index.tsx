@@ -15,7 +15,7 @@ import SummaryCards from "./components/SummaryCards";
 import Filters, { EstadoFiltro } from "./components/Filters";
 import PaymentsGrid from "./components/PaymentsGrid";
 import GestionEmpresasModal from "./components/GestionEmpresasModal";
-import { mesLargo } from "./helpers";
+import { mesConVencido } from "./helpers";
 
 const now = new Date();
 // Rango por defecto: 6 meses hacia atrás desde el mes actual (dentro del año).
@@ -126,19 +126,21 @@ export default function PanelPagosSection() {
           {/* Mes de resumen: arriba de todo, gobierna las tarjetas superiores. */}
           <div className="flex items-center gap-2">
             <label className="text-sm text-muted-foreground">
-              Mes de resumen
+              Mes de cobranza
             </label>
+            {/* Mes vencido: el mes seleccionado cobra el período del mes anterior.
+                Se muestra "Julio (Junio)" y arranca en el mes en curso. */}
             <Select
               value={String(month)}
               onValueChange={(v) => setMonth(Number(v))}
             >
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {MESES.map((m) => (
                   <SelectItem key={m} value={String(m)}>
-                    {mesLargo(m)}
+                    {mesConVencido(m)}
                   </SelectItem>
                 ))}
               </SelectContent>

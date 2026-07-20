@@ -40,6 +40,13 @@ export const MESES_LARGOS = [
 export const mesCorto = (mes: number) => MESES_CORTOS[mes - 1] ?? String(mes);
 export const mesLargo = (mes: number) => MESES_LARGOS[mes - 1] ?? String(mes);
 
+// Mes anterior (mes vencido). Enero (1) -> Diciembre (12).
+export const mesAnterior = (mes: number) => (mes === 1 ? 12 : mes - 1);
+
+// Etiqueta "mes vencido" para el select: "Julio (Junio)".
+export const mesConVencido = (mes: number) =>
+  `${mesLargo(mes)} (${mesLargo(mesAnterior(mes))})`;
+
 // Fecha ISO -> dd/mm/aa
 export const formatFecha = (fecha: string | null | undefined): string => {
   if (!fecha) return "—";

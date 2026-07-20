@@ -39,9 +39,11 @@ export interface GridRow {
 
 /** GET /payments-panel/summary — tarjetas de resumen (doble total). */
 export interface SummaryResponse {
-  cobrado_mes: Desglose; // se reinicia al cambiar de mes
+  cobrado_mes: Desglose; // período cobrado (mes vencido = mes seleccionado - 1)
   acumulado_anio: Desglose; // fijo, acumulado del año
   empresas_pendientes: { pendientes: number; total: number }; // "X de Y"
+  // Período efectivamente cobrado (mes vencido) para rotular las tarjetas.
+  periodo?: { mes: number; year: number };
 }
 
 /** Fila del historial en el detalle de empresa. */
