@@ -17,7 +17,9 @@ export const DeclaracionModule = ({
 
   const sueldoBasico = statement.sueldo_basico;
 
-  const columns = createColumns(sueldoBasico);
+  // Pasamos mes/year para que el aporte solidario use la fórmula vigente al
+  // período de la declaración (versionada, ver shared/utils/aportes.ts).
+  const columns = createColumns(sueldoBasico, statement.mes, statement.year);
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">

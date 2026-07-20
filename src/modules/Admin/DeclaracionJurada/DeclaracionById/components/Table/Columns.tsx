@@ -3,7 +3,7 @@
 import React from "react";
 import { Empleado } from "@/shared/types/Querys/IInfoDeclaracion";
 import { ColumnDef } from "@tanstack/react-table";
-import { calcularAporteSolidario } from "@/shared/utils/aportes";
+import { calcularAporteSolidarioPorPeriodo } from "@/shared/utils/aportes";
 
 // Función para formatear números como moneda
 const formatCurrency = (value: number) => {
@@ -13,7 +13,13 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
+// mes/year son el PERÍODO de la declaración: se usan para elegir la fórmula
+// correcta del aporte solidario (versionada, ver shared/utils/aportes.ts).
+export const createColumns = (
+  basicSalary: any,
+  mes: number,
+  year: number
+): ColumnDef<Empleado>[] => [
   {
     header: "Nombre",
     accessorKey: "nombre_completo",
@@ -112,11 +118,16 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
   {
     header: "Aporte solidario",
     cell: ({ row }) => {
-      // 2% del sueldo básico de la categoría, solo para no afiliados
-      const aporteSolidario = calcularAporteSolidario(
-        row.original.afiliado !== "No",
-        row.original.sueldo_basico
-      );
+      // Fórmula versionada por período (nueva desde julio 2026, vieja antes).
+      const aporteSolidario = calcularAporteSolidarioPorPeriodo({
+        esAfiliado: row.original.afiliado !== "No",
+        mes,
+        year,
+        sueldoBasicoCategoria: row.original.sueldo_basico,
+        monto: row.original.monto,
+        sumaNoRemunerativa: row.original.suma_no_remunerativa,
+        remunerativoAdicional: row.original.remunerativo_adicional,
+      });
       return <React.Fragment>{formatCurrency(aporteSolidario)}</React.Fragment>;
     },
   },
@@ -141,11 +152,16 @@ export const createColumns = (basicSalary: any): ColumnDef<Empleado>[] => [
       // 1% del basicSalary
       const fas = basicSalary * 0.01;
 
-      // 2% del sueldo básico de la categoría, solo para no afiliados
-      const aporteSolidario = calcularAporteSolidario(
-        row.original.afiliado !== "No",
-        row.original.sueldo_basico
-      );
+      // Fórmula versionada por período (nueva desde julio 2026, vieja antes).
+      const aporteSolidario = calcularAporteSolidarioPorPeriodo({
+        esAfiliado: row.original.afiliado !== "No",
+        mes,
+        year,
+        sueldoBasicoCategoria: row.original.sueldo_basico,
+        monto: row.original.monto,
+        sumaNoRemunerativa: row.original.suma_no_remunerativa,
+        remunerativoAdicional: row.original.remunerativo_adicional,
+      });
 
       // 3% del (sueldo básico + adicionales) solo para afiliados
       const sindicato =
