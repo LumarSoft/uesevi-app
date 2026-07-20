@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
-import { calcularAporteSolidario } from "@/shared/utils/aportes";
+import { calcularAporteSolidarioPorPeriodo } from "@/shared/utils/aportes";
 
 const FAS_PERCENTAGE = 0.01; // 1%
 const SINDICATO_PERCENTAGE = 0.03; // 3%
@@ -35,11 +35,17 @@ export function Total({
         Number(employee.suma_no_remunerativa) +
         Number(employee.remunerativo_adicional);
 
-      // Aporte solidario: 2% del sueldo básico de la categoría (no del sueldo real).
-      const aporteSolidario = calcularAporteSolidario(
-        employee.afiliado !== "No",
-        employee.sueldo_basico
-      );
+      // Fórmula versionada por período (solo aplica en el fallback legacy sin
+      // auxiliar; con snapshot se usan los valores de statement.desglose).
+      const aporteSolidario = calcularAporteSolidarioPorPeriodo({
+        esAfiliado: employee.afiliado !== "No",
+        mes: statement.mes,
+        year: statement.year,
+        sueldoBasicoCategoria: employee.sueldo_basico,
+        monto: employee.monto,
+        sumaNoRemunerativa: employee.suma_no_remunerativa,
+        remunerativoAdicional: employee.remunerativo_adicional,
+      });
 
       const sindicato =
         employee.afiliado === "Sí" ? totalEmployee * SINDICATO_PERCENTAGE : 0;
@@ -67,41 +73,32 @@ export function Total({
     );
   }
 
-  // Calcular el total sin ajuste
-  const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
+  // --- Desglose por concepto ---
+  // Preferimos el snapshot CONGELADO (statement.desglose, tabla auxiliar): es lo
+  // que realmente se declaró al cargar y coincide exactamente con el Panel de
+  // Pagos. No se recalcula, así los valores no cambian aunque después cambien
+  // los básicos de categoría o la fórmula del aporte. Solo si no existe snapshot
+  // (declaración legacy sin auxiliar) recaemos en el recálculo en vivo + ajuste
+  // proporcional para cuadrar el total contra el subtotal guardado.
+  let totalFazAjustado: number;
+  let totalAporteSolidarioAjustado: number;
+  let totalSindicatoAjustado: number;
 
-  // Calcular el ajuste automático
-  const importeDeclaracion = Number(statement.subtotal);
-  const ajuste = importeDeclaracion - grandTotal;
-
-  // Crear un array de contribuciones para distribuir el ajuste
-  const contribuciones = [
-    { nombre: "FAS", valor: totalFaz, porcentaje: totalFaz / grandTotal },
-    {
-      nombre: "Aporte Solidario",
-      valor: totalAporteSolidario,
-      porcentaje: totalAporteSolidario / grandTotal,
-    },
-    {
-      nombre: "Sindicato",
-      valor: totalSindicato,
-      porcentaje: totalSindicato / grandTotal,
-    },
-  ];
-
-  // Distribuir el ajuste de manera precisa
-  const contribucionesAjustadas = contribuciones.map((contribucion) => {
-    const ajusteContribucion = ajuste * contribucion.porcentaje;
-    return {
-      ...contribucion,
-      valorAjustado: contribucion.valor + ajusteContribucion,
-    };
-  });
-
-  // Extraer valores ajustados
-  const totalFazAjustado = contribucionesAjustadas[0].valorAjustado;
-  const totalAporteSolidarioAjustado = contribucionesAjustadas[1].valorAjustado;
-  const totalSindicatoAjustado = contribucionesAjustadas[2].valorAjustado;
+  if (statement.desglose) {
+    totalFazAjustado = Number(statement.desglose.fas) || 0;
+    totalAporteSolidarioAjustado = Number(statement.desglose.solidario) || 0;
+    totalSindicatoAjustado = Number(statement.desglose.sindical) || 0;
+  } else {
+    const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
+    const importeDeclaracion = Number(statement.subtotal);
+    const ajuste = importeDeclaracion - grandTotal;
+    const base = grandTotal || 1; // evita división por cero
+    totalFazAjustado = totalFaz + ajuste * (totalFaz / base);
+    totalAporteSolidarioAjustado =
+      totalAporteSolidario + ajuste * (totalAporteSolidario / base);
+    totalSindicatoAjustado =
+      totalSindicato + ajuste * (totalSindicato / base);
+  }
 
   const grandTotalAjustado =
     totalFazAjustado + totalAporteSolidarioAjustado + totalSindicatoAjustado;
