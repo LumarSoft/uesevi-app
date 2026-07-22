@@ -17,7 +17,9 @@ export const AddScaleDialog = ({ id }: { id: number }) => {
   const [name, setName] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     if (!name) {
       return toast.error("Por favor, ingrese un nombre.");
     } else if (!file) {
@@ -33,9 +35,12 @@ export const AddScaleDialog = ({ id }: { id: number }) => {
       const result = await postData("scales", formData);
       if (result.ok) {
         toast.success("Archivo subido correctamente.");
+      } else {
+        toast.error(result.message || "No se pudo subir el archivo.");
       }
     } catch (error) {
       console.error("Error:", error);
+      toast.error("Error al subir el archivo.");
     }
   };
 
