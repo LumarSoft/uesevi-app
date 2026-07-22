@@ -24,6 +24,8 @@ export const EditScalesDialog = ({
   const [newName, setNewName] = useState(data.nombre);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (newName === data.nombre) {
       return;
     }
