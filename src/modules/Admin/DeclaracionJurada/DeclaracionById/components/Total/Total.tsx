@@ -39,9 +39,9 @@ export function Total({
       // auxiliar; con snapshot se usan los valores de statement.desglose).
       const aporteSolidario = calcularAporteSolidarioPorPeriodo({
         esAfiliado: employee.afiliado !== "No",
-        mes: statement.mes,
-        year: statement.year,
+        fechaCarga: statement.fecha_carga,
         sueldoBasicoCategoria: employee.sueldo_basico,
+        presentismoCategoria: employee.presentismo,
         monto: employee.monto,
         sumaNoRemunerativa: employee.suma_no_remunerativa,
         remunerativoAdicional: employee.remunerativo_adicional,

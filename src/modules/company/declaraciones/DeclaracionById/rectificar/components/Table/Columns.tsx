@@ -37,6 +37,17 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
     },
   },
   {
+    header: "Presentismo",
+    cell: ({ row }) => {
+      // Congelado al cargar la declaración. $0 en las anteriores a agosto 2026.
+      return (
+        <React.Fragment>
+          {formatCurrency(Number(row.original.presentismo) || 0)}
+        </React.Fragment>
+      );
+    },
+  },
+  {
     header: "Remunerativo adicional",
     cell: ({ row }) => {
       return (
@@ -103,7 +114,8 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
       // 2% del sueldo básico de la categoría, solo para no afiliados
       const aporteSolidario = calcularAporteSolidario(
         row.original.afiliado !== "No",
-        row.original.sueldo_basico
+        row.original.sueldo_basico,
+        row.original.presentismo
       );
       return <React.Fragment>{formatCurrency(aporteSolidario)}</React.Fragment>;
     },
@@ -127,7 +139,8 @@ export const createColumns = (): ColumnDef<Empleado>[] => [
       // 2% del sueldo básico de la categoría, solo para no afiliados
       const aporteSolidario = calcularAporteSolidario(
         row.original.afiliado !== "No",
-        row.original.sueldo_basico
+        row.original.sueldo_basico,
+        row.original.presentismo
       );
       const sindicato =
         row.original.afiliado === "Sí"
