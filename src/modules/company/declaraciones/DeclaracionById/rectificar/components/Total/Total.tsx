@@ -16,7 +16,8 @@ export function Total({ statement }: { statement: IInfoDeclaracion }) {
     // Aporte solidario: 2% del sueldo básico de la categoría, solo no afiliados.
     const aporteSolidario = calcularAporteSolidario(
       employee.afiliado !== "No",
-      employee.sueldo_basico
+      employee.sueldo_basico,
+      employee.presentismo
     );
     const sindicato = employee.afiliado === "Sí" ? totalEmployee * 0.03 : 0;
 

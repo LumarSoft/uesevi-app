@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 export const AddCategory = () => {
   const [name, setName] = useState("");
   const [salary, setSalary] = useState(0);
+  const [presentismo, setPresentismo] = useState("");
 
   const handleSubmit = async () => {
     if (!name || !salary) {
@@ -29,6 +30,9 @@ export const AddCategory = () => {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("salary", salary.toString());
+    // Opcional: si queda vacío la categoría se crea sin presentismo y el
+    // aporte solidario se calcula sólo sobre el sueldo básico.
+    formData.append("presentismo", presentismo);
 
     const result = await postData("category", formData);
 
@@ -65,6 +69,18 @@ export const AddCategory = () => {
                 type="number"
                 onChange={(e) => setSalary(Number(e.target.value))}
               />
+            </div>
+            <div className="grid w-full  items-center gap-1.5">
+              <Label>Presentismo (opcional)</Label>
+              <Input
+                placeholder="Presentismo"
+                type="number"
+                value={presentismo}
+                onChange={(e) => setPresentismo(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                El aporte solidario es el 2% de (sueldo básico + presentismo).
+              </p>
             </div>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-4">

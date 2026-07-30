@@ -28,6 +28,11 @@ export const EditCategory = ({
 }) => {
   const [name, setName] = React.useState(data.nombre);
   const [salary, setSalary] = React.useState(data.sueldo_basico);
+  const [presentismo, setPresentismo] = React.useState(data.presentismo ?? "");
+
+  // Base del aporte solidario: sueldo básico + presentismo de la categoría.
+  const aporteSolidario =
+    ((Number(salary) || 0) + (Number(presentismo) || 0)) * 0.02;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +43,8 @@ export const EditCategory = ({
     const formData = new FormData();
     formData.append("name", name);
     formData.append("salary", salary);
+    // Se manda siempre, incluso vacío: "" limpia el monto (queda en NULL).
+    formData.append("presentismo", presentismo);
 
     const result = await updateData("category/:id", data.id, formData);
 
@@ -47,6 +54,7 @@ export const EditCategory = ({
         ...data,
         nombre: name,
         sueldo_basico: salary,
+        presentismo: presentismo === "" ? null : presentismo,
       });
     }
   };
@@ -81,6 +89,26 @@ export const EditCategory = ({
                 value={salary}
                 onChange={(e) => setSalary(e.target.value.toString())}
               />
+            </div>
+            <div className="grid w-full  items-center gap-1.5">
+              <Label>Presentismo</Label>
+              <Input
+                placeholder="Presentismo"
+                type="number"
+                value={presentismo}
+                onChange={(e) => setPresentismo(e.target.value.toString())}
+              />
+              <p className="text-xs text-muted-foreground">
+                Aporte solidario resultante:{" "}
+                <span className="font-semibold">
+                  {new Intl.NumberFormat("es-AR", {
+                    style: "currency",
+                    currency: "ARS",
+                  }).format(aporteSolidario)}
+                </span>{" "}
+                — 2% de (sueldo básico + presentismo). Si se deja vacío, el
+                aporte se calcula sólo sobre el sueldo básico.
+              </p>
             </div>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-4">

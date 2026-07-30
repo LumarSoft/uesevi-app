@@ -12,7 +12,7 @@ import {
   Empleado,
 } from "@/shared/types/Querys/IInfoDeclaracion";
 import { Button } from "@/components/ui/button";
-import { calcularAporteSolidario as calcularAporteSolidarioUtil } from "@/shared/utils/aportes";
+import { calcularAporteSolidarioPorPeriodo } from "@/shared/utils/aportes";
 
 interface PDFGeneratorProps {
   data: IInfoDeclaracion;
@@ -98,8 +98,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     fontWeight: "bold",
   },
+  // Anchos de la tabla de empleados. OJO: 3 columnas anchas + 12 normales.
+  // 3*8.6 + 12*6.1 = 99.0% — tiene que quedar <= 100% o la tabla se desborda
+  // fuera de la hoja. Al agregar o sacar una columna, recalcular acá.
   tableCol: {
-    width: "6.5%",
+    width: "6.1%",
     borderStyle: "solid",
     borderWidth: 1,
     borderLeftWidth: 0,
@@ -107,7 +110,7 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   tableColWide: {
-    width: "9%",
+    width: "8.6%",
     borderStyle: "solid",
     borderWidth: 1,
     borderLeftWidth: 0,
@@ -174,11 +177,17 @@ const MyDocument: React.FC<{
   };
 
   const calcularAporteSolidario = (empleado: Empleado): number => {
-    // 2% del sueldo básico de la categoría, solo para no afiliados.
-    return calcularAporteSolidarioUtil(
-      empleado.afiliado !== "No",
-      empleado.sueldo_basico
-    );
+    // Fórmula versionada por PERÍODO de la declaración: una DDJJ anterior a
+    // julio 2026 tiene que seguir mostrando lo que se declaró en su momento.
+    return calcularAporteSolidarioPorPeriodo({
+      esAfiliado: empleado.afiliado !== "No",
+      fechaCarga: data.fecha_carga,
+      sueldoBasicoCategoria: empleado.sueldo_basico,
+      presentismoCategoria: empleado.presentismo,
+      monto: empleado.monto,
+      sumaNoRemunerativa: empleado.suma_no_remunerativa,
+      remunerativoAdicional: empleado.remunerativo_adicional,
+    });
   };
 
   const calcularSindicato = (empleado: Empleado): number => {
@@ -224,41 +233,31 @@ const MyDocument: React.FC<{
     { totalAporteSolidario: 0, totalSindicato: 0 }
   );
 
-  // Calcular el total sin ajuste
-  const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
+  // --- Desglose por concepto ---
+  // Se prefiere el snapshot CONGELADO (data.desglose, tabla auxiliar): es lo que
+  // realmente se declaró al cargar, y hace que el PDF coincida con la pantalla,
+  // con la vista de administración y con el Panel de Pagos. Sólo si no hay
+  // snapshot (declaración legacy sin auxiliar) se recae en el recálculo en vivo
+  // + ajuste proporcional contra el subtotal guardado.
+  let totalFazAjustado: number;
+  let totalAporteSolidarioAjustado: number;
+  let totalSindicatoAjustado: number;
 
-  // Calcular el ajuste automático
-  const importeDeclaracion = Number(data.subtotal);
-  const ajuste = importeDeclaracion - grandTotal;
-
-  // Crear un array de contribuciones para distribuir el ajuste
-  const contribuciones = [
-    { nombre: "FAS", valor: totalFaz, porcentaje: totalFaz / grandTotal },
-    {
-      nombre: "Aporte Solidario",
-      valor: totalAporteSolidario,
-      porcentaje: totalAporteSolidario / grandTotal,
-    },
-    {
-      nombre: "Sindicato",
-      valor: totalSindicato,
-      porcentaje: totalSindicato / grandTotal,
-    },
-  ];
-
-  // Distribuir el ajuste de manera precisa
-  const contribucionesAjustadas = contribuciones.map((contribucion) => {
-    const ajusteContribucion = ajuste * contribucion.porcentaje;
-    return {
-      ...contribucion,
-      valorAjustado: contribucion.valor + ajusteContribucion,
-    };
-  });
-
-  // Extraer valores ajustados
-  const totalFazAjustado = contribucionesAjustadas[0].valorAjustado;
-  const totalAporteSolidarioAjustado = contribucionesAjustadas[1].valorAjustado;
-  const totalSindicatoAjustado = contribucionesAjustadas[2].valorAjustado;
+  if (data.desglose) {
+    totalFazAjustado = Number(data.desglose.fas) || 0;
+    totalAporteSolidarioAjustado = Number(data.desglose.solidario) || 0;
+    totalSindicatoAjustado = Number(data.desglose.sindical) || 0;
+  } else {
+    const grandTotal = totalFaz + totalAporteSolidario + totalSindicato;
+    const importeDeclaracion = Number(data.subtotal);
+    const ajuste = importeDeclaracion - grandTotal;
+    const divisor = grandTotal || 1; // evita división por cero
+    totalFazAjustado = totalFaz + ajuste * (totalFaz / divisor);
+    totalAporteSolidarioAjustado =
+      totalAporteSolidario + ajuste * (totalAporteSolidario / divisor);
+    totalSindicatoAjustado =
+      totalSindicato + ajuste * (totalSindicato / divisor);
+  }
 
   const grandTotalAjustado =
     totalFazAjustado + totalAporteSolidarioAjustado + totalSindicatoAjustado;
@@ -411,6 +410,9 @@ const MyDocument: React.FC<{
                 <Text>Categoría</Text>
               </View>
               <View style={styles.tableCol}>
+                <Text>Presentismo</Text>
+              </View>
+              <View style={styles.tableCol}>
                 <Text>Rem. adic.</Text>
               </View>
               <View style={styles.tableCol}>
@@ -455,6 +457,11 @@ const MyDocument: React.FC<{
                 </View>
                 <View style={styles.tableColWide}>
                   <Text>{empleado.categoria}</Text>
+                </View>
+                <View style={styles.tableCol}>
+                  <Text>
+                    {formatCurrency(Number(empleado.presentismo) || 0)}
+                  </Text>
                 </View>
                 <View style={styles.tableCol}>
                   <Text>

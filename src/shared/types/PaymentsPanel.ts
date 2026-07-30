@@ -24,6 +24,8 @@ export interface MesCelda {
   solidario: number;
   sindical: number;
   intereses: number;
+  /** false => este período no recalcula interés por mora. */
+  aplica_interes: boolean;
 }
 
 /** Una fila (empresa) de la grilla principal. */
@@ -57,6 +59,10 @@ export interface HistorialRow {
   fecha_pago: string | null;
   estado: EstadoMes;
   declaracion_jurada_id: number | null;
+  /** false => este período no recalcula interés por mora. */
+  aplica_interes: boolean;
+  /** id en pagos_panel; null si todavía no se guardó nada para el período. */
+  pagos_panel_id: number | null;
 }
 
 /** GET /payments-panel/company/:idCompany — detalle. */
@@ -79,6 +85,12 @@ export interface ProposalResponse {
   sindical: number;
   subtotal: number;
   estado: EstadoMes;
+  // Estado ya cargado en el panel, para PRECARGAR el diálogo y poder corregir.
+  fecha_pago: string | null;
+  intereses: number;
+  aplica_interes: boolean;
+  observaciones: string | null;
+  pagos_panel_id: number | null;
 }
 
 /** POST /payments-panel/interest/preview. */
@@ -101,6 +113,8 @@ export interface CompanyManagementRow {
 export interface UpsertPaymentPayload {
   declaracion_jurada_id: number;
   fecha_pago: string;
+  /** 1 = recalcular interés por mora al cambiar la fecha; 0 = no tocarlo. */
+  aplica_interes?: 0 | 1;
   importe_fas?: number;
   importe_solidario?: number;
   importe_sindical?: number;
