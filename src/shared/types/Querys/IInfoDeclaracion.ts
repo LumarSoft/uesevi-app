@@ -5,6 +5,12 @@ export interface IInfoDeclaracion {
   cantidad_afiliados_declaracion: number;
   year: number;
   mes: number;
+  /**
+   * `declaraciones_juradas.fecha` — cuándo se CARGÓ la declaración. Determina
+   * qué fórmula del aporte solidario aplica al mostrarla. NO usar mes/year para
+   * eso: el período no dice cuándo se cargó (ver shared/utils/aportes.ts).
+   */
+  fecha_carga: string | null;
   rectificada: number;
   vencimiento: string;
   fecha_pago: string | null;
@@ -31,6 +37,12 @@ export interface Empleado {
   afiliado: string;
   cuil: string;
   sueldo_basico: number;
+  /**
+   * Presentismo de la categoría CONGELADO al cargar la declaración. Llega en 0
+   * en las declaraciones anteriores a agosto 2026 (no existía el concepto).
+   * Junto con sueldo_basico es la base del aporte solidario.
+   */
+  presentismo: number;
   remunerativo_adicional: string;
   suma_no_remunerativa: string;
   categoria: string;

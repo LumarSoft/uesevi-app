@@ -170,7 +170,10 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
                   </TableRow>
                 ) : detail && detail.historial.length > 0 ? (
                   detail.historial.map((row) => (
-                    <TableRow key={row.mes}>
+                    // La key incluye la DDJJ: si por datos sucios llegara más
+                    // de una fila del mismo mes, React no las colapsa ni las
+                    // renderiza desordenadas (el backend ya garantiza una sola).
+                    <TableRow key={`${row.mes}-${row.declaracion_jurada_id}`}>
                       <TableCell className="font-medium">
                         {mesLargo(row.mes)} {year}
                       </TableCell>
@@ -186,6 +189,14 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
                       </TableCell>
                       <TableCell className="text-right">
                         {formatCurrency(row.intereses)}
+                        {!row.aplica_interes && (
+                          <span
+                            className="ml-1 text-xs text-muted-foreground"
+                            title="Este período no recalcula interés por mora"
+                          >
+                            (sin interés)
+                          </span>
+                        )}
                       </TableCell>
                       <TableCell>{formatFecha(row.fecha_pago)}</TableCell>
                       <TableCell>{estadoBadge(row.estado)}</TableCell>
@@ -199,13 +210,15 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
                         )}
                       </TableCell>
                       <TableCell>
-                        {row.estado !== "Pagado" && row.declaracion_jurada_id && (
+                        {row.declaracion_jurada_id && (
+                          // También en las Pagado: hay que poder corregir una
+                          // fecha mal cargada sin desconfirmar el pago.
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => setConfirmMonth(row.mes)}
                           >
-                            Confirmar
+                            {row.estado === "Pagado" ? "Editar" : "Confirmar"}
                           </Button>
                         )}
                       </TableCell>
@@ -222,9 +235,12 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
             </Table>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            La columna Intereses se calcula automáticamente por fecha de pago y
-            admite ajuste manual. El registro queda de solo lectura una vez
-            confirmado como Pagado.
+            La fecha de pago se puede editar en cualquier momento, incluso en las
+            declaraciones ya confirmadas (editarlas no las desconfirma). El
+            interés se calcula automáticamente por fecha de pago y admite ajuste
+            manual; con la opción &ldquo;Calcular interés por mora&rdquo;
+            destildada, cambiar la fecha no modifica el importe — es lo indicado
+            para completar declaraciones viejas que ya se cobraron.
           </p>
         </CardContent>
       </Card>

@@ -98,8 +98,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     fontWeight: "bold",
   },
+  // Anchos de la tabla de empleados. OJO: 3 columnas anchas + 12 normales.
+  // 3*8.6 + 12*6.1 = 99.0% — tiene que quedar <= 100% o la tabla se desborda
+  // fuera de la hoja. Al agregar o sacar una columna, recalcular acá.
   tableCol: {
-    width: "6.5%",
+    width: "6.1%",
     borderStyle: "solid",
     borderWidth: 1,
     borderLeftWidth: 0,
@@ -107,7 +110,7 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   tableColWide: {
-    width: "9%",
+    width: "8.6%",
     borderStyle: "solid",
     borderWidth: 1,
     borderLeftWidth: 0,
@@ -178,9 +181,9 @@ const MyDocument: React.FC<{
     // 2026, vieja (sueldo real + no rem. + rem. adic.) antes. Ver aportes.ts.
     return calcularAporteSolidarioPorPeriodo({
       esAfiliado: empleado.afiliado !== "No",
-      mes: data.mes,
-      year: data.year,
+      fechaCarga: data.fecha_carga,
       sueldoBasicoCategoria: empleado.sueldo_basico,
+      presentismoCategoria: empleado.presentismo,
       monto: empleado.monto,
       sumaNoRemunerativa: empleado.suma_no_remunerativa,
       remunerativoAdicional: empleado.remunerativo_adicional,
@@ -405,6 +408,9 @@ const MyDocument: React.FC<{
                 <Text>Categoría</Text>
               </View>
               <View style={styles.tableCol}>
+                <Text>Presentismo</Text>
+              </View>
+              <View style={styles.tableCol}>
                 <Text>Rem. adic.</Text>
               </View>
               <View style={styles.tableCol}>
@@ -449,6 +455,11 @@ const MyDocument: React.FC<{
                 </View>
                 <View style={styles.tableColWide}>
                   <Text>{empleado.categoria}</Text>
+                </View>
+                <View style={styles.tableCol}>
+                  <Text>
+                    {formatCurrency(Number(empleado.presentismo) || 0)}
+                  </Text>
                 </View>
                 <View style={styles.tableCol}>
                   <Text>
