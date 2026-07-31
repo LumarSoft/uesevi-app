@@ -13,12 +13,13 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-// mes/year son el PERÍODO de la declaración: se usan para elegir la fórmula
-// correcta del aporte solidario (versionada, ver shared/utils/aportes.ts).
+// fechaCarga = `declaraciones_juradas.fecha`, o sea CUÁNDO SE CARGÓ la
+// declaración. Es lo que determina qué fórmula del aporte solidario aplica.
+// NO usar el período (mes/year) para eso: una DDJJ de un período viejo cargada
+// hoy se guarda con la fórmula vigente. Ver shared/utils/aportes.ts.
 export const createColumns = (
   basicSalary: any,
-  mes: number,
-  year: number
+  fechaCarga: string | null
 ): ColumnDef<Empleado>[] => [
   {
     header: "Nombre",
@@ -42,6 +43,17 @@ export const createColumns = (
       return (
         <React.Fragment>
           {formatCurrency(Number(row.original.sueldo_basico))}
+        </React.Fragment>
+      );
+    },
+  },
+  {
+    header: "Presentismo",
+    cell: ({ row }) => {
+      // Congelado al cargar la declaración. $0 en las anteriores a agosto 2026.
+      return (
+        <React.Fragment>
+          {formatCurrency(Number(row.original.presentismo) || 0)}
         </React.Fragment>
       );
     },
@@ -118,12 +130,12 @@ export const createColumns = (
   {
     header: "Aporte solidario",
     cell: ({ row }) => {
-      // Fórmula versionada por período (nueva desde julio 2026, vieja antes).
+      // Fórmula vigente al momento de CARGARSE la declaración.
       const aporteSolidario = calcularAporteSolidarioPorPeriodo({
         esAfiliado: row.original.afiliado !== "No",
-        mes,
-        year,
+        fechaCarga,
         sueldoBasicoCategoria: row.original.sueldo_basico,
+        presentismoCategoria: row.original.presentismo,
         monto: row.original.monto,
         sumaNoRemunerativa: row.original.suma_no_remunerativa,
         remunerativoAdicional: row.original.remunerativo_adicional,
@@ -152,12 +164,12 @@ export const createColumns = (
       // 1% del basicSalary
       const fas = basicSalary * 0.01;
 
-      // Fórmula versionada por período (nueva desde julio 2026, vieja antes).
+      // Fórmula vigente al momento de CARGARSE la declaración.
       const aporteSolidario = calcularAporteSolidarioPorPeriodo({
         esAfiliado: row.original.afiliado !== "No",
-        mes,
-        year,
+        fechaCarga,
         sueldoBasicoCategoria: row.original.sueldo_basico,
+        presentismoCategoria: row.original.presentismo,
         monto: row.original.monto,
         sumaNoRemunerativa: row.original.suma_no_remunerativa,
         remunerativoAdicional: row.original.remunerativo_adicional,
