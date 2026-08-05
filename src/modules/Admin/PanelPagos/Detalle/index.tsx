@@ -202,9 +202,17 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
                       <TableCell>{estadoBadge(row.estado)}</TableCell>
                       <TableCell>
                         {row.declaracion_jurada_id ? (
-                          <span className="text-indigo-600">
+                          <button
+                            type="button"
+                            className="text-indigo-600 underline-offset-2 hover:underline"
+                            onClick={() =>
+                              router.push(
+                                `/admin/declaraciones/${idEmpresa}/${row.declaracion_jurada_id}`
+                              )
+                            }
+                          >
                             DDJJ #{row.declaracion_jurada_id}
-                          </span>
+                          </button>
                         ) : (
                           "—"
                         )}
