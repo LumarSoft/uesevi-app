@@ -1,10 +1,13 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { Info } from "./components/Info/Info";
 import { createColumns } from "./components/Table/Columns";
 import { DataTable } from "./components/Table/Data-Table";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 import { Total } from "./components/Total/Total";
 import PDFDownloadButton from "./components/PDFDownloadButton";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
 export const DeclaracionModule = ({
   statement,
@@ -15,6 +18,7 @@ export const DeclaracionModule = ({
 }) => {
   console.log(statement);
 
+  const router = useRouter();
   const sueldoBasico = statement.sueldo_basico;
 
   // Pasamos mes/year para que el aporte solidario use la fórmula vigente al
@@ -25,6 +29,17 @@ export const DeclaracionModule = ({
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
+        {/* router.back() en vez de una ruta fija: esta pantalla se abre desde
+            el listado de declaraciones, el historial y el panel de pagos, así
+            que "volver" tiene que respetar de dónde vino cada vez. */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.back()}
+          className="flex items-center gap-1"
+        >
+          <ChevronLeft className="h-4 w-4" /> Volver
+        </Button>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
             Declaración jurada
