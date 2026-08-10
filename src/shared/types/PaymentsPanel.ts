@@ -63,6 +63,7 @@ export interface HistorialRow {
   aplica_interes: boolean;
   /** id en pagos_panel; null si todavía no se guardó nada para el período. */
   pagos_panel_id: number | null;
+  observaciones: string | null;
 }
 
 /** GET /payments-panel/company/:idCompany — detalle. */
