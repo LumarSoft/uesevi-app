@@ -20,6 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { fetchData } from "@/services/mysql/functions";
 import { CompanyDetailResponse } from "@/shared/types/PaymentsPanel";
 import { ChevronLeft } from "lucide-react";
@@ -175,7 +181,22 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
                     // renderiza desordenadas (el backend ya garantiza una sola).
                     <TableRow key={`${row.mes}-${row.declaracion_jurada_id}`}>
                       <TableCell className="font-medium">
-                        {mesLargo(row.mes)} {year}
+                        {row.observaciones ? (
+                          <TooltipProvider delayDuration={100}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="font-bold text-orange-500">
+                                  {mesLargo(row.mes)} {year}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>{row.observaciones}</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ) : (
+                          <>
+                            {mesLargo(row.mes)} {year}
+                          </>
+                        )}
                       </TableCell>
                       <TableCell className="text-right font-semibold">
                         {formatCurrency(row.importe_total)}
