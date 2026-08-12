@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { SummaryResponse } from "@/shared/types/PaymentsPanel";
+import { SummaryResponse, PanelMode } from "@/shared/types/PaymentsPanel";
 import { formatCurrency, mesLargo, mesAnterior } from "../helpers";
 import { Wallet, TrendingUp, AlertCircle } from "lucide-react";
 
@@ -9,6 +9,7 @@ interface Props {
   summary: SummaryResponse | null;
   month: number;
   year: number;
+  mode?: PanelMode;
   loading?: boolean;
 }
 
@@ -19,10 +20,17 @@ const DesgloseLinea = ({ label, value }: { label: string; value: number }) => (
   </div>
 );
 
-export default function SummaryCards({ summary, month, year, loading }: Props) {
+export default function SummaryCards({
+  summary,
+  month,
+  year,
+  mode = "periodo",
+  loading,
+}: Props) {
   const cobrado = summary?.cobrado_mes;
   const acumulado = summary?.acumulado_anio;
   const pendientes = summary?.empresas_pendientes;
+  const esCaja = mode === "caja";
 
   // Período efectivamente cobrado (mes vencido). El backend lo devuelve en
   // summary.periodo; si no viene, lo derivamos del mes seleccionado - 1.
@@ -36,8 +44,11 @@ export default function SummaryCards({ summary, month, year, loading }: Props) {
         <CardContent className="pt-6">
           <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase text-muted-foreground">
             <Wallet className="h-4 w-4 text-sky-500" />
-            Cobrado en {mesLargo(month)} — período {mesLargo(periodoMes)}{" "}
-            {periodoYear} (mes vencido)
+            {esCaja
+              ? `Cobrado en ${mesLargo(month)} ${year} (por fecha de pago)`
+              : `Cobrado en ${mesLargo(month)} — período ${mesLargo(
+                  periodoMes
+                )} ${periodoYear} (mes vencido)`}
           </div>
           <p className="mb-3 text-2xl font-bold">
             {loading ? "…" : formatCurrency(cobrado?.total)}
@@ -55,7 +66,7 @@ export default function SummaryCards({ summary, month, year, loading }: Props) {
         <CardContent className="pt-6">
           <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase text-muted-foreground">
             <TrendingUp className="h-4 w-4 text-emerald-500" />
-            Acumulado {year} (fijo)
+            Acumulado {year} {esCaja ? "(por fecha de pago)" : "(fijo)"}
           </div>
           <p className="mb-3 text-2xl font-bold">
             {loading ? "…" : formatCurrency(acumulado?.total)}

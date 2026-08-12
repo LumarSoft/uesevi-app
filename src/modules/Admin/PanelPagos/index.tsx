@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { fetchData } from "@/services/mysql/functions";
-import { GridRow, SummaryResponse } from "@/shared/types/PaymentsPanel";
+import { GridRow, SummaryResponse, PanelMode } from "@/shared/types/PaymentsPanel";
 import SummaryCards from "./components/SummaryCards";
 import Filters, { EstadoFiltro } from "./components/Filters";
 import PaymentsGrid from "./components/PaymentsGrid";
@@ -27,6 +27,9 @@ const MESES = Array.from({ length: 12 }, (_, i) => i + 1);
 export default function PanelPagosSection() {
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
+  // Vista de montos: por período de declaración (devengado) o por fecha de pago
+  // real (caja). El toggle gobierna tanto las tarjetas como la grilla.
+  const [mode, setMode] = useState<PanelMode>("periodo");
   const [from, setFrom] = useState(DEFAULT_FROM);
   const [to, setTo] = useState(DEFAULT_TO);
   const [selectedEmpresaId, setSelectedEmpresaId] = useState<number | null>(null);
@@ -42,6 +45,10 @@ export default function PanelPagosSection() {
   const fetchGrid = useCallback(async () => {
     setLoadingGrid(true);
     try {
+      // La grilla queda SIEMPRE por período (seguimiento de deudas). El toggle
+      // de arriba solo cambia el resumen superior (lo aprobado por la clienta).
+      // El backend igual soporta ?mode=caja para la grilla, por si más adelante
+      // se quiere habilitar.
       const res = await fetchData(
         `payments-panel/grid?year=${year}&from=${from}&to=${to}`
       );
@@ -58,7 +65,7 @@ export default function PanelPagosSection() {
     setLoadingSummary(true);
     try {
       const res = await fetchData(
-        `payments-panel/summary?year=${year}&month=${month}`
+        `payments-panel/summary?year=${year}&month=${month}&mode=${mode}`
       );
       setSummary(res?.data ?? null);
     } catch (e) {
@@ -67,7 +74,7 @@ export default function PanelPagosSection() {
     } finally {
       setLoadingSummary(false);
     }
-  }, [year, month]);
+  }, [year, month, mode]);
 
   useEffect(() => {
     fetchGrid();
@@ -123,11 +130,45 @@ export default function PanelPagosSection() {
           <CardTitle className="text-xl font-bold">
             Panel de Pagos de Empresas
           </CardTitle>
-          {/* Mes de resumen: arriba de todo, gobierna las tarjetas superiores. */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-muted-foreground">
-              Mes de cobranza
-            </label>
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Modo del RESUMEN superior: los ingresos del mes se cuentan por
+                período de la declaración (devengado) o por fecha de pago real
+                (caja). Solo afecta las tarjetas de arriba; la grilla va siempre
+                por período. */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-muted-foreground">Ingresos por</label>
+              <div className="inline-flex rounded-md border p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setMode("periodo")}
+                  className={`rounded px-3 py-1 text-sm transition-colors ${
+                    mode === "periodo"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted"
+                  }`}
+                  title="Ingresos del mes según el período de la declaración, sin importar cuándo se abonó (devengado)."
+                >
+                  Período
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode("caja")}
+                  className={`rounded px-3 py-1 text-sm transition-colors ${
+                    mode === "caja"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted"
+                  }`}
+                  title="Ingresos del mes según la fecha de pago real, sin importar de qué período sean las declaraciones (caja)."
+                >
+                  Fecha de pago
+                </button>
+              </div>
+            </div>
+            {/* Mes de resumen: gobierna las tarjetas superiores. */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-muted-foreground">
+                Mes de cobranza
+              </label>
             {/* Mes vencido: el mes seleccionado cobra el período del mes anterior.
                 Se muestra "Julio (Junio)" y arranca en el mes en curso. */}
             <Select
@@ -145,6 +186,7 @@ export default function PanelPagosSection() {
                 ))}
               </SelectContent>
             </Select>
+            </div>
           </div>
         </div>
       </CardHeader>
@@ -153,6 +195,7 @@ export default function PanelPagosSection() {
           summary={summary}
           month={month}
           year={year}
+          mode={mode}
           loading={loadingSummary}
         />
 
