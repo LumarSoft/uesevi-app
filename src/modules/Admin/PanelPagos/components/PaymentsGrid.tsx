@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { GridRow } from "@/shared/types/PaymentsPanel";
+import { GridRow, PanelMode } from "@/shared/types/PaymentsPanel";
 import { formatCurrency, mesCorto } from "../helpers";
 import MonthCell from "./MonthCell";
 import { SearchX } from "lucide-react";
@@ -19,6 +19,7 @@ interface Props {
   rows: GridRow[];
   from: number;
   to: number;
+  mode?: PanelMode;
   loading?: boolean;
 }
 
@@ -28,7 +29,7 @@ const TOTAL_W = 120;
 const PEND_W = 100;
 const MONTH_MIN_W = 140; // ancho mínimo por mes (dispara scroll cuando hay muchos)
 
-export default function PaymentsGrid({ rows, from, to, loading }: Props) {
+export default function PaymentsGrid({ rows, from, to, mode = "periodo", loading }: Props) {
   const router = useRouter();
   const meses: number[] = [];
   for (let m = from; m <= to; m++) meses.push(m);
@@ -95,7 +96,7 @@ export default function PaymentsGrid({ rows, from, to, loading }: Props) {
 
                 {row.meses.map((cell) => (
                   <TableCell key={cell.mes} className="p-0 align-top">
-                    <MonthCell cell={cell} />
+                    <MonthCell cell={cell} mode={mode} />
                   </TableCell>
                 ))}
 
