@@ -2,7 +2,17 @@
 // Alineados con los endpoints /payments-panel del backend.
 // Ver docs/Uesevi_Evolutivo_Panel_de_Pagos_PLAN_TECNICO.md (Secciones 3 y 4).
 
-export type EstadoMes = "Pagado" | "Pendiente" | "Sin DDJJ";
+export type EstadoMes = "Pagado" | "Pendiente" | "Sin DDJJ" | "Sin movimiento";
+
+/** Vista de montos del panel. */
+export type PanelMode = "periodo" | "caja";
+
+/** Un período (mes de DDJJ) que compone una celda en vista caja. */
+export interface CajaPeriodo {
+  mes: number; // mes de la declaración que se cobró
+  monto: number;
+  fecha_pago: string | null;
+}
 
 /** Desglose por concepto usado en tarjetas y celdas. */
 export interface Desglose {
@@ -26,6 +36,8 @@ export interface MesCelda {
   intereses: number;
   /** false => este período no recalcula interés por mora. */
   aplica_interes: boolean;
+  /** Solo vista caja: qué períodos (meses de DDJJ) componen el monto del mes. */
+  periodos?: CajaPeriodo[];
 }
 
 /** Una fila (empresa) de la grilla principal. */
@@ -44,8 +56,9 @@ export interface SummaryResponse {
   cobrado_mes: Desglose; // período cobrado (mes vencido = mes seleccionado - 1)
   acumulado_anio: Desglose; // fijo, acumulado del año
   empresas_pendientes: { pendientes: number; total: number }; // "X de Y"
-  // Período efectivamente cobrado (mes vencido) para rotular las tarjetas.
+  // Mes rotulado en "Cobrado del mes": mes vencido en período, mes literal en caja.
   periodo?: { mes: number; year: number };
+  mode?: PanelMode;
 }
 
 /** Fila del historial en el detalle de empresa. */
