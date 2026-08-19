@@ -30,9 +30,16 @@ export const DeleteDialog = ({
       if (result.ok) {
         toast.success("Declaración jurada eliminada");
         deleteStatement(statement.id);
+      } else {
+        // El borrado puede fallar en la base: antes la API respondía 200 igual
+        // y el diálogo se cerraba sin avisar nada.
+        toast.error(
+          result.message || "No se pudo eliminar la declaración jurada"
+        );
       }
     } catch (error) {
       console.log(error);
+      toast.error("No se pudo eliminar la declaración jurada");
     }
   };
 

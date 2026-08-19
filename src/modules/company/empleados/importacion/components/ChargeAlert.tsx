@@ -24,8 +24,12 @@ export const ChargeAlert = () => {
             </p>
             <ul className="list-disc pl-5 space-y-2">
               <li>
-                Apellido, Nombre, CUIL, Adhesion al sindicato, Categoria son
-                campos OBLIGATORIOS.
+                Apellido, Nombre, CUIL, Adhesion al sindicato, Categoria y
+                Sueldo Básico son campos OBLIGATORIOS en TODAS las filas.
+              </li>
+              <li>
+                El CUIL debe tener 11 dígitos y no puede repetirse entre
+                empleados. Se admiten guiones o puntos (el sistema los quita).
               </li>
               <li>
                 El campo adhesión al sindicato debe indicar una opción del
@@ -37,8 +41,13 @@ export const ChargeAlert = () => {
                 <span className="font-bold">No tipear la categoria</span>
               </li>
               <li>El campo Sueldo Basico no debe ser un valor 0</li>
-              <li>El CUIL NO puede contener guiones ni puntos.</li>
               <li>El CUIL NO puede ser 00-0000000-0</li>
+              <li>
+                Si alguna fila tiene un error, el sistema lo lista con el número
+                de fila del Excel y{" "}
+                <span className="font-bold">no carga la declaración</span>:
+                corregí el archivo y volvé a subirlo.
+              </li>
             </ul>
           </AlertDescription>
           <div className="mt-4">
