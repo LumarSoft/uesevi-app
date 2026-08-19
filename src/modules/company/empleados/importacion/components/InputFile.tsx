@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -20,6 +20,11 @@ import { Upload, X, FileSpreadsheet, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { REQUIRED_COLUMNS, CATEGORIAS_PERMITIDAS } from "../constants/excelSchema";
+import {
+  validateStatementRows,
+  type RowError,
+} from "@/shared/utils/validateStatementRows";
+import StatementErrorsPanel from "@/shared/components/StatementErrorsPanel";
 
 export const InputFile = ({
   month,
@@ -34,6 +39,17 @@ export const InputFile = ({
   const { user } = userStore();
   const router = useRouter();
   const [dragActive, setDragActive] = useState(false);
+  // Errores de la última carga (validación local o respuesta de la API).
+  const [errors, setErrors] = useState<RowError[]>([]);
+  const errorsRef = useRef<HTMLDivElement | null>(null);
+
+  // Si la carga falla, llevamos la vista al detalle de errores: el panel queda
+  // debajo del selector de archivo y en pantallas chicas no se ve.
+  useEffect(() => {
+    if (errors.length > 0) {
+      errorsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [errors]);
 
   // Función para enviar datos a la API y retornar el estado
   const sendJson = async (data: any[]): Promise<boolean> => {
@@ -58,13 +74,34 @@ export const InputFile = ({
       const result = await postData("employees/import", formData);
       if (result.ok) {
         return true;
-      } else {
-        toast.error(result.message);
-        return false;
       }
+
+      // La API vuelve a validar el archivo y puede devolver el detalle fila por
+      // fila; si no, mostramos el motivo que informó el servidor.
+      setErrors(
+        Array.isArray(result.errors) && result.errors.length > 0
+          ? result.errors
+          : [
+              {
+                fila: null,
+                campo: null,
+                mensaje:
+                  result.message ||
+                  "El servidor rechazó la carga. No se guardó ningún dato.",
+              },
+            ]
+      );
+      return false;
     } catch (error) {
       console.error("Error al enviar el formulario:", error);
-      toast.error("Error al enviar los datos a la API");
+      setErrors([
+        {
+          fila: null,
+          campo: null,
+          mensaje:
+            "No se pudo contactar al servidor. La declaración no se cargó: revisá tu conexión e intentá de nuevo.",
+        },
+      ]);
       return false; // Indica que hubo un error
     }
   };
@@ -74,6 +111,7 @@ export const InputFile = ({
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
+      setErrors([]);
     }
   };
 
@@ -126,147 +164,43 @@ export const InputFile = ({
 
       const formattedData = formatKeys(data);
 
-      // Validación de datos
-      if (formattedData.length > 0) {
-        // Validar que todas las columnas requeridas estén presentes
-        const formattedColumns = Object.keys(formattedData[0]);
-        const missingColumns = REQUIRED_COLUMNS.filter(
-          (col) => !formattedColumns.includes(col)
-        );
+      // Categorías REALES del sistema (GET /category). Si la API no responde se
+      // usa la lista local como fallback para no bloquear la carga.
+      const categoriasResult = await fetchData("category");
+      const categoriasValidas: string[] =
+        categoriasResult?.ok && Array.isArray(categoriasResult.data)
+          ? categoriasResult.data
+              .map((c: any) => c?.nombre)
+              .filter((n: any): n is string => Boolean(n))
+          : CATEGORIAS_PERMITIDAS;
 
-        if (missingColumns.length > 0) {
-          toast.error(
-            `Faltan columnas requeridas en el archivo: ${missingColumns.join(
-              ", "
-            )}`
-          );
-          return false;
-        }
+      // Validamos TODAS las filas (no solo los encabezados de la primera) con
+      // las mismas reglas que aplica la API. Si algo falla, el detalle queda a
+      // la vista en el panel de errores y no se envía nada.
+      const validationErrors = validateStatementRows(
+        formattedData,
+        categoriasValidas
+      );
 
-        // Validar la categoría contra las categorías REALES del sistema
-        // (GET /category). Si la API no responde, se usa la lista local como
-        // fallback para no bloquear la carga.
-        const categoriasResult = await fetchData("category");
-        const categoriasValidas: string[] =
-          categoriasResult?.ok && Array.isArray(categoriasResult.data)
-            ? categoriasResult.data
-                .map((c: any) => c?.nombre)
-                .filter((n: any): n is string => Boolean(n))
-            : CATEGORIAS_PERMITIDAS;
-
-        // Validar tipos de datos y valores
-        const errors: string[] = [];
-
-        formattedData.forEach((row, index) => {
-          // Ajustar el número de fila: índice + 2 (índice empieza en 0 + 1 para empezar en 1 + 1 por la fila de encabezado)
-          const rowNumber = index + 2;
-
-          // Validar CUIL (solo números)
-          if (row.cuil && !/^\d+$/.test(String(row.cuil))) {
-            errors.push(
-              `Fila ${rowNumber}: El CUIL debe contener solo números`
-            );
-          }
-
-          // Validar categoría (debe ser una de las categorías del sistema)
-          if (
-            row.categora &&
-            !categoriasValidas.some(categoria =>
-              categoria.toLowerCase() === String(row.categora).trim().toLowerCase()
-            )
-          ) {
-            errors.push(
-              `Fila ${rowNumber}: La categoría "${row.categora}" no es válida. Revise las opciones nuevamente`
-            );
-          }
-
-          // Validar campos numéricos
-          if (row.sueldo_bsico && isNaN(Number(row.sueldo_bsico))) {
-            errors.push(
-              `Fila ${rowNumber}: El sueldo básico debe ser un número`
-            );
-          } else if (row.sueldo_bsico && Number(row.sueldo_bsico) < 0) {
-            errors.push(
-              `Fila ${rowNumber}: El sueldo básico no puede ser negativo`
-            );
-          }
-
-          if (row.adicionales && isNaN(Number(row.adicionales))) {
-            errors.push(
-              `Fila ${rowNumber}: Los adicionales deben ser un número`
-            );
-          } else if (row.adicionales && Number(row.adicionales) < 0) {
-            errors.push(
-              `Fila ${rowNumber}: Los adicionales no pueden ser negativos`
-            );
-          }
-
-          if (
-            row.suma_no_remunerativa &&
-            isNaN(Number(row.suma_no_remunerativa))
-          ) {
-            errors.push(
-              `Fila ${rowNumber}: El suma_no_remunerativa debe ser un número`
-            );
-          } else if (
-            row.suma_no_remunerativa && Number(row.suma_no_remunerativa) <= 0
-          ) {
-            errors.push(
-              `Fila ${rowNumber}: El suma_no_remunerativa debe ser un número positivo mayor a cero`
-            );
-          }
-
-          // Validar que nombre y apellido no estén vacíos
-          if (!row.nombre || String(row.nombre).trim() === "") {
-            errors.push(`Fila ${rowNumber}: El nombre no puede estar vacío`);
-          }
-
-          if (!row.apellido || String(row.apellido).trim() === "") {
-            errors.push(`Fila ${rowNumber}: El apellido no puede estar vacío`);
-          }
-
-          // Validar adherido_a_sindicato (debe ser booleano o convertible a booleano)
-          const sindicatoValue = String(row.adherido_a_sindicato).toLowerCase();
-          if (
-            sindicatoValue !== "true" &&
-            sindicatoValue !== "false" &&
-            sindicatoValue !== "1" &&
-            sindicatoValue !== "0" &&
-            sindicatoValue !== "si" &&
-            sindicatoValue !== "no"
-          ) {
-            errors.push(
-              `Fila ${rowNumber}: Adherido a sindicato debe ser Sí/No, True/False o 1/0`
-            );
-          }
-        });
-
-        // Si hay errores, mostrarlos y detener el proceso
-        if (errors.length > 0) {
-          // Limitar a mostrar máximo 5 errores para no saturar la pantalla
-          const displayErrors = errors.slice(0, 5);
-          const remainingErrors = errors.length - 5;
-
-          let errorMessage = displayErrors.join("\n");
-          if (remainingErrors > 0) {
-            errorMessage += `\n...y ${remainingErrors} errores más.`;
-          }
-
-          toast.error(errorMessage, {
-            autoClose: 10000, // Dar más tiempo para leer los errores
-          });
-          return false;
-        }
-      } else {
-        toast.error("El archivo no contiene datos");
+      if (validationErrors.length > 0) {
+        setErrors(validationErrors);
         return false;
       }
+
+      setErrors([]);
 
       // Aquí se lo enviamos a la función para enviar a la API y esperamos a que termine
       return await sendJson(formattedData); // Retorna el resultado de sendJson
     } catch (error) {
       console.error(error);
-      toast.error("Ocurrió un error al subir el archivo");
+      setErrors([
+        {
+          fila: null,
+          campo: null,
+          mensaje:
+            "No se pudo leer el archivo. Verificá que sea un Excel válido (.xlsx o .xls) y que la primera hoja tenga los datos.",
+        },
+      ]);
       return false; // Retorna false si hay un error
     }
   };
@@ -289,12 +223,18 @@ export const InputFile = ({
     setLoading(false);
     setIsUploading(false);
 
+    // Solo confirmamos la carga si la API respondió OK. Antes se avisaba
+    // "Archivo subido correctamente" y se redirigía aunque el backend hubiera
+    // hecho rollback, así que la empresa creía que la DDJJ estaba presentada.
     if (isFinish) {
-      toast.success("Archivo subido correctamente");
+      toast.success("Declaración jurada cargada correctamente");
       return router.push("/empresa/declaraciones");
-    } else {
-      toast.error("Hubo un problema al procesar el archivo");
     }
+
+    toast.error(
+      "No se pudo cargar la declaración jurada. Revisá el detalle de errores.",
+      { autoClose: 8000 }
+    );
   };
   // Manejadores de drag and drop
   const handleDrag = (e: React.DragEvent) => {
@@ -318,6 +258,7 @@ export const InputFile = ({
       (droppedFile.name.endsWith(".xlsx") || droppedFile.name.endsWith(".xls"))
     ) {
       setFile(droppedFile);
+      setErrors([]);
     } else {
       toast.error("Por favor, solo archivos Excel (.xlsx, .xls)");
     }
@@ -333,6 +274,7 @@ export const InputFile = ({
       input.value = "";
     }
     setFile(null);
+    setErrors([]);
   };
 
   return (
@@ -404,6 +346,14 @@ export const InputFile = ({
               </div>
             )}
           </div>
+        </div>
+
+        {/* Detalle de errores de la última carga */}
+        <div ref={errorsRef}>
+          <StatementErrorsPanel
+            errors={errors}
+            onDismiss={() => setErrors([])}
+          />
         </div>
 
         {/* Alerta informativa */}

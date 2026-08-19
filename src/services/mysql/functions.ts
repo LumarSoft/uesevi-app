@@ -31,9 +31,12 @@ const handleResponse = async (response: Response) => {
 
     return {
       ok: false,
-      status: "error",
+      status: errorDetails.status || "error",
       statusCode: response.status,
       message: errorDetails.message || "Error desconocido",
+      // Detalle fila por fila que devuelve la API cuando falla la validación
+      // de un Excel (importación / rectificación de declaraciones juradas).
+      errors: errorDetails.errors || null,
       data: null,
     };
   }
