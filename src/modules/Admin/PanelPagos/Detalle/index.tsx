@@ -26,7 +26,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { fetchData } from "@/services/mysql/functions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { fetchData, postData } from "@/services/mysql/functions";
 import { CompanyDetailResponse } from "@/shared/types/PaymentsPanel";
 import { ChevronLeft } from "lucide-react";
 import {
@@ -62,6 +72,13 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
   const [detail, setDetail] = useState<CompanyDetailResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [confirmMonth, setConfirmMonth] = useState<number | null>(null);
+  // Pago a desmarcar (fila con estado Pagado). Se guarda el id de pagos_panel y
+  // el mes para el texto del diálogo de confirmación.
+  const [desmarcar, setDesmarcar] = useState<{
+    pagosPanelId: number;
+    mes: number;
+  } | null>(null);
+  const [desmarcando, setDesmarcando] = useState(false);
 
   const fetchDetail = useCallback(async () => {
     setLoading(true);
@@ -81,6 +98,28 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
   useEffect(() => {
     fetchDetail();
   }, [fetchDetail]);
+
+  // Desmarca el pago: revierte estado_pago en el Panel (vuelve a Pendiente).
+  // Sólo afecta al Panel; la declaración jurada no se toca.
+  const handleDesmarcar = async () => {
+    if (!desmarcar) return;
+    setDesmarcando(true);
+    try {
+      const res = await postData(
+        `payments-panel/payment/${desmarcar.pagosPanelId}/unconfirm`,
+        new FormData()
+      );
+      if (res && res.ok === false) {
+        throw new Error(res.message || "Error al desmarcar el pago");
+      }
+      setDesmarcar(null);
+      await fetchDetail();
+    } catch (e) {
+      console.error("Error al desmarcar el pago:", e);
+    } finally {
+      setDesmarcando(false);
+    }
+  };
 
   const header = detail?.header;
 
@@ -240,15 +279,32 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
                       </TableCell>
                       <TableCell>
                         {row.declaracion_jurada_id && (
-                          // También en las Pagado: hay que poder corregir una
-                          // fecha mal cargada sin desconfirmar el pago.
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setConfirmMonth(row.mes)}
-                          >
-                            {row.estado === "Pagado" ? "Editar" : "Confirmar"}
-                          </Button>
+                          <div className="flex justify-end gap-2">
+                            {/* También en las Pagado: hay que poder corregir una
+                                fecha mal cargada sin desconfirmar el pago. */}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setConfirmMonth(row.mes)}
+                            >
+                              {row.estado === "Pagado" ? "Editar" : "Confirmar"}
+                            </Button>
+                            {row.estado === "Pagado" && row.pagos_panel_id && (
+                              // Desmarcar: vuelve a Pendiente sólo en el Panel.
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() =>
+                                  setDesmarcar({
+                                    pagosPanelId: row.pagos_panel_id as number,
+                                    mes: row.mes,
+                                  })
+                                }
+                              >
+                                Desmarcar
+                              </Button>
+                            )}
+                          </div>
                         )}
                       </TableCell>
                     </TableRow>
@@ -270,6 +326,8 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
             manual; con la opción &ldquo;Calcular interés por mora&rdquo;
             destildada, cambiar la fecha no modifica el importe — es lo indicado
             para completar declaraciones viejas que ya se cobraron.
+            &nbsp;&ldquo;Desmarcar&rdquo; revierte un pago confirmado por error:
+            vuelve a Pendiente en el Panel (no modifica la declaración jurada).
           </p>
         </CardContent>
       </Card>
@@ -284,6 +342,36 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
           onSaved={fetchDetail}
         />
       )}
+
+      <AlertDialog
+        open={desmarcar !== null}
+        onOpenChange={(v) => !v && !desmarcando && setDesmarcar(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Desmarcar el pago?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {desmarcar
+                ? `El pago de ${mesLargo(desmarcar.mes)} ${year} volverá a estado Pendiente en el Panel. No modifica la declaración jurada. Se puede volver a confirmar después.`
+                : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={desmarcando}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={desmarcando}
+              onClick={(e) => {
+                // Evita que el AlertDialog se cierre solo antes de terminar el
+                // pedido: se cierra en handleDesmarcar al resolver.
+                e.preventDefault();
+                handleDesmarcar();
+              }}
+            >
+              {desmarcando ? "Desmarcando…" : "Desmarcar pago"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
