@@ -60,7 +60,6 @@ export function LoginEmpresaModule() {
 
       const { user, token } = data;
       userStore.getState().setAuth(token, user);
-      localStorage.setItem("auth-token", token);
 
       router.replace("/empresa/empleados/importacion");
     } catch (error: any) {
