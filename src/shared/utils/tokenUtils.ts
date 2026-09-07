@@ -1,3 +1,5 @@
+import { userStore } from "@/shared/stores/userStore";
+
 /**
  * Decodifica un token JWT sin verificar la firma
  * Solo para leer la información del payload en el cliente
@@ -31,18 +33,19 @@ export function isTokenExpired(token: string): boolean {
 }
 
 /**
- * Obtiene el token del localStorage y verifica si es válido
+ * Obtiene el token del store de sesión (Zustand) y verifica si es válido.
+ * Esta es la única fuente de verdad del token: no leer/escribir localStorage
+ * por fuera del store.
  */
 export function getValidToken(): string | null {
-  const token = localStorage.getItem("auth-token");
+  const token = userStore.getState().token;
 
   if (!token) {
     return null;
   }
 
   if (isTokenExpired(token)) {
-    // Si el token está expirado, lo eliminamos
-    localStorage.removeItem("auth-token");
+    userStore.getState().logout();
     return null;
   }
 
@@ -50,7 +53,9 @@ export function getValidToken(): string | null {
 }
 
 /**
- * Verifica si el usuario está autenticado con un rol específico
+ * Verifica si el usuario está autenticado con un rol específico.
+ * Esto es solo UX (redirige en el cliente); la seguridad real la da el
+ * backend con el JWT en cada request.
  */
 export function isAuthenticatedWithRole(requiredRole: string): boolean {
   const token = getValidToken();
@@ -69,8 +74,8 @@ export function isAuthenticatedWithRole(requiredRole: string): boolean {
 }
 
 /**
- * Limpia el token del localStorage
+ * Limpia la sesión del usuario.
  */
 export function clearAuthToken(): void {
-  localStorage.removeItem("auth-token");
+  userStore.getState().logout();
 }

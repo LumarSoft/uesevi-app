@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ComboboxEmpresas } from "./Combobox";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
+import { fetchData } from "@/services/mysql/functions";
 
 // Tipos para la respuesta de la API de búsqueda
 interface SearchResponse {
@@ -102,26 +103,12 @@ export function DataTable<TData, TValue>({
     try {
       const limit = 10; // Mismo que la paginación original
       const offset = (page - 1) * limit;
-      const BASE_API_URL =
-        process.env.NEXT_PUBLIC_BASE_API_URL || "http://localhost:3010";
 
-      const response = await fetch(
-        `${BASE_API_URL}/employees/search?q=${encodeURIComponent(
+      const result = await fetchData(
+        `employees/search?q=${encodeURIComponent(
           term.trim()
-        )}&limit=${limit}&offset=${offset}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        )}&limit=${limit}&offset=${offset}`
       );
-
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-
-      const result = await response.json();
 
       if (result.ok && result.data) {
         setSearchResults(result.data.employees);

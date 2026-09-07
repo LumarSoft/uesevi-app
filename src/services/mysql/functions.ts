@@ -1,10 +1,29 @@
+import { userStore } from "@/shared/stores/userStore";
+
 // Revalidate para Next.js
 export const revalidate = 1;
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
 
+// Agrega el JWT del usuario logueado (si existe) a los headers de la request
+function authHeaders(extra: Record<string, string> = {}) {
+  const token = userStore.getState().token;
+  return {
+    ...extra,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 // Función para manejar la respuesta de la API
 const handleResponse = async (response: Response) => {
+  if (response.status === 401) {
+    userStore.getState().logout();
+    if (typeof window !== "undefined") {
+      const isAdminArea = window.location.pathname.startsWith("/admin");
+      window.location.href = isAdminArea ? "/admin/login" : "/loginempresa";
+    }
+  }
+
   if (!response.ok) {
     let errorDetails;
     const contentType = response.headers.get("content-type");
@@ -61,9 +80,7 @@ export const fetchData = async (endpoint: string): Promise<any> => {
   try {
     const response = await fetch(`${BASE_API_URL}/${endpoint}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: authHeaders({ "Content-Type": "application/json" }),
       cache: "no-store",
     });
     return await handleResponse(response);
@@ -85,9 +102,7 @@ export const fetchOneRow = async (endpoint: string, id: number) => {
 
     const response = await fetch(`${BASE_API_URL}/${url}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: authHeaders({ "Content-Type": "application/json" }),
     });
     return await handleResponse(response);
   } catch (error: any) {
@@ -119,7 +134,8 @@ export const postData = async (endpoint: string, postData: FormData) => {
 
     const response = await fetch(`${BASE_API_URL}/${endpoint}`, {
       method: "POST",
-      body: postData, // No agregues el header 'Content-Type'
+      headers: authHeaders(), // No agregues el header 'Content-Type'
+      body: postData,
     });
 
     const result = await handleResponse(response);
@@ -162,7 +178,8 @@ export const updateData = async (
 
     const response = await fetch(`${BASE_API_URL}/${url}`, {
       method: "PUT",
-      body: updateData, // No agregues el header 'Content-Type'
+      headers: authHeaders(), // No agregues el header 'Content-Type'
+      body: updateData,
     });
 
     const result = await handleResponse(response);
@@ -186,9 +203,7 @@ export const deleteData = async (endpoint: string, id: number) => {
 
     const response = await fetch(`${BASE_API_URL}/${url}`, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: authHeaders({ "Content-Type": "application/json" }),
     });
     return await handleResponse(response);
   } catch (error: any) {

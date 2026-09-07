@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Building2, Clock, User, ChevronDown, ChevronRight } from "lucide-react";
 import { IEmployeeHistory } from "@/shared/types/Querys/IEmployeeHistory";
 import { IEmpleado } from "@/shared/types/Querys/IEmpleado";
+import { fetchOneRow } from "@/services/mysql/functions";
 
 interface HistorialDialogProps {
   empleado: IEmpleado;
@@ -36,31 +37,12 @@ export const HistorialDialog: React.FC<HistorialDialogProps> = ({ empleado }) =>
     
     setLoading(true);
     try {
-      const BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL || "http://localhost:3001";
-      console.log("🔧 BASE_API_URL:", BASE_API_URL);
-      
-      // Obtener el historial del empleado
-      const url = `${BASE_API_URL}/employees/history/${empleado.empleado_id}`;
-      console.log("🌐 URL de consulta:", url);
-      
-      const response = await fetch(url);
-      console.log("🔍 History response status:", response.status);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log("📡 Respuesta del servidor:", data);
-        
-        if (data.ok) {
-          console.log("✅ Datos del historial recibidos:", data.data);
-          console.log("🔍 Primer elemento del historial:", JSON.stringify(data.data[0], null, 2));
-          setHistorial(data.data);
-        } else {
-          console.error("Error fetching historial:", data.message);
-        }
+      const data = await fetchOneRow("employees/history/:id", empleado.empleado_id);
+
+      if (data.ok) {
+        setHistorial(data.data);
       } else {
-        console.error("❌ Error HTTP:", response.status, response.statusText);
-        const errorText = await response.text();
-        console.error("❌ Error response:", errorText.substring(0, 500));
+        console.error("Error fetching historial:", data.message);
       }
     } catch (error) {
       console.error("Error fetching historial:", error);

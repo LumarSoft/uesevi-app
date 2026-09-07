@@ -6,8 +6,7 @@ module.exports = {
       env_production: {
         NODE_ENV: "production",
         PORT: 3000,
-        NEXT_PUBLIC_BASE_API_URL: "https://lusoinsumos.store",
-        JWT_SECRET: "***QUITADO-POR-SEGURIDAD***",
+        NEXT_PUBLIC_BASE_API_URL: "https://apiuesevi.jpmanagementgroup.com.ar",
       },
     },
   ],

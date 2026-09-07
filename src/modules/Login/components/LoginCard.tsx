@@ -44,7 +44,6 @@ export const LoginCard = () => {
         }
 
         userStore.getState().setAuth(token, user as any);
-        localStorage.setItem("auth-token", token);
 
         router.replace("/admin/dashboard");
       } else {
