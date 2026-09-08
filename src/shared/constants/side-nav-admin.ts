@@ -16,6 +16,7 @@ import {
   Calculator,
   AlertTriangle,
   Wallet,
+  Bot,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 
@@ -143,5 +144,11 @@ export const NavItemsAdmin: NavItem[] = [
     icon: Wallet,
     href: "/admin/panel-pagos",
     color: "text-emerald-500",
+  },
+  {
+    title: "Asistente",
+    icon: Bot,
+    href: "/admin/chatbot",
+    color: "text-cyan-500",
   },
 ];
