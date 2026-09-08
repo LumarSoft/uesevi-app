@@ -62,6 +62,17 @@ const celdas = (linea: string) =>
     .split("|")
     .map((celda) => celda.trim());
 
+// Escalonado entre bloques. Se topea para que una respuesta larga no tarde
+// segundos en terminar de aparecer: a partir del bloque 8 entran todos juntos.
+const RETRASO_POR_BLOQUE_MS = 70;
+const BLOQUES_ESCALONADOS = 8;
+
+const entrada = (indice: number) => ({
+  style: {
+    animationDelay: `${Math.min(indice, BLOQUES_ESCALONADOS) * RETRASO_POR_BLOQUE_MS}ms`,
+  },
+});
+
 const Markdown = ({ texto }: { texto: string }) => {
   const lineas = texto.split("\n");
   const bloques: ReactNode[] = [];
@@ -70,6 +81,7 @@ const Markdown = ({ texto }: { texto: string }) => {
 
   while (i < lineas.length) {
     const linea = lineas[i];
+    const indice = clave;
 
     // Tabla: fila de encabezado + separador + filas
     if (esFilaDeTabla(linea) && i + 1 < lineas.length && esSeparadorDeTabla(lineas[i + 1])) {
@@ -80,8 +92,9 @@ const Markdown = ({ texto }: { texto: string }) => {
         filas.push(celdas(lineas[i]));
         i += 1;
       }
+      clave += 1;
       bloques.push(
-        <div key={clave++} className="my-2 overflow-x-auto">
+        <div key={indice} {...entrada(indice)} className="my-2 overflow-x-auto animacion-respuesta">
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="border-b border-border">
@@ -112,8 +125,9 @@ const Markdown = ({ texto }: { texto: string }) => {
     // Encabezados
     const encabezado = linea.match(/^(#{1,4})\s+(.*)$/);
     if (encabezado) {
+      clave += 1;
       bloques.push(
-        <p key={clave++} className="mt-3 font-semibold first:mt-0">
+        <p key={indice} {...entrada(indice)} className="mt-3 font-semibold first:mt-0 animacion-respuesta">
           {renderInline(encabezado[2])}
         </p>
       );
@@ -128,8 +142,9 @@ const Markdown = ({ texto }: { texto: string }) => {
         items.push(lineas[i].replace(/^\s*[-*]\s+/, ""));
         i += 1;
       }
+      clave += 1;
       bloques.push(
-        <ul key={clave++} className="my-1.5 list-disc space-y-0.5 pl-5">
+        <ul key={indice} {...entrada(indice)} className="my-1.5 list-disc space-y-0.5 pl-5 animacion-respuesta">
           {items.map((item, indice) => (
             <li key={indice}>{renderInline(item)}</li>
           ))}
@@ -145,8 +160,9 @@ const Markdown = ({ texto }: { texto: string }) => {
         items.push(lineas[i].replace(/^\s*\d+[.)]\s+/, ""));
         i += 1;
       }
+      clave += 1;
       bloques.push(
-        <ol key={clave++} className="my-1.5 list-decimal space-y-0.5 pl-5">
+        <ol key={indice} {...entrada(indice)} className="my-1.5 list-decimal space-y-0.5 pl-5 animacion-respuesta">
           {items.map((item, indice) => (
             <li key={indice}>{renderInline(item)}</li>
           ))}
@@ -174,12 +190,13 @@ const Markdown = ({ texto }: { texto: string }) => {
       parrafo.push(lineas[i]);
       i += 1;
     }
+    clave += 1;
     bloques.push(
-      <p key={clave++} className="my-1.5 first:mt-0 last:mb-0">
-        {parrafo.map((linea, indice) => (
-          <Fragment key={indice}>
-            {indice > 0 && <br />}
-            {renderInline(linea)}
+      <p key={indice} {...entrada(indice)} className="my-1.5 first:mt-0 last:mb-0 animacion-respuesta">
+        {parrafo.map((textoLinea, nLinea) => (
+          <Fragment key={nLinea}>
+            {nLinea > 0 && <br />}
+            {renderInline(textoLinea)}
           </Fragment>
         ))}
       </p>

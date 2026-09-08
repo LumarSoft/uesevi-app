@@ -52,7 +52,10 @@ const PropuestaCard = ({ propuesta }: { propuesta: IChatbotPropuesta }) => {
   };
 
   return (
-    <div className="mt-3 rounded-2xl border border-amber-500/30 bg-amber-500/[0.06] p-4">
+    <div
+      className="animacion-respuesta mt-3 rounded-2xl border border-amber-500/30 bg-amber-500/[0.06] p-4"
+      style={{ animationDelay: "180ms" }}
+    >
       <div className="flex items-start gap-2.5">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
         <div className="min-w-0 flex-1">

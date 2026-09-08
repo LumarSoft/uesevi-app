@@ -16,8 +16,17 @@ export interface IChatbotHerramientaUsada {
   input: Record<string, unknown>;
 }
 
+export interface IChatbotAnalisisArchivo {
+  archivo: string;
+  legible: boolean;
+  es_valido: boolean;
+  filas_leidas: number;
+  cantidad_errores: number;
+}
+
 export interface IChatbotRespuesta {
   respuesta: string;
+  analisis_archivo: IChatbotAnalisisArchivo | null;
   propuestas: IChatbotPropuesta[];
   herramientas_usadas: IChatbotHerramientaUsada[];
   conversacion: IChatbotItemApi[];
@@ -28,6 +37,8 @@ export interface IChatbotBurbuja {
   id: string;
   autor: "usuario" | "asistente";
   texto: string;
+  // Nombre del Excel que se mandó junto al mensaje, si hubo uno.
+  adjunto?: string;
   herramientas?: IChatbotHerramientaUsada[];
   propuestas?: IChatbotPropuesta[];
   error?: boolean;
