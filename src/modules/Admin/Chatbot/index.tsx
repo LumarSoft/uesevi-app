@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Building2, FileClock, SquarePen, Users, Wallet } from "lucide-react";
+import { Building2, FileClock, FileSpreadsheet, Paperclip, SquarePen, Users } from "lucide-react";
 import { postData } from "@/services/mysql/functions";
 import {
   IChatbotBurbuja,
   IChatbotItemApi,
 } from "@/shared/types/Querys/IChatbot";
+import type { LucideIcon } from "lucide-react";
 import Composer from "./components/Composer";
+import OrbPensando from "./components/OrbPensando";
 import Markdown from "./components/Markdown";
 import PropuestaCard from "./components/PropuestaCard";
 
@@ -30,11 +32,11 @@ const ETIQUETAS_HERRAMIENTAS: Record<string, string> = {
   proponer_actualizar_empleado: "Propuesta: modificar empleado",
 };
 
-const ATAJOS = [
+const ATAJOS: { icono: LucideIcon; texto: string; adjunta?: boolean }[] = [
   { icono: FileClock, texto: "Última declaración de una empresa" },
   { icono: Users, texto: "En qué empresa está un empleado" },
-  { icono: Wallet, texto: "Empresas con más deuda vencida" },
   { icono: Building2, texto: "Datos de contacto de una empresa" },
+  { icono: FileSpreadsheet, texto: "Revisar un Excel que la empresa no pudo subir", adjunta: true },
 ];
 
 const nuevoId = () =>
@@ -49,7 +51,12 @@ const ChatbotModule = () => {
   // entero en cada consulta para que el modelo no pierda el contexto.
   const [conversacion, setConversacion] = useState<IChatbotItemApi[]>([]);
   const [entrada, setEntrada] = useState("");
+  const [archivo, setArchivo] = useState<File | null>(null);
   const [cargando, setCargando] = useState(false);
+  // Si el orbe no puede dibujarse (sin WebGPU, o el usuario pidió menos
+  // movimiento) se cae a los puntitos y no se reintenta en toda la sesión.
+  const [orbeDisponible, setOrbeDisponible] = useState(true);
+  const archivoAtajoRef = useRef<HTMLInputElement>(null);
 
   const finRef = useRef<HTMLDivElement>(null);
   const vacio = burbujas.length === 0;
@@ -60,18 +67,27 @@ const ChatbotModule = () => {
 
   const enviar = async (texto: string) => {
     const pregunta = texto.trim();
-    if (!pregunta || cargando) return;
+    const adjunto = archivo;
+    // Con un archivo adjunto no hace falta escribir nada.
+    if ((!pregunta && !adjunto) || cargando) return;
 
     setEntrada("");
+    setArchivo(null);
     setCargando(true);
     setBurbujas((previas) => [
       ...previas,
-      { id: nuevoId(), autor: "usuario", texto: pregunta },
+      {
+        id: nuevoId(),
+        autor: "usuario",
+        texto: pregunta || "Revisá este Excel de declaración jurada.",
+        adjunto: adjunto?.name,
+      },
     ]);
 
     const formData = new FormData();
     formData.append("mensaje", pregunta);
     formData.append("conversacion", JSON.stringify(conversacion));
+    if (adjunto) formData.append("archivo", adjunto);
 
     const resultado = await postData("chatbot", formData);
     setCargando(false);
@@ -106,6 +122,7 @@ const ChatbotModule = () => {
     setBurbujas([]);
     setConversacion([]);
     setEntrada("");
+    setArchivo(null);
   };
 
   // ---------------------------------------------------------------------
@@ -124,15 +141,30 @@ const ChatbotModule = () => {
             onCambio={setEntrada}
             onEnviar={() => enviar(entrada)}
             cargando={cargando}
+            archivo={archivo}
+            onArchivo={setArchivo}
             autoFocus
           />
 
+          <input
+            ref={archivoAtajoRef}
+            type="file"
+            accept=".xlsx,.xls,.xlsm,.csv"
+            onChange={(evento) => {
+              setArchivo(evento.target.files?.[0] ?? null);
+              evento.target.value = "";
+            }}
+            className="hidden"
+          />
+
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            {ATAJOS.map(({ icono: Icono, texto }) => (
+            {ATAJOS.map(({ icono: Icono, texto, adjunta }) => (
               <button
                 key={texto}
                 type="button"
-                onClick={() => setEntrada(`${texto}: `)}
+                onClick={() =>
+                  adjunta ? archivoAtajoRef.current?.click() : setEntrada(`${texto}: `)
+                }
                 className="flex items-center gap-2.5 rounded-xl border bg-background px-3.5 py-3 text-left text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
               >
                 <Icono className="h-4 w-4 shrink-0 opacity-70" />
@@ -163,8 +195,14 @@ const ChatbotModule = () => {
         <div className="mx-auto w-full max-w-3xl space-y-6 px-4 pb-8 pt-12">
           {burbujas.map((burbuja) =>
             burbuja.autor === "usuario" ? (
-              <div key={burbuja.id} className="flex justify-end">
-                <p className="max-w-[80%] whitespace-pre-wrap rounded-2xl bg-muted px-4 py-2.5 text-[15px]">
+              <div key={burbuja.id} className="flex flex-col items-end gap-1.5">
+                {burbuja.adjunto && (
+                  <span className="flex max-w-[80%] items-center gap-1.5 rounded-xl border bg-background px-3 py-2 text-xs text-muted-foreground">
+                    <Paperclip className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{burbuja.adjunto}</span>
+                  </span>
+                )}
+                <p className="animacion-respuesta max-w-[80%] whitespace-pre-wrap rounded-2xl bg-muted px-4 py-2.5 text-[15px]">
                   {burbuja.texto}
                 </p>
               </div>
@@ -184,7 +222,10 @@ const ChatbotModule = () => {
                 ))}
 
                 {!!burbuja.herramientas?.length && (
-                  <details className="mt-3 text-xs text-muted-foreground">
+                  <details
+                    className="animacion-respuesta mt-3 text-xs text-muted-foreground"
+                    style={{ animationDelay: "240ms" }}
+                  >
                     <summary className="cursor-pointer select-none list-none opacity-60 transition-opacity hover:opacity-100">
                       {burbuja.herramientas.length}{" "}
                       {burbuja.herramientas.length === 1
@@ -211,17 +252,20 @@ const ChatbotModule = () => {
             )
           )}
 
-          {cargando && (
-            <div className="flex gap-1.5 py-1" aria-label="Consultando">
-              {[0, 150, 300].map((retraso) => (
-                <span
-                  key={retraso}
-                  className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50"
-                  style={{ animationDelay: `${retraso}ms` }}
-                />
-              ))}
-            </div>
-          )}
+          {cargando &&
+            (orbeDisponible ? (
+              <OrbPensando onFallback={() => setOrbeDisponible(false)} />
+            ) : (
+              <div className="flex gap-1.5 py-1" aria-label="Consultando">
+                {[0, 150, 300].map((retraso) => (
+                  <span
+                    key={retraso}
+                    className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50"
+                    style={{ animationDelay: `${retraso}ms` }}
+                  />
+                ))}
+              </div>
+            ))}
 
           <div ref={finRef} />
         </div>
@@ -234,6 +278,8 @@ const ChatbotModule = () => {
             onCambio={setEntrada}
             onEnviar={() => enviar(entrada)}
             cargando={cargando}
+            archivo={archivo}
+            onArchivo={setArchivo}
           />
           <p className="mt-2 text-center text-[11px] text-muted-foreground">
             Los cambios en la base requieren tu confirmación.
