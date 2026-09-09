@@ -23,6 +23,11 @@ export interface NavItem {
   title: string;
   href: string;
   icon: LucideIcon;
+  /**
+   * Ítems que no se dibujan con un ícono de lucide. "nacho" renderiza la
+   * silueta animada del asistente, que saluda al pasarle el mouse por encima.
+   */
+  marca?: "nacho";
   color?: string;
   isChidren?: boolean;
   children?: NavItem[];
@@ -143,5 +148,11 @@ export const NavItemsAdmin: NavItem[] = [
     icon: Wallet,
     href: "/admin/panel-pagos",
     color: "text-emerald-500",
+  },
+  {
+    title: "Nacho",
+    icon: MessageSquare, // no se usa: lo reemplaza la silueta (marca: "nacho")
+    marca: "nacho",
+    href: "/admin/chatbot",
   },
 ];

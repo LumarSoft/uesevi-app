@@ -82,3 +82,248 @@
 ::-webkit-scrollbar-track {
   background-color: #ffff; /* Color del fondo */
 }
+
+/* ---------------------------------------------------------------------------
+   Aparición de la respuesta del asistente (panel de admin → Asistente).
+
+   El texto entra desenfocado y desde abajo en vez de aparecer de golpe cuando
+   se apaga el orbe. Los bloques del markdown la usan con `animation-delay`
+   escalonado, así la respuesta se arma de arriba hacia abajo.
+   --------------------------------------------------------------------------- */
+@keyframes aparecer-respuesta {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+.animacion-respuesta {
+  /* `backwards` mantiene el estado inicial durante el retraso: sin eso los
+     bloques con delay parpadean visibles antes de empezar a animarse. */
+  animation: aparecer-respuesta 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animacion-respuesta {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Nacho (panel de admin → Nacho): feedback mientras responde.
+   --------------------------------------------------------------------------- */
+
+/* Cada paso de la línea de tiempo entra deslizándose desde la izquierda. */
+@keyframes entrar-paso {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.paso-nacho {
+  animation: entrar-paso 260ms ease-out backwards;
+}
+
+/* Cursor al final del texto mientras sigue llegando. */
+@keyframes parpadeo-nacho {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.cursor-nacho::after {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  border-radius: 2px;
+  background: hsl(var(--foreground));
+  animation: parpadeo-nacho 900ms steps(2, start) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paso-nacho {
+    animation: none;
+  }
+  .cursor-nacho::after {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Nacho: la silueta.
+
+   Todo lo que anima son `transform` y `opacity` sobre custom properties que
+   escribe `shared/components/Nacho/motor.ts` desde un único rAF. No hay
+   render de React por cuadro ni layout/paint: sólo composición.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* Azul institucional del logo de UESEVI (#3e5298). */
+  --nacho-masa: 227 42% 42%;
+  --nacho-ojo: 0 0% 100%;
+  --nacho-ok: 160 84% 27%;
+}
+
+.dark {
+  /* Se aclara para no fundirse con el fondo del panel en oscuro. */
+  --nacho-masa: 226 52% 59%;
+  --nacho-ojo: 222.2 84% 4.9%;
+  --nacho-ok: 158 64% 52%;
+}
+
+.nacho {
+  --nacho-respiro: 0;
+  --nacho-ancho: 1;
+  --nacho-alto: 1;
+  --nacho-sesgo: 0;
+  --nacho-parpadeo: 1;
+  --nacho-mx: 0;
+  --nacho-my: 0;
+  --nacho-incl: 0;
+  --nacho-sacudida: 0;
+  --nacho-halo: 0;
+  overflow: visible;
+}
+
+.nacho-cuerpo {
+  transform-box: view-box;
+  /* Apoyado en la base: al respirar se hunde y se ensancha en vez de flotar. */
+  transform-origin: 60px 102px;
+  transform: translate(calc(var(--nacho-sacudida) * 1px), calc(var(--nacho-respiro) * 1px))
+    rotate(calc(var(--nacho-sesgo) * 1deg)) scale(var(--nacho-ancho), var(--nacho-alto));
+}
+
+/* Las piezas de la masa comparten relleno opaco, así que se funden en una sola
+   silueta sin costuras y sin necesidad de un único path. */
+/* Sin `transition` sobre el color, a propósito: Chromium no vuelve a disparar
+   una transición cuando lo único que cambia es el var() del que sale el valor
+   —al pasar de oscuro a claro Nacho se quedaba con el azul del otro tema— y
+   registrar la propiedad con @property lo congela igual. Sin transición todo
+   resuelve en vivo, y el corte seco le sienta mejor al golpe de "encontrado"
+   y al de "falla" que un fundido. */
+.nacho-masa > * {
+  fill: hsl(var(--nacho-masa));
+}
+
+.nacho[data-estado="encontrado"] .nacho-masa > * {
+  fill: hsl(var(--nacho-ok));
+}
+
+.nacho[data-estado="falla"] .nacho-masa > * {
+  fill: hsl(var(--destructive));
+}
+
+.nacho-halo {
+  fill: none;
+  stroke: hsl(var(--nacho-masa));
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 13 87;
+  stroke-dashoffset: calc(var(--nacho-halo) * -1);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.nacho[data-estado="leyendo"] .nacho-halo,
+.nacho[data-estado="pensando"] .nacho-halo {
+  opacity: 1;
+}
+
+.nacho-ojos {
+  transform: translate(calc(var(--nacho-mx) * 1px), calc(var(--nacho-my) * 1px));
+}
+
+.nacho-ojo {
+  transform-box: view-box;
+}
+
+.nacho-ojo-izq {
+  transform-origin: 48px 64px;
+  transform: scaleY(var(--nacho-parpadeo)) rotate(calc(var(--nacho-incl) * 1deg));
+}
+
+.nacho-ojo-der {
+  transform-origin: 72px 64px;
+  transform: scaleY(var(--nacho-parpadeo)) rotate(calc(var(--nacho-incl) * -1deg));
+}
+
+.nacho-pupila {
+  fill: hsl(var(--nacho-ojo));
+  transition: opacity 130ms ease;
+}
+
+.nacho-arco {
+  fill: none;
+  stroke: hsl(var(--nacho-ojo));
+  stroke-width: 11;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 130ms ease;
+}
+
+/* Ojos en arco: la única expresión "de cara" que tiene, y dura 1,2 s. */
+.nacho[data-estado="encontrado"] .nacho-pupila {
+  opacity: 0;
+}
+
+.nacho[data-estado="encontrado"] .nacho-arco {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nacho-halo,
+  .nacho-pupila,
+  .nacho-arco {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Atajos del estado vacío de Nacho: aparecen al enfocar el input.
+
+   La grilla pasa de 0fr a 1fr, así el alto lo pone el contenido y no hay que
+   fijar un `max-height` a ojo. Los ítems de adentro entran escalonados con
+   `.animacion-respuesta`, la misma que usa la respuesta del asistente.
+   --------------------------------------------------------------------------- */
+.atajos-nacho {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease;
+}
+
+.atajos-nacho[data-abierto="true"] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.atajos-nacho > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atajos-nacho {
+    transition: none;
+  }
+}

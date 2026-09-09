@@ -30,7 +30,6 @@ export const LoginCard = () => {
       formData.append("rol", "admin");
 
       const response = await postData("login", formData);
-      console.log(response);
 
       if (response.ok && response.data) {
         const { token, user } = response.data;
@@ -47,7 +46,11 @@ export const LoginCard = () => {
 
         router.replace("/admin/dashboard");
       } else {
-        setError("Error al iniciar sesión. Por favor, intente de nuevo.");
+        // Mensaje real de la API ("El correo electrónico no existe",
+        // "Contraseña incorrecta") para que el usuario sepa qué corregir.
+        setError(
+          response.message || "Error al iniciar sesión. Por favor, intente de nuevo."
+        );
         setLoading(false);
       }
     } catch (error: any) {
