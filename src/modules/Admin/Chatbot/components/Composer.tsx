@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ArrowUp, Loader2, Paperclip, X } from "lucide-react";
+import { ArrowUp, Paperclip, Square, X } from "lucide-react";
 
 // Mismos formatos que acepta la API en POST /chatbot.
 const FORMATOS_ACEPTADOS = ".xlsx,.xls,.xlsm,.csv";
@@ -13,6 +13,8 @@ interface ComposerProps {
   onCambio: (valor: string) => void;
   onEnviar: () => void;
   cargando: boolean;
+  // Corta la consulta en curso (el stream se aborta y el modelo deja de correr).
+  onDetener?: () => void;
   archivo: File | null;
   onArchivo: (archivo: File | null) => void;
   autoFocus?: boolean;
@@ -32,6 +34,7 @@ const Composer = ({
   onCambio,
   onEnviar,
   cargando,
+  onDetener,
   archivo,
   onArchivo,
   autoFocus,
@@ -73,7 +76,8 @@ const Composer = ({
   };
 
   // Con un archivo adjunto alcanza para enviar: si no escribe nada, la API
-  // asume que lo que quiere es que lo revisemos.
+  // asume que lo que quiere es que lo revisemos. Mientras Nacho responde se
+  // puede seguir escribiendo, pero no enviar.
   const puedeEnviar = !cargando && (valor.trim().length > 0 || Boolean(archivo));
 
   return (
@@ -104,9 +108,8 @@ const Composer = ({
           onKeyDown={manejarTecla}
           rows={1}
           placeholder={
-            archivo ? "Contame qué querés que revise…" : "Preguntá algo sobre la base…"
+            archivo ? "Contame qué querés que revise…" : "Preguntale a Nacho…"
           }
-          disabled={cargando}
           className="max-h-[200px] w-full resize-none bg-transparent py-4 pl-14 pr-14 text-[15px] leading-6 placeholder:text-muted-foreground focus:outline-none disabled:opacity-60"
         />
 
@@ -128,19 +131,27 @@ const Composer = ({
           <Paperclip className="h-[18px] w-[18px]" />
         </button>
 
-        <button
-          type="button"
-          onClick={onEnviar}
-          disabled={!puedeEnviar}
-          aria-label="Enviar"
-          className="absolute bottom-2.5 right-2.5 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-25"
-        >
-          {cargando ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
+        {cargando && onDetener ? (
+          <button
+            type="button"
+            onClick={onDetener}
+            aria-label="Detener"
+            title="Detener la respuesta"
+            className="absolute bottom-2.5 right-2.5 flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-background transition-opacity hover:opacity-80"
+          >
+            <Square className="h-3.5 w-3.5 fill-current" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onEnviar}
+            disabled={!puedeEnviar}
+            aria-label="Enviar"
+            className="absolute bottom-2.5 right-2.5 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-25"
+          >
             <ArrowUp className="h-4 w-4" />
-          )}
-        </button>
+          </button>
+        )}
       </div>
     </div>
   );
