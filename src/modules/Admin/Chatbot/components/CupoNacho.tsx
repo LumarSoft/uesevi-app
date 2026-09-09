@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, ChevronDown, Gauge, Loader2 } from "lucide-react";
+import { AlertTriangle, ChevronDown, Gauge, Gift, Loader2 } from "lucide-react";
 import { fetchData } from "@/services/mysql/functions";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { IChatbotCupo, IChatbotReporte } from "@/shared/types/Querys/IChatbot";
@@ -9,6 +9,10 @@ import type { IChatbotCupo, IChatbotReporte } from "@/shared/types/Querys/IChatb
 // Cada consulta a Nacho consume tokens del modelo, que se pagan. Esta pastilla
 // le muestra al personal cuánto le queda del cupo del mes, en consultas: los
 // tokens son una unidad que no le dice nada a quien usa el panel.
+//
+// Mientras `modo` es "prueba" el cupo no corta nada: se muestra igual para que
+// el consumo sea visible desde el día uno y para dejar dicho que esas consultas
+// son un regalo con fecha de vencimiento, no una función incluida para siempre.
 //
 // Si el usuario es el proveedor del sistema (CHATBOT_EMAILS_PROVEEDOR en la
 // API), la API le manda además los costos en dólares y el detalle aparece en el
@@ -48,6 +52,8 @@ const dolares = (valor: number, decimales = 2) =>
     minimumFractionDigits: decimales,
     maximumFractionDigits: decimales,
   })}`;
+
+const fechaCorta = (iso: string) => iso.split("-").reverse().join("/");
 
 const NOMBRE_MES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -121,7 +127,7 @@ const CupoNacho = ({ cupo }: { cupo: IChatbotCupo | null }) => {
             <p className="text-sm font-semibold">Consultas de {nombreDePeriodo(cupo.periodo)}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {cupo.modo === "prueba"
-                ? "Período de prueba: el uso se mide, no se corta."
+                ? "Prueba gratuita: el consumo se mide, pero no se corta ni se cobra."
                 : `${numero(cupo.consultas_restantes)} disponibles hasta fin de mes.`}
             </p>
           </div>
@@ -142,14 +148,40 @@ const CupoNacho = ({ cupo }: { cupo: IChatbotCupo | null }) => {
           </div>
 
           {cupo.prueba && (
-            <Fila
-              etiqueta="Prueba"
-              valor={`día ${cupo.prueba.dia} de ${cupo.prueba.dias} · hasta el ${cupo.prueba.fin
-                .split("-")
-                .reverse()
-                .join("/")}`}
-            />
+            <div className="space-y-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-2.5">
+              <p className="flex items-start gap-2 text-xs text-emerald-700 dark:text-emerald-400">
+                <Gift className="mt-px h-3.5 w-3.5 shrink-0" />
+                <span>
+                  {cupo.prueba.activa ? (
+                    <>
+                      <span className="font-semibold">Prueba gratuita sin cargo.</span> Estas
+                      consultas son una cortesía de Lumarsoft mientras dura la prueba.
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-semibold">La prueba gratuita terminó.</span> Nacho
+                      sigue disponible mientras definimos cómo continúa.
+                    </>
+                  )}
+                </span>
+              </p>
+              {cupo.prueba.activa && (
+                <Fila
+                  etiqueta="Día de la prueba"
+                  valor={`${cupo.prueba.dia} de ${cupo.prueba.dias}`}
+                />
+              )}
+              <Fila
+                etiqueta={cupo.prueba.activa ? "Hasta el" : "Terminó el"}
+                valor={fechaCorta(cupo.prueba.fin)}
+              />
+            </div>
           )}
+
+          <p className="text-[11px] leading-relaxed text-muted-foreground">
+            Nacho está en versión beta: puede equivocarse y sus funciones todavía
+            cambian de una semana a la otra.
+          </p>
 
           {(cupo.nivel === "aviso" || cupo.nivel === "critico" || cupo.nivel === "agotado") && (
             <p

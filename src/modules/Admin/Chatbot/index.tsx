@@ -472,6 +472,9 @@ const ChatbotModule = () => {
           <AvatarNacho tamano={20} estado={estadoNacho} />
           <span className="font-medium text-foreground">Nacho</span>
           <span>· asistente de UESEVI</span>
+          <span className="rounded-full border px-1.5 py-px text-[10px] font-medium uppercase tracking-wider">
+            Beta
+          </span>
         </div>
         <div className="flex items-center gap-1.5">
           <CupoNacho cupo={cupo} />
