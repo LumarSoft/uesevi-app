@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   Building2,
+  Check,
+  Copy,
   FileCheck2,
   FileClock,
   FileSpreadsheet,
@@ -17,6 +19,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { fetchData, postStream } from "@/services/mysql/functions";
+import { copiarAlPortapapeles } from "@/shared/utils/portapapeles";
 import { userStore } from "@/shared/stores/userStore";
 import {
   IChatbotAnalisisArchivo,
@@ -47,6 +50,33 @@ const ATAJOS: { icono: LucideIcon; texto: string; adjunta?: boolean }[] = [
 ];
 
 const MENSAJE_ARCHIVO = "Revisá este Excel de declaración jurada.";
+
+// Copiar la respuesta entera: lo que Nacho contesta termina en un mail a la
+// empresa o en una nota interna, y hoy había que seleccionarla a mano.
+const BotonCopiarRespuesta = ({ texto }: { texto: string }) => {
+  const [copiado, setCopiado] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        void copiarAlPortapapeles(texto).then((copiado) => {
+          if (!copiado) return;
+          setCopiado(true);
+          setTimeout(() => setCopiado(false), 1800);
+        });
+      }}
+      title="Copiar la respuesta"
+      aria-label="Copiar la respuesta"
+      className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-all hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100 group-hover/burbuja:opacity-100"
+    >
+      {copiado ? (
+        <Check className="h-3.5 w-3.5 text-emerald-600" />
+      ) : (
+        <Copy className="h-3.5 w-3.5" />
+      )}
+    </button>
+  );
+};
 
 const nuevoId = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -506,12 +536,17 @@ const ChatbotModule = () => {
                 </p>
               </div>
             ) : (
-              <div key={burbuja.id} className="flex gap-3">
+              <div key={burbuja.id} className="group/burbuja flex gap-3">
                 <div className="pt-0.5">
                   <AvatarNacho estado={estadoDeBurbuja(burbuja)} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="mb-1.5 text-xs font-semibold text-muted-foreground">Nacho</p>
+                  <div className="mb-1.5 flex h-6 items-center gap-1">
+                    <p className="text-xs font-semibold text-muted-foreground">Nacho</p>
+                    {!burbuja.enCurso && !burbuja.error && burbuja.texto && (
+                      <BotonCopiarRespuesta texto={burbuja.texto} />
+                    )}
+                  </div>
 
                   {burbuja.analisis && <ChipArchivo analisis={burbuja.analisis} />}
 
