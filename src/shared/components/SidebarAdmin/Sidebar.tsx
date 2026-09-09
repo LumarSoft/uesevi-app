@@ -50,7 +50,12 @@ export default function Sidebar({ className }: SidebarProps) {
         )}
         onClick={handleToggle}
       />
-      <div className="space-y-4 py-4">
+      {/* El alto lo fija el nav (h-screen menos el pt-20 de la cabecera) y acá
+          adentro va el scroll: con la barra desplegada y un acordeón abierto la
+          lista pasa el alto de la pantalla y antes no había forma de llegar a
+          los últimos ítems. El scroll no puede ir en el nav porque recortaría
+          la flecha de plegado, que se dibuja fuera de su borde derecho. */}
+      <div className="h-full space-y-4 overflow-y-auto py-4 [scrollbar-color:hsl(var(--muted-foreground)/0.35)_transparent] [scrollbar-width:thin]">
         <div className="px-3 py-2">
           <div className="mt-3 space-y-1">
             <SideNav
