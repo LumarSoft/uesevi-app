@@ -16,7 +16,6 @@ import {
   Calculator,
   AlertTriangle,
   Wallet,
-  Bot,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 
@@ -24,6 +23,11 @@ export interface NavItem {
   title: string;
   href: string;
   icon: LucideIcon;
+  /**
+   * Ítems que no se dibujan con un ícono de lucide. "nacho" renderiza la
+   * silueta animada del asistente, que saluda al pasarle el mouse por encima.
+   */
+  marca?: "nacho";
   color?: string;
   isChidren?: boolean;
   children?: NavItem[];
@@ -146,9 +150,9 @@ export const NavItemsAdmin: NavItem[] = [
     color: "text-emerald-500",
   },
   {
-    title: "Asistente",
-    icon: Bot,
+    title: "Nacho",
+    icon: MessageSquare, // no se usa: lo reemplaza la silueta (marca: "nacho")
+    marca: "nacho",
     href: "/admin/chatbot",
-    color: "text-cyan-500",
   },
 ];

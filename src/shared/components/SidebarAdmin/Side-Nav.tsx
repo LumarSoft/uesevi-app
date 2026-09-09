@@ -14,6 +14,7 @@ import { NavItem } from "@/shared/constants/side-nav-admin";
 import { useSidebar } from "@/shared/hooks/useSidebar";
 import { ChevronDownIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Nacho } from "@/shared/components/Nacho";
 
 interface SideNavProps {
   items: NavItem[];
@@ -123,7 +124,11 @@ export function SideNav({
               path === item.href && "bg-muted font-bold hover:bg-muted"
             )}
           >
-            <item.icon className={cn("h-5 w-5", item.color)} />
+            {item.marca === "nacho" ? (
+              <Nacho tamano={22} saludaEnHover />
+            ) : (
+              <item.icon className={cn("h-5 w-5", item.color)} />
+            )}
             <span
               className={cn(
                 "absolute left-12 text-base duration-200",
