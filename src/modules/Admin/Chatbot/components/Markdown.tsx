@@ -1,6 +1,8 @@
 "use client";
 
-import { Fragment, ReactNode } from "react";
+import { Fragment, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Check, Copy, Download, FileText } from "lucide-react";
+import { copiarAlPortapapeles } from "@/shared/utils/portapapeles";
 
 /**
  * Renderer de markdown mínimo, pensado sólo para lo que devuelve el chatbot:
@@ -49,6 +51,10 @@ const renderInline = (texto: string): ReactNode[] => {
   return partes;
 };
 
+// Nacho cierra cada respuesta con datos citando de dónde salieron. Esa línea
+// es la trazabilidad de la respuesta, no una oración más: se separa del cuerpo.
+const esLineaDeFuente = (linea: string) => /^\s*\**\s*fuentes?\s*:/i.test(linea);
+
 const esFilaDeTabla = (linea: string) =>
   linea.trim().startsWith("|") && linea.trim().endsWith("|");
 
@@ -61,6 +67,191 @@ const celdas = (linea: string) =>
     .slice(1, -1)
     .split("|")
     .map((celda) => celda.trim());
+
+// Texto plano de una celda, sin las marcas de markdown: se usa para decidir si
+// una columna es numérica y para copiar o exportar la tabla.
+const textoPlano = (celda: string) => celda.replace(/\*\*|`|\*/g, "").trim();
+
+// Importes ($ 2.447.767,60), porcentajes, cantidades. Deja afuera los períodos
+// (8/2026) y las fechas, que se leen mejor alineados a la izquierda.
+const esNumerico = (celda: string) => {
+  const plano = textoPlano(celda);
+  if (!plano) return false;
+  return /^[-+]?\s*\$?\s*\d[\d.,]*\s*%?$/.test(plano);
+};
+
+// Una columna se alinea a la derecha si la mayoría de sus celdas con contenido
+// son números. Con los montos alineados, comparar una columna es inmediato.
+const columnasNumericas = (filas: string[][], cantidadColumnas: number) => {
+  const numericas: boolean[] = [];
+  for (let columna = 0; columna < cantidadColumnas; columna += 1) {
+    const conContenido = filas.map((fila) => fila[columna] ?? "").filter((celda) => textoPlano(celda));
+    numericas[columna] =
+      conContenido.length > 0 &&
+      conContenido.filter(esNumerico).length / conContenido.length >= 0.6;
+  }
+  return numericas;
+};
+
+// La fila de totales que suele cerrar las tablas de Nacho ("Total", "TOTAL",
+// "**Total**"): se separa del resto en vez de quedar como una fila más.
+const esFilaDeTotal = (fila: string[]) => /^total(es)?\b/i.test(textoPlano(fila[0] ?? ""));
+
+const descargarCSV = (encabezados: string[], filas: string[][]) => {
+  const escapar = (celda: string) => `"${textoPlano(celda).replace(/"/g, '""')}"`;
+  // Separador de punto y coma: los importes usan la coma como decimal, así que
+  // un CSV separado por comas se abre mal en Excel en español.
+  const csv = [encabezados, ...filas].map((fila) => fila.map(escapar).join(";")).join("\r\n");
+  const url = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" }));
+  const enlace = document.createElement("a");
+  enlace.href = url;
+  enlace.download = `nacho-${new Date().toISOString().slice(0, 10)}.csv`;
+  enlace.click();
+  URL.revokeObjectURL(url);
+};
+
+const BotonTabla = ({
+  onClick,
+  titulo,
+  children,
+}: {
+  onClick: () => void;
+  titulo: string;
+  children: ReactNode;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    title={titulo}
+    aria-label={titulo}
+    className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+  >
+    {children}
+  </button>
+);
+
+/**
+ * Tabla de resultados. Los datos que devuelve Nacho terminan en una planilla o
+ * en un reclamo, así que la tabla tiene que poder copiarse tal cual: el botón
+ * de copiar usa tabulaciones (se pega en Excel en columnas) y el de descargar
+ * arma un CSV con separador de punto y coma.
+ */
+const TablaMarkdown = ({
+  encabezados,
+  filas,
+}: {
+  encabezados: string[];
+  filas: string[][];
+}) => {
+  const [copiado, setCopiado] = useState(false);
+  // Mientras la respuesta llega en streaming la tabla se vuelve a dibujar en
+  // cada cuadro: sin memo, una tabla de 200 filas revisaría todas sus celdas
+  // 60 veces por segundo para decidir la alineación.
+  const numericas = useMemo(
+    () => columnasNumericas(filas, encabezados.length),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filas.length, encabezados.length]
+  );
+
+  // Una tabla ancha (la escala salarial, por ejemplo) se corta en el borde y no
+  // hay nada que indique que sigue. El degradado sólo aparece cuando de verdad
+  // queda contenido para ese lado.
+  const contenedorRef = useRef<HTMLDivElement>(null);
+  const [sobra, setSobra] = useState({ izquierda: false, derecha: false });
+
+  const medirDesborde = useCallback(() => {
+    const nodo = contenedorRef.current;
+    if (!nodo) return;
+    const restante = nodo.scrollWidth - nodo.clientWidth - nodo.scrollLeft;
+    setSobra({ izquierda: nodo.scrollLeft > 1, derecha: restante > 1 });
+  }, []);
+
+  useEffect(() => {
+    const nodo = contenedorRef.current;
+    if (!nodo) return;
+    medirDesborde();
+    // Cambia con el ancho del panel y con cada fila que llega en streaming.
+    const observador = new ResizeObserver(medirDesborde);
+    observador.observe(nodo);
+    return () => observador.disconnect();
+  }, [medirDesborde, filas.length]);
+
+  const copiar = async () => {
+    // Separado por tabulaciones: pegado en Excel cae en columnas.
+    const texto = [encabezados, ...filas]
+      .map((fila) => fila.map(textoPlano).join("\t"))
+      .join("\n");
+    if (await copiarAlPortapapeles(texto)) {
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 1800);
+    }
+  };
+
+  // `whitespace-nowrap` en las numéricas: sin eso "$ 33.780.479,96" se parte
+  // después del signo y el importe queda en dos renglones.
+  const alineacion = (columna: number) =>
+    numericas[columna] ? "text-right tabular-nums whitespace-nowrap" : "text-left";
+
+  return (
+    <div className="group/tabla animacion-respuesta relative my-4">
+      {/* Flotan por encima de la tabla, no sobre la fila de encabezado: ahí
+          tapaban el título de la última columna. */}
+      <div className="pointer-events-none absolute -top-8 right-0 z-10 flex gap-0.5 rounded-lg border bg-background p-0.5 opacity-0 shadow-sm transition-opacity focus-within:pointer-events-auto focus-within:opacity-100 group-hover/tabla:pointer-events-auto group-hover/tabla:opacity-100">
+        <BotonTabla onClick={() => void copiar()} titulo="Copiar la tabla">
+          {copiado ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+        </BotonTabla>
+        <BotonTabla onClick={() => descargarCSV(encabezados, filas)} titulo="Descargar como CSV">
+          <Download className="h-3.5 w-3.5" />
+        </BotonTabla>
+      </div>
+
+      {sobra.izquierda && (
+        <div className="pointer-events-none absolute inset-y-px left-px z-[5] w-8 rounded-l-xl bg-gradient-to-r from-background to-transparent" />
+      )}
+      {sobra.derecha && (
+        <div className="pointer-events-none absolute inset-y-px right-px z-[5] w-8 rounded-r-xl bg-gradient-to-l from-background to-transparent" />
+      )}
+
+      <div ref={contenedorRef} onScroll={medirDesborde} className="overflow-x-auto rounded-xl border">
+        <table className="w-full border-collapse text-[13px]">
+          <thead>
+            <tr className="bg-muted/50">
+              {encabezados.map((encabezado, indice) => (
+                <th
+                  key={indice}
+                  className={`whitespace-nowrap px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground ${alineacion(indice)}`}
+                >
+                  {renderInline(encabezado)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filas.map((fila, indiceFila) => {
+              const total = esFilaDeTotal(fila);
+              return (
+                <tr
+                  key={indiceFila}
+                  className={
+                    total
+                      ? "border-t-2 border-border bg-muted/30 font-semibold"
+                      : "border-t border-border/50 transition-colors hover:bg-muted/40"
+                  }
+                >
+                  {fila.map((celda, indiceCelda) => (
+                    <td key={indiceCelda} className={`px-3 py-2 align-top ${alineacion(indiceCelda)}`}>
+                      {renderInline(celda)}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 
 // Escalonado entre bloques. Se topea para que una respuesta larga no tarde
 // segundos en terminar de aparecer: a partir del bloque 8 entran todos juntos.
@@ -108,29 +299,8 @@ const Markdown = ({ texto, animar = true }: { texto: string; animar?: boolean })
       }
       clave += 1;
       bloques.push(
-        <div key={indice} {...entrada(indice)} className={clase("my-2 overflow-x-auto")}>
-          <table className="w-full border-collapse text-xs">
-            <thead>
-              <tr className="border-b border-border">
-                {encabezados.map((encabezado, indice) => (
-                  <th key={indice} className="px-2 py-1.5 text-left font-semibold">
-                    {renderInline(encabezado)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filas.map((fila, indiceFila) => (
-                <tr key={indiceFila} className="border-b border-border/40 last:border-0">
-                  {fila.map((celda, indiceCelda) => (
-                    <td key={indiceCelda} className="px-2 py-1.5 align-top">
-                      {renderInline(celda)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div key={indice} {...entrada(indice)} className={clase("")}>
+          <TablaMarkdown encabezados={encabezados} filas={filas} />
         </div>
       );
       continue;
@@ -211,6 +381,25 @@ const Markdown = ({ texto, animar = true }: { texto: string; animar?: boolean })
       i += 1;
     }
     clave += 1;
+
+    if (parrafo.length === 1 && esLineaDeFuente(parrafo[0])) {
+      bloques.push(
+        <p
+          key={indice}
+          {...entrada(indice)}
+          className={`animacion-respuesta ${clase(
+            "mt-3 flex items-start gap-1.5 border-t pt-2 text-xs text-muted-foreground"
+          )}`}
+        >
+          <FileText className="mt-px h-3.5 w-3.5 shrink-0 opacity-70" />
+          {/* Se deja la línea tal cual la escribió el modelo, con su "Fuente:":
+              recortar la etiqueta dejaba el pie arrancando en minúscula. */}
+          <span>{renderInline(parrafo[0])}</span>
+        </p>
+      );
+      continue;
+    }
+
     bloques.push(
       <p key={indice} {...entrada(indice)} className={clase("my-1.5 first:mt-0 last:mb-0")}>
         {parrafo.map((textoLinea, nLinea) => (
