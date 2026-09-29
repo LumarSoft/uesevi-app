@@ -1,6 +1,5 @@
 import { CardHeader, CardTitle, CardContent, Card } from "@/components/ui/card";
 import { IDashboard } from "@/shared/types/Querys/IDashboard";
-import { Users } from "lucide-react";
 
 const AdminDashboardModule = ({ data }: { data: IDashboard }) => {
   return (
@@ -15,7 +14,7 @@ const AdminDashboardModule = ({ data }: { data: IDashboard }) => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Empleados con contrato vigente
+                  Total empleados
                 </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -35,25 +34,13 @@ const AdminDashboardModule = ({ data }: { data: IDashboard }) => {
               <CardContent>
                 <div className="text-2xl font-bold">{data.total_empleados}</div>
                 <p className="text-xs text-muted-foreground">
-                  En empresas activas y con usuario habilitado
+                  Registrados al dia de la fecha
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Personas registradas</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{data.total_personas_registradas}</div>
-                <p className="text-xs text-muted-foreground">
-                  CUIL únicos en el padrón, incluidos los históricos
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Empresas activas</CardTitle>
+                <CardTitle className="text-sm font-medium">Empresas</CardTitle>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -70,14 +57,14 @@ const AdminDashboardModule = ({ data }: { data: IDashboard }) => {
               <CardContent>
                 <div className="text-2xl font-bold">{data.total_empresas}</div>
                 <p className="text-xs text-muted-foreground">
-                  Con estado Activo
+                  Empresas en la base de datos
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Afiliados con contrato vigente
+                  Empleados afiliados
                 </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +85,7 @@ const AdminDashboardModule = ({ data }: { data: IDashboard }) => {
                   {data.empleados_con_sindicato_activo}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  En empresas activas y con usuario habilitado
+                  Afiliados al dia de la fecha
                 </p>
               </CardContent>
             </Card>
