@@ -5,6 +5,7 @@ import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 import { Total } from "./components/Total/Total";
 import { Info } from "./components/Info/Info";
 import PDFDownloadButton from "./PDFDownloadButton";
+import { columnasDetalleDeclaracionReemplazada } from "@/shared/components/ColumnasDetalleDeclaracionReemplazada";
 
 export const DeclaracionModule = ({
   statement,
@@ -17,7 +18,9 @@ export const DeclaracionModule = ({
 
   // Se pasa la FECHA DE CARGA (no el período) para elegir la fórmula del
   // aporte solidario. Ver shared/utils/aportes.ts.
-  const columns = createColumns(sueldoBasico, statement.fecha_carga);
+  const columns = statement.estado === 3
+    ? columnasDetalleDeclaracionReemplazada
+    : createColumns(sueldoBasico, statement.fecha_carga);
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -26,13 +29,18 @@ export const DeclaracionModule = ({
             Declaracion jurada
           </h2>
         </div>
-        <PDFDownloadButton
-          data={statement}
-          rate={rate}
-          basicSalary={sueldoBasico}
-        />
+        {statement.estado !== 3 && (
+          <PDFDownloadButton
+            data={statement}
+            rate={rate}
+            basicSalary={sueldoBasico}
+          />
+        )}
         <Info statement={statement} />
         <Total statement={statement} rate={rate} basicSalary={sueldoBasico} />
+        {statement.estado === 3 && (
+          <h3 className="text-xl font-semibold">Detalle de empleados de esta versión</h3>
+        )}
         <DataTable columns={columns} data={statement.empleados} />
       </div>
     </div>

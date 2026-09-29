@@ -3,13 +3,14 @@ import { HistorialDeclaracionesModule } from "@/modules/Admin/DeclaracionJurada/
 import { fetchData } from "@/services/mysql/functions";
 import { Loader } from "@/shared/components/Loader/Loader";
 import { useEffect, useState } from "react";
+import { IDeclaracion } from "@/shared/types/Querys/IDeclaracion";
 
 export default function HistorialDeclaraciones({
   params: { idEmpresa, anio, mes },
 }: {
   params: { idEmpresa: number; anio: number; mes: number };
 }) {
-  const [statements, setStatements] = useState([]);
+  const [statements, setStatements] = useState<IDeclaracion[]>([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -22,12 +23,13 @@ export default function HistorialDeclaraciones({
         if (statementsResult.ok) {
           setStatements(statementsResult.data);
           setError(false);
-          setLoading(false);
         } else {
           setError(true);
         }
       } catch (error) {
-        console.log("Error al cargar los datos:", error);
+        setError(true);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -37,9 +39,8 @@ export default function HistorialDeclaraciones({
   if (loading) {
     return <Loader />;
   }
-  if (!statements.length) {
-    return <div>Error al cargar los datos</div>;
-  }
+  if (error) return <div>No se pudo cargar el historial de declaraciones.</div>;
+  if (!statements.length) return <div>No hay versiones para este período.</div>;
 
   return <HistorialDeclaracionesModule statements={statements} />;
 }

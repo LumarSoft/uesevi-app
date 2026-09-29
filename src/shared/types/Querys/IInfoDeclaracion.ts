@@ -21,6 +21,7 @@ export interface IInfoDeclaracion {
   ajuste: number;
   importe: number;
   subtotal: number;
+  interes: number | null;
   // Desglose CONGELADO (snapshot) desde la tabla auxiliar al momento de cargar
   // la declaración. Fuente de verdad del desglose por concepto. null en
   // declaraciones legacy sin auxiliar (el front cae al cálculo tradicional).

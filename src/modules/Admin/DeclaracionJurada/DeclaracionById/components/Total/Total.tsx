@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 import { calcularAporteSolidarioPorPeriodo } from "@/shared/utils/aportes";
+import { ResumenDeclaracionReemplazada } from "@/shared/components/ResumenDeclaracionReemplazada";
 
 const FAS_PERCENTAGE = 0.01; // 1%
 const SINDICATO_PERCENTAGE = 0.03; // 3%
@@ -21,6 +22,8 @@ export function Total({
   rate: any;
   basicSalary: any;
 }) {
+  if (statement.estado === 3) return <ResumenDeclaracionReemplazada statement={statement} />;
+
   const fechaPago = statement.fecha_pago;
   let totalIntereses = 0;
   const employeeData = statement.empleados;

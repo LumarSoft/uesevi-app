@@ -71,7 +71,9 @@ export const createColumns = (
               </Button>
             </Link>
           )}
-          <DeleteDialog statement={row.original} deleteStatement={deleteStatement}/>
+          {row.original.rectificada === 0 && (
+            <DeleteDialog statement={row.original} deleteStatement={deleteStatement} />
+          )}
         </div>
       );
     },

@@ -110,8 +110,8 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <ClipboardCheck className="h-5 w-5 text-gray-500" />
-              <span className="font-medium">Rectificada:</span>
-              <span>{statement.rectificada}</span>
+              <span className="font-medium">Versión:</span>
+              <span>{statement.rectificada === 0 ? "Original" : `Rectificación ${statement.rectificada}`}</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -119,7 +119,9 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
               <span className="font-medium">Vencimiento:</span>
               <span className="flex">
                 {formatDate(statement.vencimiento)}
-                {statement.estado === 1 ? (
+                {statement.estado === 3 ? (
+                  <span className="ml-2 text-blue-500 font-medium">Reemplazada por una rectificación</span>
+                ) : statement.estado === 1 ? (
                   <span className="ml-2 text-green-500 font-medium">
                     ✓ Aprobado
                   </span>

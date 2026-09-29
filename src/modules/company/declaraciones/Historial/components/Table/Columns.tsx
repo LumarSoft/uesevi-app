@@ -4,6 +4,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { EyeIcon } from "lucide-react";
 import Link from "next/link";
 
+const version = (numero: number) => numero === 0 ? "Original" : `Rectificación ${numero}`;
+
 export const createColumns = (): ColumnDef<IDeclaracion>[] => [
   {
     accessorKey: "nombre_empresa",
@@ -22,11 +24,16 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
     header: "Año",
   },
   {
+    accessorKey: "rectificada",
+    header: "Versión",
+    cell: ({ row }) => version(row.original.rectificada),
+  },
+  {
     accessorKey: "fecha",
     header: "Fecha de presentación",
     cell: ({ row }) => {
       const date = new Date(row.original.fecha);
-      return date.toLocaleDateString();
+      return date.toLocaleDateString("es-AR");
     },
   },
   {
@@ -38,24 +45,18 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
       if (estado === 1) return <span className="text-green-500">Aprobado</span>;
       if (estado === 2)
         return <span className="text-yellow-500">Pago parcial</span>;
-      if (estado === 3) return <span className="text-blue-500">Rechazado</span>;
+      if (estado === 3) return <span className="text-blue-500">Reemplazada</span>;
     },
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const isFirstRow = row.index === 0;
       return (
-        <>
-          {isFirstRow && (
-            <Link href={`/empresa/declaraciones/${row.original.id}`}>
-              <Button>
-                <EyeIcon />
-                Ver
-              </Button>
-            </Link>
-          )}
-        </>
+        <Link href={`/empresa/declaraciones/${row.original.id}`}>
+          <Button aria-label={`Ver ${version(row.original.rectificada)}`}>
+            <EyeIcon /> Ver
+          </Button>
+        </Link>
       );
     },
   },
