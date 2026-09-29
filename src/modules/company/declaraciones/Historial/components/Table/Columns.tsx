@@ -40,6 +40,9 @@ export const createColumns = (): ColumnDef<IDeclaracion>[] => [
     accessorKey: "estado",
     header: "Estado",
     cell: ({ row }) => {
+      if (Number(row.original.es_version_anterior) === 1) {
+        return <span className="text-blue-500">Reemplazada</span>;
+      }
       const estado = row.original.estado;
       if (estado === 0) return <span className="text-red-500">Pendiente</span>;
       if (estado === 1) return <span className="text-green-500">Aprobado</span>;

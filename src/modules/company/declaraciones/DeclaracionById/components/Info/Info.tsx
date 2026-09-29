@@ -10,6 +10,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
+import { esVersionReemplazada } from "@/shared/utils/declaraciones";
 
 export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
   const formatDate = (dateString: string | null) => {
@@ -119,7 +120,7 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
               <span className="font-medium">Vencimiento:</span>
               <span className="flex">
                 {formatDate(statement.vencimiento)}
-                {statement.estado === 3 ? (
+                {esVersionReemplazada(statement) ? (
                   <span className="ml-2 text-blue-500 font-medium">Reemplazada por una rectificación</span>
                 ) : statement.estado === 1 ? (
                   <span className="ml-2 text-green-500 font-medium">
