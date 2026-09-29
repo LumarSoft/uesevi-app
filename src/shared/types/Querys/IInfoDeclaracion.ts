@@ -18,6 +18,7 @@ export interface IInfoDeclaracion {
   pago_parcial: string | null;
   empleados: Empleado[];
   estado: number;
+  es_version_anterior: number;
   ajuste: number;
   importe: number;
   subtotal: number;

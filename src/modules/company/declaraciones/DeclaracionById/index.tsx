@@ -6,6 +6,7 @@ import { Total } from "./components/Total/Total";
 import { Info } from "./components/Info/Info";
 import PDFDownloadButton from "./PDFDownloadButton";
 import { columnasDetalleDeclaracionReemplazada } from "@/shared/components/ColumnasDetalleDeclaracionReemplazada";
+import { esVersionReemplazada } from "@/shared/utils/declaraciones";
 
 export const DeclaracionModule = ({
   statement,
@@ -15,10 +16,11 @@ export const DeclaracionModule = ({
   rate: any;
 }) => {
   const sueldoBasico = statement.sueldo_basico;
+  const reemplazada = esVersionReemplazada(statement);
 
   // Se pasa la FECHA DE CARGA (no el período) para elegir la fórmula del
   // aporte solidario. Ver shared/utils/aportes.ts.
-  const columns = statement.estado === 3
+  const columns = reemplazada
     ? columnasDetalleDeclaracionReemplazada
     : createColumns(sueldoBasico, statement.fecha_carga);
   return (
@@ -29,7 +31,7 @@ export const DeclaracionModule = ({
             Declaracion jurada
           </h2>
         </div>
-        {statement.estado !== 3 && (
+        {!reemplazada && (
           <PDFDownloadButton
             data={statement}
             rate={rate}
@@ -38,7 +40,7 @@ export const DeclaracionModule = ({
         )}
         <Info statement={statement} />
         <Total statement={statement} rate={rate} basicSalary={sueldoBasico} />
-        {statement.estado === 3 && (
+        {reemplazada && (
           <h3 className="text-xl font-semibold">Detalle de empleados de esta versión</h3>
         )}
         <DataTable columns={columns} data={statement.empleados} />

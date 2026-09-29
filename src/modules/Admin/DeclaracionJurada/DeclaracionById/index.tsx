@@ -9,6 +9,7 @@ import PDFDownloadButton from "./components/PDFDownloadButton";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { columnasDetalleDeclaracionReemplazada } from "@/shared/components/ColumnasDetalleDeclaracionReemplazada";
+import { esVersionReemplazada } from "@/shared/utils/declaraciones";
 
 export const DeclaracionModule = ({
   statement,
@@ -21,12 +22,13 @@ export const DeclaracionModule = ({
 
   const router = useRouter();
   const sueldoBasico = statement.sueldo_basico;
+  const reemplazada = esVersionReemplazada(statement);
 
   // Pasamos mes/year para que el aporte solidario use la fórmula vigente al
   // período de la declaración (versionada, ver shared/utils/aportes.ts).
   // Se pasa la FECHA DE CARGA (no el período) para elegir la fórmula del
   // aporte solidario. Ver shared/utils/aportes.ts.
-  const columns = statement.estado === 3
+  const columns = reemplazada
     ? columnasDetalleDeclaracionReemplazada
     : createColumns(sueldoBasico, statement.fecha_carga);
   return (
@@ -48,7 +50,7 @@ export const DeclaracionModule = ({
             Declaración jurada
           </h2>
         </div>
-        {statement.estado !== 3 && (
+        {!reemplazada && (
           <PDFDownloadButton
             data={statement}
             rate={rate}
@@ -57,7 +59,7 @@ export const DeclaracionModule = ({
         )}
         <Info statement={statement} />
         <Total statement={statement} rate={rate} basicSalary={sueldoBasico} />
-        {statement.estado === 3 && (
+        {reemplazada && (
           <h3 className="text-xl font-semibold">Detalle de empleados de esta versión</h3>
         )}
         <DataTable columns={columns} data={statement.empleados} />

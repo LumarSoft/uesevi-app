@@ -16,5 +16,5 @@ export const columnasDetalleDeclaracionReemplazada: ColumnDef<Empleado>[] = [
   { id: "remunerativo_adicional", header: "Remunerativo adicional", cell: ({ row }) => moneda(row.original.remunerativo_adicional) },
   { id: "suma_no_remunerativa", header: "Suma no remunerativa", cell: ({ row }) => moneda(row.original.suma_no_remunerativa) },
   { id: "sueldo_basico", header: "Básico de categoría al declarar", cell: ({ row }) => moneda(row.original.sueldo_basico) },
-  { id: "presentismo", header: "Presentismo al declarar", cell: ({ row }) => moneda(row.original.presentismo) },
+  { id: "presentismo", header: "Presentismo de categoría (0 si no se registraba)", cell: ({ row }) => moneda(row.original.presentismo) },
 ];
