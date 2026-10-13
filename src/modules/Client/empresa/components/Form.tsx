@@ -69,6 +69,11 @@ export const Form = () => {
           username: "",
           password: "",
         });
+      } else {
+        // Ej.: 409 si el email de acceso ya está registrado en otra empresa.
+        toast.error(
+          result.message || "No se pudo registrar la empresa. Intente nuevamente."
+        );
       }
     } catch (error) {
       console.error(error);
@@ -213,7 +218,8 @@ export const Form = () => {
               <Input
                 id="username"
                 name="username"
-                placeholder="Ingrese el usuario del sistema"
+                type="email"
+                placeholder="Email para ingresar al sistema (único por empresa)"
                 required
                 onChange={handleChange}
                 value={formData.username}
