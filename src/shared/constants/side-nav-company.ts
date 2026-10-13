@@ -51,6 +51,12 @@ export const NavItemsCompany: NavItem[] = [
     color: "text-green-500",
   },
   {
+    title: "Mi cuenta",
+    href: "/empresa/mi-cuenta",
+    icon: UserRoundCog,
+    color: "text-rose-500",
+  },
+  {
     title: "Instructivo del sistema",
     href: "/empresa/instructivo",
     icon: BookText,
