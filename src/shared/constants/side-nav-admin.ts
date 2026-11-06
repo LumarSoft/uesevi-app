@@ -16,6 +16,7 @@ import {
   Calculator,
   AlertTriangle,
   Wallet,
+  PieChart,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 
@@ -82,6 +83,13 @@ export const NavItemsAdmin: NavItem[] = [
     icon: FileText,
     href: "/admin/escalas",
     color: "text-yellow-500",
+  },
+  // Salario de referencia mensual que se muestra en la home (afiliados)
+  {
+    title: "Composición salarial",
+    icon: PieChart,
+    href: "/admin/composicion-salarial",
+    color: "text-cyan-500",
   },
 
   //Ahora categorias
