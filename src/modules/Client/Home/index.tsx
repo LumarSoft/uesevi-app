@@ -5,11 +5,13 @@ import { HeroComponent } from "./components/Hero/HeroComponent";
 import LatestNews from "./components/LatestNews/LatestNews";
 import ScalesPreview from "./components/ScalesPreview/ScalesPreview";
 import FormPreview from "./components/FormPreview/FormPreview";
+import SalarioDelMes from "./components/SalarioDelMes/SalarioDelMes";
 
 const HomeModule = ({ noticias }: { noticias: INoticias[] }) => {
   return (
     <div>
       <HeroComponent />
+      <SalarioDelMes />
       <AboutUs />
       <Coverage />
       <FormPreview />

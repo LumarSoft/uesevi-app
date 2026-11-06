@@ -5,10 +5,12 @@ import Link from "next/link";
 import React from "react";
 
 export const HeroComponent = () => {
-  const scrollNoticias = () => {
-    document.getElementById("lastestNews")?.scrollIntoView({
-      behavior: "smooth",
-    });
+  // Baja a "Salario del mes"; si todavía no hay ningún período cargado, a noticias.
+  const scrollSiguiente = () => {
+    const destino =
+      document.getElementById("salario-del-mes") ??
+      document.getElementById("lastestNews");
+    destino?.scrollIntoView({ behavior: "smooth" });
   };
   return (
     <section className="h-screen max-h-screen w-full flex">
@@ -26,7 +28,7 @@ export const HeroComponent = () => {
             src="/flecha.svg"
             className="w-14 mt-14 animate-bounce animate-infinite cursor-pointer"
             alt="arrowIcon"
-            onClick={scrollNoticias}
+            onClick={scrollSiguiente}
           />
         </FramerComponent>
       </div>
