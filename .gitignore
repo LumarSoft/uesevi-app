@@ -37,3 +37,20 @@ uesevi-app.zip
 uesevi-app2.zip
 
 .env
+
+# Seguridad (16/11/2026): que no se suban claves, volcados ni archivos subidos
+# variables de entorno: ".env" (arriba) no cubría .env.local, .env.production, etc.; se deja subir solo el ejemplo
+.env.*
+!.env.example
+# volcados de base de datos (este repo no versiona .sql; si algún día hace falta uno a propósito, se agrega con git add -f o una negación)
+/*.sql
+*dump*.sql
+*backup*.sql
+*.sql.gz
+*.dump
+# llaves y certificados (*.pem ya estaba arriba)
+*.key
+*.p12
+*.pfx
+# logs de cualquier herramienta (arriba solo estaban los de npm, yarn y pnpm)
+*.log
