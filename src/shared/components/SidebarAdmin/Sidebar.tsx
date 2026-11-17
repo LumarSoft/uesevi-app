@@ -50,14 +50,29 @@ export default function Sidebar({ className }: SidebarProps) {
         )}
         onClick={handleToggle}
       />
-      <div className="space-y-4 py-4">
-        <div className="px-3 py-2">
-          <div className="mt-3 space-y-1">
-            <SideNav
-              className="text-background opacity-0 transition-all duration-300 group-hover:z-50 group-hover:ml-4 group-hover:rounded group-hover:bg-foreground group-hover:p-2 group-hover:opacity-100"
-              items={NavItemsAdmin}
-              CountCompaniesPending={CountCompaniesPending}
-            />
+      {/* El nav mide lo que la pantalla y el layout corta lo que sobra
+          (overflow-hidden): sin un contenedor con scroll propio, al abrir un
+          desplegable los últimos ítems quedaban afuera y no había forma de
+          llegar a ellos. La flecha de colapsar queda fuera de este contenedor
+          para que el scroll no la recorte.
+          Colapsado no scrollea: las etiquetas que aparecen al pasar el mouse
+          se dibujan por fuera del ancho del nav, y un contenedor con scroll
+          vertical también recorta en horizontal. */}
+      <div
+        className={cn(
+          "h-full",
+          isOpen && "overflow-y-auto overscroll-contain [scrollbar-width:thin]"
+        )}
+      >
+        <div className="space-y-4 py-4">
+          <div className="px-3 py-2">
+            <div className="mt-3 space-y-1">
+              <SideNav
+                className="text-background opacity-0 transition-all duration-300 group-hover:z-50 group-hover:ml-4 group-hover:rounded group-hover:bg-foreground group-hover:p-2 group-hover:opacity-100"
+                items={NavItemsAdmin}
+                CountCompaniesPending={CountCompaniesPending}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -63,7 +63,7 @@ export const NavItemsAdmin: NavItem[] = [
         color: "text-rose-500",
       },
       {
-        title: "Formulario",
+        title: "Fichas de afiliación",
         href: "/admin/usuarios/formulario",
         icon: BookCopy,
         color: "text-rose-500",

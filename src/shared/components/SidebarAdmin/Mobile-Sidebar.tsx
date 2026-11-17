@@ -24,7 +24,9 @@ export const MobileSidebar = () => {
             <MenuIcon />
           </div>
         </SheetTrigger>
-        <SheetContent side="left" className="w-72">
+        {/* Con un desplegable abierto el menú es más alto que la pantalla del
+            celular: sin overflow-y-auto los últimos ítems quedaban afuera. */}
+        <SheetContent side="left" className="w-72 overflow-y-auto">
           <div className="px-1 py-6 pt-16">
             <SideNav items={NavItemsAdmin} setOpen={setOpen} />
           </div>

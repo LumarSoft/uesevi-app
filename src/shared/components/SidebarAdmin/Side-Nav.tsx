@@ -91,7 +91,7 @@ export function SideNav({
                       path === child.href && "bg-muted font-bold hover:bg-muted"
                     )}
                   >
-                    <child.icon className={cn("h-5 w-5", child.color)} />
+                    <child.icon className={cn("h-5 w-5 shrink-0", child.color)} />
                     <div
                       className={cn(
                         "left-12 text-base duration-200 w-full flex justify-between",
