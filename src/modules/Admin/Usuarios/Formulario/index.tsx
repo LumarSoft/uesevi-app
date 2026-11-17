@@ -5,6 +5,8 @@ import { IFormulario } from "@/shared/types/Querys/IFormulario";
 import { useState } from "react";
 import { IEmpresa } from "@/shared/types/Querys/IEmpresa";
 import { Button } from "@/components/ui/button";
+import { fetchData } from "@/services/mysql/functions";
+import { NuevaFicha } from "./components/Dialog/NuevaFicha";
 
 const AdminFormularioModule = ({
   forms,
@@ -27,20 +29,30 @@ const AdminFormularioModule = ({
     setFormulario((prevData) => prevData.filter((item) => item.id !== id));
   };
 
+  // Tras cargar una ficha se relee el listado: la API devuelve las fichas ya
+  // formateadas (fechas, `created`) y la nueva queda primera.
+  const recargarFichas = async () => {
+    const result = await fetchData("forms");
+    if (result.ok) setFormulario(result.data);
+  };
+
   const columns = createColumns(handleUpdate, companies, handleDelete);
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            Empleados afiliados via web
+            Fichas de afiliación
           </h2>
-          <Button>
-            <a href="/ficha-uesevi-1.pdf" download>
-              Descargar ficha vacía
-            </a>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <NuevaFicha companies={companies} onCreated={recargarFichas} />
+            <Button variant="outline">
+              <a href="/ficha-uesevi-1.pdf" download>
+                Descargar ficha vacía
+              </a>
+            </Button>
+          </div>
         </div>
         <DataTable columns={columns} data={formulario} filterColumn="nombre" />
       </div>

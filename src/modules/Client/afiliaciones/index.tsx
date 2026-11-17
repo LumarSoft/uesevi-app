@@ -1,5 +1,5 @@
 import { Beneficios } from "./components/Beneficios/Beneficios";
-import { Form } from "./components/Formulario/Form";
+import { ComoAfiliarse } from "./components/ComoAfiliarse/ComoAfiliarse";
 
 export default function AfiliacionesModule() {
   return (
@@ -8,7 +8,7 @@ export default function AfiliacionesModule() {
         Afiliación al Gremio
       </h1>
       <Beneficios />
-      <Form />
+      <ComoAfiliarse />
     </div>
   );
 }
