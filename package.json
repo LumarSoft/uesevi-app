@@ -7,7 +7,8 @@
     "build": "next build",
     "export": "next build && next export",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test test/*.test.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
