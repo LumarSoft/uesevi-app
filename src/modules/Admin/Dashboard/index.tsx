@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { CardHeader, CardTitle, CardContent, Card } from "@/components/ui/card";
 import { IDashboard } from "@/shared/types/Querys/IDashboard";
 
@@ -61,34 +63,45 @@ const AdminDashboardModule = ({ data }: { data: IDashboard }) => {
                 </p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Empleados afiliados
-                </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <rect width="20" height="14" x="2" y="5" rx="2" />
-                  <path d="M2 10h20" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {data.empleados_con_sindicato_activo}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Afiliados al dia de la fecha
-                </p>
-              </CardContent>
-            </Card>
+            {/* La tarjeta de afiliados abre el listado completo, con buscador. */}
+            <Link
+              href="/admin/usuarios/afiliados"
+              aria-label="Ver el listado de empleados afiliados"
+              className="group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <Card className="h-full transition-colors group-hover:border-primary/60 group-hover:bg-muted/50">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Empleados afiliados
+                  </CardTitle>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    className="h-4 w-4 text-muted-foreground"
+                  >
+                    <rect width="20" height="14" x="2" y="5" rx="2" />
+                    <path d="M2 10h20" />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {data.empleados_con_sindicato_activo}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Afiliados al dia de la fecha
+                  </p>
+                  <p className="mt-3 flex items-center gap-1 text-xs font-medium text-primary">
+                    Ver listado
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
         </div>
       </div>

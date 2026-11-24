@@ -11,9 +11,13 @@ pnpm dev      # next dev — http://localhost:3000
 pnpm build    # next build
 pnpm lint     # next lint (eslint-config-next)
 pnpm start    # next start
+pnpm test     # node --test test/*.test.mjs (Node's built-in runner, no dependencies)
 ```
 
-There is no test suite and no test runner configured.
+Tests are minimal: `test/*.test.mjs` cover pure helpers only (today, the affiliates search in
+`src/modules/Admin/Usuarios/Afiliados/helpers.ts`). They import the `.ts` file directly through
+Node's type stripping, so a helper under test must not import anything at runtime
+(`import type` is fine). There is no component/browser test setup.
 
 Production runs through a custom Node server under PM2, not `next start`:
 `server.js` (custom `createServer` wrapper, hostname `uesevi.org.ar` in production) launched by

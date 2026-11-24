@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   Users,
   UserRoundCog,
+  UserCheck,
   Building2,
   Pickaxe,
   Newspaper,
@@ -60,6 +61,13 @@ export const NavItemsAdmin: NavItem[] = [
         title: "Empleados",
         href: "/admin/usuarios/empleados",
         icon: Pickaxe,
+        color: "text-rose-500",
+      },
+      // Mismo listado que abre la tarjeta "Empleados afiliados" del dashboard
+      {
+        title: "Afiliados",
+        href: "/admin/usuarios/afiliados",
+        icon: UserCheck,
         color: "text-rose-500",
       },
       {
