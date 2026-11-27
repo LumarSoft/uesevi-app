@@ -78,6 +78,16 @@ test("el mismo día del vencimiento sigue en término aunque ya pasó la hora", 
   );
 });
 
+test("el cartel no depende del huso del servidor que serializa la fecha", () => {
+  // DATE 30/11 serializado por una API en UTC y por una en Argentina.
+  for (const vencimiento of ["2026-11-30T00:00:00.000Z", "2026-11-30T03:00:00.000Z"]) {
+    const d = decl({ vencimiento });
+    assert.equal(textoVencimiento(situacionVencimiento(d, local(2026, 11, 29, 10))), "Vence mañana", vencimiento);
+    assert.equal(textoVencimiento(situacionVencimiento(d, local(2026, 11, 30, 18))), "Vence hoy", vencimiento);
+    assert.equal(situacionVencimiento(d, local(2026, 12, 1, 10)).tipo, "vencida", vencimiento);
+  }
+});
+
 test("vencida sin pago muestra los días de atraso", () => {
   const s = situacionVencimiento(decl({}), local(2026, 12, 4, 21));
   assert.deepEqual(s, { tipo: "vencida", dias: 4 });

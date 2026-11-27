@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fetchData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
+import { marcarSesionVencida } from "@/shared/utils/sesionVencida";
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
 const MIN_PASSWORD_LENGTH = 8;
@@ -41,6 +42,8 @@ const putAccount = async (path: string, body: FormData) => {
       body,
     });
     if (response.status === 401) {
+      // Igual que functions.ts: el login avisa que la sesión venció.
+      if (token) marcarSesionVencida();
       userStore.getState().logout();
       window.location.href = "/loginempresa";
     }

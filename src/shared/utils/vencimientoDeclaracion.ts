@@ -47,6 +47,20 @@ export type SituacionVencimiento =
   // rojo, justo lo que veía cada empresa al terminar de cargar.
   | { tipo: "en_termino"; diasRestantes: number };
 
+/**
+ * Día de calendario del vencimiento. La columna es DATE (sin hora) y mysql2 la
+ * serializa como la medianoche del huso del servidor: "…T00:00:00Z" si corre en
+ * UTC o "…T03:00:00Z" en Argentina. En los dos casos la fecha UTC es la
+ * correcta; leerla en hora local la corría al día anterior con un servidor en
+ * UTC ("Vence hoy" un día antes y "Vencida" el día del vencimiento).
+ */
+const diaDelVencimiento = (vencimiento: Date) =>
+  new Date(
+    vencimiento.getUTCFullYear(),
+    vencimiento.getUTCMonth(),
+    vencimiento.getUTCDate()
+  );
+
 /** Días de calendario (hora local) entre dos fechas, sin contar la hora. */
 const diasDeCalendario = (desde: Date, hasta: Date) => {
   const inicio = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate());
@@ -73,7 +87,7 @@ export function situacionVencimiento(
 
   // Por día de calendario: el día del vencimiento todavía está en término
   // (la API lo guarda como fecha sin hora, y ese día no corre interés).
-  const diasRestantes = diasDeCalendario(hoy, vencimiento);
+  const diasRestantes = diasDeCalendario(hoy, diaDelVencimiento(vencimiento));
   if (diasRestantes >= 0) return { tipo: "en_termino", diasRestantes };
   return {
     tipo: "vencida",
