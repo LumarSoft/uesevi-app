@@ -235,21 +235,6 @@ export const diaYMes = (fecha: string): string => {
   return `${d}/${m}`;
 };
 
-/** Agrupa por mes ("Noviembre 2026"), manteniendo el orden de la lista. */
-export const agruparPorMes = (
-  mejoras: Mejora[]
-): { mes: string; mejoras: Mejora[] }[] => {
-  const grupos: { mes: string; mejoras: Mejora[] }[] = [];
-  for (const mejora of mejoras) {
-    const [y, m] = mejora.fecha.split("-").map(Number);
-    const mes = `${MESES[m - 1]} ${y}`;
-    const ultimo = grupos[grupos.length - 1];
-    if (ultimo && ultimo.mes === mes) ultimo.mejoras.push(mejora);
-    else grupos.push({ mes, mejoras: [mejora] });
-  }
-  return grupos;
-};
-
 /** Días entre la fecha de la mejora y hoy (0 = hoy). */
 export const diasDesde = (fecha: string, hoy: Date = new Date()): number => {
   const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
@@ -258,5 +243,49 @@ export const diasDesde = (fecha: string, hoy: Date = new Date()): number => {
   );
 };
 
-/** Las de las últimas dos semanas llevan la etiqueta "Reciente". */
-export const DIAS_RECIENTE = 14;
+/** "2026-11-27" → "27 de noviembre de 2026" (o sin el año). */
+export const fechaLarga = (fecha: string, conAnio = true): string => {
+  const [y, m, d] = fecha.split("-").map(Number);
+  const texto = `${d} de ${MESES[m - 1].toLowerCase()}`;
+  return conAnio ? `${texto} de ${y}` : texto;
+};
+
+/** "2026-06-24" → "junio de 2026". */
+export const mesYAnio = (fecha: string): string => {
+  const [y, m] = fecha.split("-").map(Number);
+  return `${MESES[m - 1].toLowerCase()} de ${y}`;
+};
+
+export interface Entrega {
+  fecha: string;
+  mejoras: Mejora[];
+}
+
+/**
+ * Agrupa por fecha: cada día que llegó algo a producción es una "entrega".
+ * Mantiene el orden de la lista (la más nueva primero).
+ */
+export const agruparPorFecha = (mejoras: Mejora[]): Entrega[] => {
+  const entregas: Entrega[] = [];
+  for (const mejora of mejoras) {
+    const ultima = entregas[entregas.length - 1];
+    if (ultima && ultima.fecha === mejora.fecha) ultima.mejoras.push(mejora);
+    else entregas.push({ fecha: mejora.fecha, mejoras: [mejora] });
+  }
+  return entregas;
+};
+
+/** Entregas agrupadas por mes ("Noviembre 2026"), para la línea de tiempo. */
+export const entregasPorMes = (
+  entregas: Entrega[]
+): { mes: string; entregas: Entrega[] }[] => {
+  const meses: { mes: string; entregas: Entrega[] }[] = [];
+  for (const entrega of entregas) {
+    const [y, m] = entrega.fecha.split("-").map(Number);
+    const mes = `${MESES[m - 1]} ${y}`;
+    const ultimo = meses[meses.length - 1];
+    if (ultimo && ultimo.mes === mes) ultimo.entregas.push(entrega);
+    else meses.push({ mes, entregas: [entrega] });
+  }
+  return meses;
+};

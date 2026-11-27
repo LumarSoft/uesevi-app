@@ -7,9 +7,11 @@ import {
   AREAS,
   MEJORAS,
   TIPOS,
-  agruparPorMes,
+  agruparPorFecha,
   diaYMes,
   diasDesde,
+  entregasPorMes,
+  fechaLarga,
 } from "../src/modules/Admin/Mejoras/mejoras.ts";
 
 test("cada mejora tiene fecha AAAA-MM-DD real, área, tipo y textos", () => {
@@ -41,14 +43,24 @@ test("no hay títulos repetidos el mismo día", () => {
   assert.equal(new Set(claves).size, claves.length);
 });
 
-test("agrupa por mes respetando el orden", () => {
-  const grupos = agruparPorMes([
-    { fecha: "2026-11-27", titulo: "a", detalle: "x", area: "Panel admin", tipo: "Nuevo" },
-    { fecha: "2026-11-02", titulo: "b", detalle: "x", area: "Panel admin", tipo: "Nuevo" },
-    { fecha: "2026-10-30", titulo: "c", detalle: "x", area: "Panel admin", tipo: "Nuevo" },
+test("agrupa por entrega (fecha) y las entregas por mes, respetando el orden", () => {
+  const m = (fecha, titulo) => ({ fecha, titulo, detalle: "x", area: "Panel admin", tipo: "Nuevo" });
+  const entregas = agruparPorFecha([
+    m("2026-11-27", "a"),
+    m("2026-11-27", "b"),
+    m("2026-11-02", "c"),
+    m("2026-10-30", "d"),
   ]);
   assert.deepEqual(
-    grupos.map((g) => [g.mes, g.mejoras.length]),
+    entregas.map((e) => [e.fecha, e.mejoras.map((x) => x.titulo).join("")]),
+    [
+      ["2026-11-27", "ab"],
+      ["2026-11-02", "c"],
+      ["2026-10-30", "d"],
+    ]
+  );
+  assert.deepEqual(
+    entregasPorMes(entregas).map((g) => [g.mes, g.entregas.length]),
     [
       ["Noviembre 2026", 2],
       ["Octubre 2026", 1],
@@ -58,6 +70,8 @@ test("agrupa por mes respetando el orden", () => {
 
 test("fechas sin corrimiento de zona horaria", () => {
   assert.equal(diaYMes("2026-11-27"), "27/11");
+  assert.equal(fechaLarga("2026-11-07"), "7 de noviembre de 2026");
+  assert.equal(fechaLarga("2026-11-07", false), "7 de noviembre");
   assert.equal(diasDesde("2026-11-27", new Date(2026, 10, 27, 23, 30)), 0);
   assert.equal(diasDesde("2026-11-13", new Date(2026, 10, 27, 1)), 14);
 });
