@@ -40,12 +40,29 @@ export const MEJORAS: Mejora[] = [
     detalle:
       "Esta misma página: reúne todo lo que vamos sumando y corrigiendo en el sistema, de lo más nuevo a lo más viejo.",
     dondeVerlo: [
-      "Menú del panel → Mejoras, la última opción.",
-      "\"Filtrar\" deja ver un área o un tipo de cambio.",
-      "\"Copiar como texto\" lo deja listo para pegar en WhatsApp o en un mail.",
+      "Menú del panel → Mejoras (el cohete), la última opción.",
+      "\"Filtrar\" deja ver un área o un tipo de cambio; los filtros aplicados quedan a la vista y se quitan de a uno.",
     ],
     area: "Panel admin",
     tipo: "Nuevo",
+  },
+  {
+    fecha: "2026-11-27",
+    titulo: "Un botón claro para ocultar el menú",
+    detalle:
+      "La flecha sobre el borde del menú se confundía con \"volver atrás\". Ahora el botón está al pie del menú, con el ícono de panel y el texto \"Ocultar menú\". También se quitó el espacio vacío que había arriba de la primera opción, y el portal de empresas suma el mismo botón.",
+    dondeVerlo: ["En la computadora, al pie del menú lateral."],
+    area: "Todo el sistema",
+    tipo: "Mejora",
+  },
+  {
+    fecha: "2026-11-27",
+    titulo: "Botones legibles en modo oscuro",
+    detalle:
+      "En modo oscuro, el texto y los íconos de los botones y etiquetas azules se veían casi negros sobre el azul. Ahora son blancos, igual que en el modo claro.",
+    dondeVerlo: ["Botón del sol y la luna, arriba a la derecha → modo oscuro."],
+    area: "Todo el sistema",
+    tipo: "Corrección",
   },
   {
     fecha: "2026-11-27",
@@ -334,20 +351,4 @@ const MESES_CORTOS = [
 export const fechaCorta = (fecha: string): string => {
   const [y, m, d] = fecha.split("-").map(Number);
   return `${d} ${MESES_CORTOS[m - 1]} ${y}`;
-};
-
-/**
- * Texto para pegar en WhatsApp o en un mail ("Copiar como texto"): asteriscos
- * para la negrita de WhatsApp, viñetas con "•".
- */
-export const textoParaCompartir = (mejoras: Mejora[]): string => {
-  const bloques = agruparPorFecha(mejoras).map((entrega) => {
-    const cambios = entrega.mejoras.map((m) => {
-      const lineas = [`*${m.titulo}* (${m.tipo} · ${m.area})`, m.detalle];
-      for (const paso of m.dondeVerlo ?? []) lineas.push(`• ${paso}`);
-      return lineas.join("\n");
-    });
-    return [`*${fechaLarga(entrega.fecha)}*`, ...cambios].join("\n\n");
-  });
-  return ["*Mejoras del sistema de UESEVI*", ...bloques].join("\n\n");
 };

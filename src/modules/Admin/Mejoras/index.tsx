@@ -4,19 +4,21 @@
 // columnas — a la izquierda título, fecha y tipo sobre una línea de tiempo; a
 // la derecha "Qué cambia" y, si hay, "Dónde verlo". Los datos viven en
 // ./mejoras.ts.
+//
+// Efecto vidrio en dos lugares: el encabezado (sobre unas luces de color
+// difuminadas, que es lo que hace que el vidrio se note) y la barra de
+// filtros, que flota fija arriba mientras la línea de tiempo pasa por debajo.
 
 import { useMemo, useState } from "react";
 import {
-  ChevronDown,
-  Copy,
   ListFilter,
+  Plus,
   ShieldCheck,
-  Sparkles,
   TrendingUp,
   Wrench,
+  X,
   type LucideIcon,
 } from "lucide-react";
-import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -38,12 +40,11 @@ import {
   TipoMejora,
   fechaCorta,
   mesYAnio,
-  textoParaCompartir,
 } from "./mejoras";
 
 const ESTILO_TIPO: Record<TipoMejora, { icono: LucideIcon; etiqueta: string }> = {
   Nuevo: {
-    icono: Sparkles,
+    icono: Plus,
     etiqueta:
       "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
   },
@@ -63,30 +64,13 @@ const ESTILO_TIPO: Record<TipoMejora, { icono: LucideIcon; etiqueta: string }> =
   },
 };
 
+// Superficie de vidrio: translúcida, desenfoca lo de atrás y tiene un borde
+// claro apenas visible. Compartida por el encabezado, la barra y el menú.
+const VIDRIO =
+  "border border-white/70 bg-white/40 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]";
+
 type FiltroArea = "todas" | AreaMejora;
 type FiltroTipo = "todos" | TipoMejora;
-
-/** Copia al portapapeles; si el navegador no deja, prueba el método viejo. */
-const copiarAlPortapapeles = async (texto: string): Promise<boolean> => {
-  try {
-    await navigator.clipboard.writeText(texto);
-    return true;
-  } catch {
-    try {
-      const area = document.createElement("textarea");
-      area.value = texto;
-      area.style.position = "fixed";
-      area.style.opacity = "0";
-      document.body.appendChild(area);
-      area.select();
-      const ok = document.execCommand("copy");
-      area.remove();
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-};
 
 export default function MejorasModule() {
   const [area, setArea] = useState<FiltroArea>("todas");
@@ -110,16 +94,20 @@ export default function MejorasModule() {
     setTipo("todos");
   };
 
-  const copiar = async (lista: Mejora[]) => {
-    const ok = await copiarAlPortapapeles(textoParaCompartir(lista));
-    if (ok) toast.success("Copiado: ya lo podés pegar en WhatsApp o en un mail.");
-    else toast.error("No se pudo copiar. Probá de nuevo.");
-  };
-
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-8 lg:py-14">
-      <header className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div>
+    <div className="relative isolate">
+      {/* Luces de fondo: sin algo de color detrás, el vidrio no se nota. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[460px] overflow-hidden"
+      >
+        <div className="absolute -top-28 left-[6%] h-80 w-80 rounded-full bg-blue-400/40 blur-3xl dark:bg-blue-500/20" />
+        <div className="absolute -top-16 right-[8%] h-72 w-72 rounded-full bg-emerald-300/45 blur-3xl dark:bg-emerald-500/15" />
+        <div className="absolute left-[42%] top-28 h-64 w-64 rounded-full bg-violet-300/35 blur-3xl dark:bg-violet-500/15" />
+      </div>
+
+      <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 lg:py-12">
+        <header className={cn("rounded-2xl p-6 sm:p-10", VIDRIO)}>
           <h1 className="text-4xl font-medium tracking-tight sm:text-5xl">
             Mejoras
           </h1>
@@ -131,22 +119,33 @@ export default function MejorasModule() {
               {MEJORAS.length} cambios desde {mesYAnio(desde)}
             </p>
           )}
-        </div>
+        </header>
 
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Barra de filtros: flota debajo del header fijo del panel (top-20). */}
+        <div
+          className={cn(
+            "sticky top-20 z-10 mb-12 mt-6 flex flex-wrap items-center gap-2 rounded-xl px-3 py-2.5",
+            VIDRIO,
+            // Más opaca que el encabezado: por debajo pasa texto y, demasiado
+            // transparente, se mezclaba con el de la barra.
+            "bg-white/80 backdrop-blur-2xl backdrop-saturate-150 dark:bg-background/80"
+          )}
+        >
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-2 hover:bg-foreground/5"
+              >
                 <ListFilter className="h-4 w-4" aria-hidden />
                 Filtrar
-                {filtrosActivos > 0 && (
-                  <span className="rounded-full bg-primary px-1.5 text-xs font-semibold text-primary-foreground">
-                    {filtrosActivos}
-                  </span>
-                )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent
+              align="start"
+              className="w-56 bg-popover/80 backdrop-blur-xl"
+            >
               <DropdownMenuLabel>Área</DropdownMenuLabel>
               <DropdownMenuRadioGroup
                 value={area}
@@ -183,72 +182,95 @@ export default function MejorasModule() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Copy className="h-4 w-4" aria-hidden />
-                Copiar como texto
-                <ChevronDown className="h-4 w-4 opacity-60" aria-hidden />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-60">
-              {ultimaFecha && (
-                <DropdownMenuItem
-                  onSelect={() =>
-                    copiar(MEJORAS.filter((m) => m.fecha === ultimaFecha))
-                  }
-                >
-                  Lo último ({fechaCorta(ultimaFecha)})
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                disabled={visibles.length === 0}
-                onSelect={() => copiar(visibles)}
+          {/* Filtros aplicados, a la vista y con su cruz para quitarlos. */}
+          {area !== "todas" && (
+            <FiltroAplicado
+              nombre="Área"
+              valor={area}
+              onQuitar={() => setArea("todas")}
+            />
+          )}
+          {tipo !== "todos" && (
+            <FiltroAplicado
+              nombre="Tipo"
+              valor={tipo}
+              onQuitar={() => setTipo("todos")}
+            />
+          )}
+          {filtrosActivos === 0 && (
+            <span className="hidden text-sm text-muted-foreground sm:inline">
+              Todas las áreas y tipos
+            </span>
+          )}
+
+          <span className="ml-auto flex items-center gap-3 text-sm text-muted-foreground">
+            {filtrosActivos > 1 && (
+              <button
+                type="button"
+                onClick={limpiarFiltros}
+                className="font-medium text-foreground underline-offset-4 hover:underline"
               >
-                Todo lo que se ve ({visibles.length})
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                Limpiar
+              </button>
+            )}
+            <span className="tabular-nums">
+              {filtrosActivos > 0
+                ? `${visibles.length} de ${MEJORAS.length}`
+                : `${MEJORAS.length} cambios`}
+            </span>
+          </span>
         </div>
-      </header>
 
-      {filtrosActivos > 0 && (
-        <p className="mb-10 text-sm text-muted-foreground">
-          {visibles.length} de {MEJORAS.length} cambios ·{" "}
-          <button
-            type="button"
-            onClick={limpiarFiltros}
-            className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
-          >
-            Limpiar filtros
-          </button>
-        </p>
-      )}
+        <ol>
+          {visibles.map((mejora, i) => (
+            <Entrada
+              key={`${mejora.fecha}-${mejora.titulo}`}
+              mejora={mejora}
+              esLoUltimo={mejora.fecha === ultimaFecha}
+              esLaUltimaFila={i === visibles.length - 1}
+            />
+          ))}
+        </ol>
 
-      <ol>
-        {visibles.map((mejora, i) => (
-          <Entrada
-            key={`${mejora.fecha}-${mejora.titulo}`}
-            mejora={mejora}
-            esLoUltimo={mejora.fecha === ultimaFecha}
-            esLaUltimaFila={i === visibles.length - 1}
-          />
-        ))}
-      </ol>
-
-      {visibles.length === 0 && (
-        <p className="text-muted-foreground">
-          No hay cambios con estos filtros.{" "}
-          <button
-            type="button"
-            onClick={limpiarFiltros}
-            className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
-          >
-            Ver todos
-          </button>
-        </p>
-      )}
+        {visibles.length === 0 && (
+          <p className="text-muted-foreground">
+            No hay cambios con estos filtros.{" "}
+            <button
+              type="button"
+              onClick={limpiarFiltros}
+              className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
+            >
+              Ver todos
+            </button>
+          </p>
+        )}
+      </div>
     </div>
+  );
+}
+
+function FiltroAplicado({
+  nombre,
+  valor,
+  onQuitar,
+}: {
+  nombre: string;
+  valor: string;
+  onQuitar: () => void;
+}) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 py-1 pl-3 pr-1 text-sm">
+      <span className="text-muted-foreground">{nombre}:</span>
+      <span className="font-medium">{valor}</span>
+      <button
+        type="button"
+        onClick={onQuitar}
+        aria-label={`Quitar el filtro ${nombre.toLowerCase()}: ${valor}`}
+        className="ml-0.5 rounded-full p-1 text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
+      >
+        <X className="h-3.5 w-3.5" aria-hidden />
+      </button>
+    </span>
   );
 }
 
@@ -264,10 +286,17 @@ function Entrada({
   const { icono: Icono, etiqueta } = ESTILO_TIPO[mejora.tipo];
 
   return (
-    <li className={cn("relative pl-12 sm:pl-14", !esLaUltimaFila && "pb-16 sm:pb-20")}>
+    <li className={cn("relative pl-12 sm:pl-14", !esLaUltimaFila && "pb-28 sm:pb-32")}>
       {/* Línea de tiempo: baja desde el nodo hasta la fila siguiente. */}
       {!esLaUltimaFila && (
         <span aria-hidden className="absolute bottom-0 left-[13px] top-9 w-px bg-border" />
+      )}
+      {/* Divisor entre cambios: a mitad del espacio, se desvanece hacia la derecha. */}
+      {!esLaUltimaFila && (
+        <span
+          aria-hidden
+          className="absolute bottom-14 left-12 right-0 h-px bg-gradient-to-r from-border via-border/60 to-transparent sm:bottom-16 sm:left-14"
+        />
       )}
       {/* Nodo: relleno sólo en la última entrega, el resto apagado. */}
       <span
@@ -275,7 +304,7 @@ function Entrada({
         className={cn(
           "absolute left-0 top-0.5 flex h-7 w-7 items-center justify-center rounded-md border",
           esLoUltimo
-            ? "border-primary bg-primary text-primary-foreground shadow-sm"
+            ? "border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/30"
             : "bg-background text-muted-foreground"
         )}
       >
@@ -283,7 +312,7 @@ function Entrada({
       </span>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,8fr)] lg:gap-16">
-        <div className="space-y-3 lg:sticky lg:top-24 lg:self-start">
+        <div className="space-y-3">
           <h2 className="text-lg font-medium leading-snug">{mejora.titulo}</h2>
           <p className="font-mono text-sm text-muted-foreground">
             <time dateTime={mejora.fecha}>{fechaCorta(mejora.fecha)}</time>

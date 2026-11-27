@@ -12,7 +12,6 @@ import {
   diasDesde,
   fechaCorta,
   fechaLarga,
-  textoParaCompartir,
 } from "../src/modules/Admin/Mejoras/mejoras.ts";
 
 test("cada mejora tiene fecha AAAA-MM-DD real, área, tipo y textos", () => {
@@ -63,30 +62,6 @@ test("agrupa por entrega (fecha) respetando el orden", () => {
       ["2026-11-02", "c"],
       ["2026-10-30", "d"],
     ]
-  );
-});
-
-test("el texto para compartir agrupa por fecha y lleva los pasos", () => {
-  const texto = textoParaCompartir([
-    {
-      fecha: "2026-11-27",
-      titulo: "Algo nuevo",
-      detalle: "Qué cambia.",
-      dondeVerlo: ["Menú → Algo."],
-      area: "Panel admin",
-      tipo: "Nuevo",
-    },
-    { fecha: "2026-11-26", titulo: "Un arreglo", detalle: "Antes fallaba.", area: "Sitio público", tipo: "Corrección" },
-  ]);
-  assert.equal(
-    texto,
-    [
-      "*Mejoras del sistema de UESEVI*",
-      "*27 de noviembre de 2026*",
-      "*Algo nuevo* (Nuevo · Panel admin)\nQué cambia.\n• Menú → Algo.",
-      "*26 de noviembre de 2026*",
-      "*Un arreglo* (Corrección · Sitio público)\nAntes fallaba.",
-    ].join("\n\n")
   );
 });
 
