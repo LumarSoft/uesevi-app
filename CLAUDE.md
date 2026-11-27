@@ -132,7 +132,7 @@ always by period. Month selects are labeled "mes (mes vencido)" via `mesConVenci
   UESEVI staff (what changes for them, no file or table names): `detalle` is shown under
   "Qué cambia" and the optional `dondeVerlo` bullets under "Dónde verlo" (only steps you
   are sure of). `test/mejoras.test.mjs` checks format and order. The page also has a
-  "Propuestas" tab (`modules/Admin/Mejoras/propuestas/`, API `/proposals`): staff propose,
+  "Propuestas" tab (`modules/Admin/Mejoras/propuestas/`, API `/propuestas`): staff propose,
   and only the API's `MEJORAS_RESPONSABLES` emails see "Responder". The one-time welcome +
   guided tour live in `modules/Admin/Mejoras/recorrido/` (mounted in the admin layout; tour
   targets are `data-recorrido="..."` attributes — keep them when editing those elements).

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 // Estado de la presentación de Mejoras: compartido entre el layout del panel
-// (que la muestra) y la página de Mejoras (botón "Ver recorrido").
+// (que la muestra) y la página de Mejoras (botón "Ver presentación").
 type Etapa = "cerrado" | "bienvenida" | "pasos" | "final";
 
 interface EstadoRecorrido {

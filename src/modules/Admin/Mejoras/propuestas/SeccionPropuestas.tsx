@@ -3,7 +3,7 @@
 // Pestaña "Propuestas" de Mejoras: el personal de UESEVI propone mejoras y
 // abajo quedan todas, con su estado y la respuesta del equipo de desarrollo.
 // Responden sólo los emails que la API tiene en MEJORAS_RESPONSABLES
-// (`puedeResponder` viene de GET /proposals).
+// (`puedeResponder` viene de GET /propuestas).
 
 import { useMemo, useState } from "react";
 import { toast } from "react-toastify";
@@ -157,7 +157,7 @@ function FormularioPropuesta({ onCreada }: { onCreada: (p: Propuesta) => void })
     datos.append("titulo", titulo.trim());
     datos.append("descripcion", descripcion.trim());
     if (area !== SIN_AREA) datos.append("area", area);
-    const resultado = await postData("proposals", datos);
+    const resultado = await postData("propuestas", datos);
     setEnviando(false);
     if (!resultado?.ok) {
       setError(resultado?.message || "No pudimos enviar la propuesta. Probá de nuevo.");
@@ -332,7 +332,7 @@ function FormularioRespuesta({
     const datos = new FormData();
     datos.append("estado", estado);
     datos.append("respuesta", respuesta.trim());
-    const resultado = await updateData("proposals/:id/respuesta", propuesta.id, datos);
+    const resultado = await updateData("propuestas/:id/respuesta", propuesta.id, datos);
     setGuardando(false);
     if (!resultado?.ok) {
       setError(resultado?.message || "No se pudo guardar la respuesta.");

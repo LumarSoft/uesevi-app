@@ -8,7 +8,7 @@
 //   2. Recorrido: oscurece la pantalla e ilumina, paso a paso, el ítem del
 //      menú, cómo se lee un cambio y los filtros (PASOS en ./recorrido.ts).
 //   3. Cierre: un despegue y a explorar.
-// Se puede repetir desde el botón "Ver recorrido" de la página de Mejoras.
+// Se puede volver a ver desde el botón "Ver presentación" de la página de Mejoras.
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";

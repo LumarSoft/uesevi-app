@@ -42,7 +42,7 @@ export const MEJORAS: Mejora[] = [
     dondeVerlo: [
       "Menú del panel → Mejoras (el cohete), la última opción.",
       "\"Filtrar\" deja ver un área o un tipo de cambio; los filtros aplicados quedan a la vista y se quitan de a uno.",
-      "Para repasar cómo se usa: \"Ver recorrido\", arriba a la derecha de la página.",
+      "Para volver a ver la presentación: \"Ver presentación\", arriba a la derecha de la página.",
     ],
     area: "Panel admin",
     tipo: "Nuevo",

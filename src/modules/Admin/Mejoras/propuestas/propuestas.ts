@@ -1,6 +1,6 @@
 // Propuestas de mejora (Mejoras → Propuestas): tipos y lógica pura, sin
 // imports en tiempo de ejecución (lo prueba test/propuestas.test.mjs).
-// La API es /proposals (Uesevi-api: proposalsController / utils/proposals.js);
+// La API es /propuestas (Uesevi-api: propuestasController / utils/propuestas.js);
 // los límites de acá tienen que coincidir con los de allá.
 
 export type EstadoPropuesta = "pendiente" | "en_curso" | "hecha" | "descartada";

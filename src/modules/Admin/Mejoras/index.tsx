@@ -7,7 +7,7 @@
 // fondos, sólo tipografía, la línea de tiempo y divisores.
 //
 // Segunda pestaña, "Propuestas": el personal propone mejoras y el equipo de
-// desarrollo responde (./propuestas/, API /proposals).
+// desarrollo responde (./propuestas/, API /propuestas).
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -104,7 +104,7 @@ export default function MejorasModule() {
   useEffect(() => {
     let vigente = true;
     (async () => {
-      const resultado = await fetchData("proposals");
+      const resultado = await fetchData("propuestas");
       if (!vigente) return;
       if (resultado?.ok && resultado.data) {
         setPropuestas(resultado.data.propuestas ?? []);
@@ -162,15 +162,16 @@ export default function MejorasModule() {
             </p>
           )}
         </div>
-        {/* Repite la presentación guiada (recorrido/RecorridoMejoras.tsx). */}
+        {/* Vuelve a abrir la presentación completa (bienvenida + recorrido,
+            recorrido/RecorridoMejoras.tsx), aunque ya se haya visto. */}
         <Button
           variant="outline"
           size="sm"
           className="gap-2 self-start sm:self-auto"
-          onClick={() => useRecorridoMejoras.getState().empezar()}
+          onClick={() => useRecorridoMejoras.getState().abrirBienvenida()}
         >
           <Compass className="h-4 w-4" aria-hidden />
-          Ver recorrido
+          Ver presentación
         </Button>
       </header>
 
