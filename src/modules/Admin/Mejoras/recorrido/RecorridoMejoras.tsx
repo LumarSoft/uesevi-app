@@ -15,7 +15,7 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Play, Rocket, X } from "lucide-react";
+import { ArrowRight, Heart, Play, Rocket, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { userStore } from "@/shared/stores/userStore";
 import { useRecorridoMejoras } from "./estado";
@@ -402,49 +402,187 @@ function Foco({
 /* 3. Cierre                                                                  */
 /* ------------------------------------------------------------------------ */
 
-const CHISPAS = Array.from({ length: 12 }, (_, i) => {
-  const angulo = (i / 12) * Math.PI * 2;
-  return {
-    x: Math.cos(angulo) * 70,
-    y: Math.sin(angulo) * 70,
-    color: ["bg-primary", "bg-emerald-400", "bg-amber-400", "bg-violet-400"][i % 4],
-  };
-});
+// ---- Festejo del cierre -----------------------------------------------------
+// Todo determinístico (sin Math.random): mismos valores en cada render.
+
+const COLORES_FESTEJO = [
+  "bg-primary",
+  "bg-emerald-400",
+  "bg-amber-400",
+  "bg-violet-400",
+  "bg-rose-400",
+  "bg-sky-400",
+];
+
+/** Pseudoazar estable a partir de un índice (0 ≤ n < 1). */
+const azar = (i: number, semilla: number) => {
+  const x = Math.sin(i * 12.9898 + semilla * 78.233) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+/** Puntos alrededor de un círculo, para las ondas de chispas. */
+const onda = (cantidad: number, radio: number, giro = 0) =>
+  Array.from({ length: cantidad }, (_, i) => {
+    const angulo = (i / cantidad) * Math.PI * 2 + giro;
+    return {
+      x: Math.cos(angulo) * radio,
+      y: Math.sin(angulo) * radio,
+      color: COLORES_FESTEJO[i % COLORES_FESTEJO.length],
+    };
+  });
+
+const CHISPAS = onda(12, 72); // primera onda: puntos
+const ESTRELLAS = onda(10, 108, Math.PI / 10); // segunda onda: rombitos, más lejos
+
+// Papelitos que caen sobre toda la tarjeta.
+const PAPELITOS = Array.from({ length: 26 }, (_, i) => ({
+  left: `${4 + azar(i, 1) * 92}%`,
+  deriva: (azar(i, 2) - 0.5) * 80,
+  giro: (azar(i, 3) > 0.5 ? 1 : -1) * (240 + azar(i, 4) * 360),
+  demora: 0.15 + azar(i, 5) * 0.7,
+  duracion: 2.2 + azar(i, 6) * 1.4,
+  ancho: azar(i, 7) > 0.5 ? "w-1.5" : "w-2",
+  color: COLORES_FESTEJO[i % COLORES_FESTEJO.length],
+}));
+
+// Estela del cohete: humo que sale de abajo a la izquierda (el cohete apunta
+// arriba a la derecha).
+const ESTELA = Array.from({ length: 7 }, (_, i) => ({
+  demora: 0.5 + i * 0.16,
+  tamano: 6 + (i % 3) * 3,
+}));
+
+function Festejo() {
+  return (
+    <div className="relative mx-auto h-24 w-24">
+      {/* Anillos que se expanden detrás del cohete. */}
+      {[0.15, 0.55, 0.95].map((demora) => (
+        <motion.span
+          key={demora}
+          aria-hidden
+          className="absolute inset-0 rounded-3xl border-2 border-primary/50"
+          initial={{ scale: 1, opacity: 0 }}
+          animate={{ scale: [1, 1.9], opacity: [0.6, 0] }}
+          transition={{ duration: 1.3, delay: demora, ease: "easeOut" }}
+        />
+      ))}
+
+      {/* Primera onda: puntos de colores. */}
+      {CHISPAS.map((chispa, i) => (
+        <motion.span
+          key={`c${i}`}
+          aria-hidden
+          className={`absolute left-1/2 top-1/2 h-2 w-2 rounded-full ${chispa.color}`}
+          initial={{ x: -4, y: -4, opacity: 0, scale: 0.4 }}
+          animate={{
+            x: chispa.x - 4,
+            y: chispa.y - 4,
+            opacity: [0, 1, 0],
+            scale: [0.4, 1, 0.6],
+          }}
+          transition={{ duration: 1.1, delay: 0.3, ease: "easeOut" }}
+        />
+      ))}
+
+      {/* Segunda onda: rombitos que giran y llegan más lejos. */}
+      {ESTRELLAS.map((estrella, i) => (
+        <motion.span
+          key={`e${i}`}
+          aria-hidden
+          className={`absolute left-1/2 top-1/2 h-1.5 w-1.5 rounded-[2px] ${estrella.color}`}
+          initial={{ x: -3, y: -3, opacity: 0, rotate: 45, scale: 0.3 }}
+          animate={{
+            x: estrella.x - 3,
+            y: estrella.y - 3,
+            opacity: [0, 1, 1, 0],
+            rotate: 405,
+            scale: [0.3, 1.2, 0.5],
+          }}
+          transition={{ duration: 1.4, delay: 0.6, ease: "easeOut" }}
+        />
+      ))}
+
+      {/* Estela: humo que sale por detrás, abajo a la izquierda. */}
+      {ESTELA.map((humo, i) => (
+        <motion.span
+          key={`h${i}`}
+          aria-hidden
+          className="absolute rounded-full bg-primary/40"
+          style={{ width: humo.tamano, height: humo.tamano, left: 14, bottom: 14 }}
+          initial={{ x: 0, y: 0, opacity: 0, scale: 1 }}
+          animate={{ x: -34, y: 34, opacity: [0, 0.8, 0], scale: [1, 1.6, 0.4] }}
+          transition={{ duration: 1.1, delay: humo.demora, repeat: 2, repeatDelay: 0.25 }}
+        />
+      ))}
+
+      {/* El cohete: sube desde abajo con un temblorcito y queda flotando. */}
+      <motion.div
+        className="relative"
+        initial={{ y: 26, opacity: 0 }}
+        animate={{ y: 0, opacity: 1, x: [0, -1.5, 1.5, -1, 1, 0] }}
+        transition={{
+          y: { type: "spring", stiffness: 180, damping: 12, delay: 0.05 },
+          opacity: { duration: 0.2 },
+          x: { duration: 0.45, delay: 0.05 },
+        }}
+      >
+        <IconoCohete grande />
+      </motion.div>
+    </div>
+  );
+}
+
+/** Papelitos cayendo sobre la tarjeta (recortados por ella: no generan scroll). */
+function Papelitos() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
+      {PAPELITOS.map((p, i) => (
+        <motion.span
+          key={i}
+          className={`absolute top-0 h-3 rounded-sm ${p.ancho} ${p.color}`}
+          style={{ left: p.left }}
+          initial={{ y: -24, x: 0, rotate: 0, opacity: 0 }}
+          animate={{ y: 420, x: p.deriva, rotate: p.giro, opacity: [0, 1, 1, 0] }}
+          transition={{ duration: p.duracion, delay: p.demora, ease: "easeIn" }}
+        />
+      ))}
+    </div>
+  );
+}
 
 function Final({ abierta, onCerrar }: { abierta: boolean; onCerrar: () => void }) {
   const reducir = useReducedMotion();
   return (
     <TarjetaAnuncio abierta={abierta} onCerrar={onCerrar}>
-      <div className="relative mx-auto h-20 w-20">
-        {!reducir &&
-          CHISPAS.map((chispa, i) => (
-            <motion.span
-              key={i}
-              aria-hidden
-              className={`absolute left-1/2 top-1/2 h-2 w-2 rounded-full ${chispa.color}`}
-              initial={{ x: -4, y: -4, opacity: 0, scale: 0.4 }}
-              animate={{
-                x: chispa.x - 4,
-                y: chispa.y - 4,
-                opacity: [0, 1, 0],
-                scale: [0.4, 1, 0.6],
-              }}
-              transition={{ duration: 1.1, delay: 0.3, ease: "easeOut" }}
-            />
-          ))}
-        <IconoCohete grande />
-      </div>
+      {!reducir && <Papelitos />}
+      {reducir ? <IconoCohete grande /> : <Festejo />}
       <DialogPrimitive.Title className="mt-7 text-2xl font-semibold leading-tight tracking-tight [text-wrap:balance]">
         ¡Listo! Ya saben dónde encontrarnos
       </DialogPrimitive.Title>
       <DialogPrimitive.Description className="mt-3 text-[15px] leading-relaxed text-muted-foreground [text-wrap:pretty]">
         Cada vez que mejoremos algo, va a estar en Mejoras. Y cuando se les
-        ocurra algo, propónganlo ahí: lo leemos y les respondemos. Gracias por
-        acompañarnos todos los días.
+        ocurra algo, propónganlo ahí: lo leemos y les respondemos.
       </DialogPrimitive.Description>
+      {/* El agradecimiento va aparte y resaltado: es lo que queremos que quede. */}
+      <motion.p
+        className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary ring-1 ring-primary/20"
+        initial={reducir ? false : { opacity: 0, y: 8, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 0.9, type: "spring", stiffness: 260, damping: 20 }}
+      >
+        <motion.span
+          aria-hidden
+          animate={reducir ? undefined : { scale: [1, 1.25, 1, 1.18, 1] }}
+          transition={{ delay: 1.3, duration: 1.1, repeat: 2, repeatDelay: 1.2 }}
+          className="inline-flex"
+        >
+          <Heart className="h-4 w-4 fill-current" />
+        </motion.span>
+        Gracias por acompañarnos todos los días
+      </motion.p>
       <Button
         onClick={onCerrar}
-        className="mt-8 h-12 w-full gap-2 rounded-xl text-base"
+        className="mt-7 h-12 w-full gap-2 rounded-xl text-base"
         autoFocus
       >
         Empezar a explorar
