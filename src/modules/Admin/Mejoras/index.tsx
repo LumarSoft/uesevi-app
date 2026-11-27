@@ -44,6 +44,8 @@ import {
   mesYAnio,
 } from "./mejoras";
 import { useRecorridoMejoras } from "./recorrido/estado";
+import { claveMejora, leerVistas, mejorasNuevas } from "./novedades";
+import { useNovedadesMejoras } from "./useNovedades";
 import { Propuesta } from "./propuestas/propuestas";
 import SeccionPropuestas from "./propuestas/SeccionPropuestas";
 
@@ -75,6 +77,23 @@ type Vista = "cambios" | "propuestas";
 
 export default function MejorasModule() {
   const [vista, setVista] = useState<Vista>("cambios");
+
+  // Novedades sin ver (./novedades.ts): se anotan al entrar, para destacarlas
+  // durante esta visita, y se dan por vistas (el número del menú se apaga).
+  const [novedades, setNovedades] = useState<Set<string>>(() => new Set());
+  useEffect(() => {
+    let almacen: Storage | null = null;
+    try {
+      almacen = window.localStorage;
+    } catch {
+      almacen = null;
+    }
+    const nuevas = mejorasNuevas(MEJORAS, leerVistas(almacen)).map(claveMejora);
+    // Se suman a las ya anotadas: si el efecto corre dos veces (React en
+    // desarrollo), la segunda lee todo como visto y no debe borrar la marca.
+    setNovedades((anotadas) => new Set([...Array.from(anotadas), ...nuevas]));
+    useNovedadesMejoras.getState().marcarTodasVistas();
+  }, []);
   const [area, setArea] = useState<FiltroArea>("todas");
   const [tipo, setTipo] = useState<FiltroTipo>("todos");
 
@@ -318,6 +337,7 @@ export default function MejorasModule() {
                 key={`${mejora.fecha}-${mejora.titulo}`}
                 mejora={mejora}
                 esLoUltimo={mejora.fecha === ultimaFecha}
+                esNovedad={novedades.has(claveMejora(mejora))}
                 esLaPrimeraFila={i === 0}
                 esLaUltimaFila={i === visibles.length - 1}
               />
@@ -417,11 +437,14 @@ function FiltroAplicado({
 function Entrada({
   mejora,
   esLoUltimo,
+  esNovedad,
   esLaPrimeraFila,
   esLaUltimaFila,
 }: {
   mejora: Mejora;
   esLoUltimo: boolean;
+  /** Publicada después de la última visita: se destaca, sin estridencias. */
+  esNovedad: boolean;
   esLaPrimeraFila: boolean;
   esLaUltimaFila: boolean;
 }) {
@@ -460,8 +483,14 @@ function Entrada({
             ilumina esta columna y quedaba un recuadro vacío). */}
         <div className="space-y-3 self-start" data-recorrido={marca("mejora-resumen")}>
           <h2 className="text-lg font-medium leading-snug">{mejora.titulo}</h2>
-          <p className="font-mono text-sm text-muted-foreground">
+          <p className="flex flex-wrap items-center gap-2 font-mono text-sm text-muted-foreground">
             <time dateTime={mejora.fecha}>{fechaCorta(mejora.fecha)}</time>
+            {esNovedad && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2 py-0.5 font-sans text-xs font-medium text-primary">
+                <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-primary" />
+                Novedad
+              </span>
+            )}
           </p>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <span

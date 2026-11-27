@@ -578,7 +578,7 @@ function Final({ abierta, onCerrar }: { abierta: boolean; onCerrar: () => void }
         >
           <Heart className="h-4 w-4 fill-current" />
         </motion.span>
-        Gracias por acompañarnos todos los días
+        Gracias por confiar en nosotros todos los días
       </motion.p>
       <Button
         onClick={onCerrar}

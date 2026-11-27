@@ -131,7 +131,10 @@ always by period. Month selects are labeled "mes (mes vencido)" via `mesConVenci
   a spacing) — dated the day it reaches production, written for
   UESEVI staff (what changes for them, no file or table names): `detalle` is shown under
   "Qué cambia" and the optional `dondeVerlo` bullets under "Dónde verlo" (only steps you
-  are sure of). `test/mejoras.test.mjs` checks format and order. The page also has a
+  are sure of). `test/mejoras.test.mjs` checks format and order. Entries dated after
+  `NOVEDADES_DESDE` (`modules/Admin/Mejoras/novedades.ts`, the launch date — never move it)
+  are "unseen news": the admin sidebar shows their count on "Mejoras" until the page is
+  opened (per browser, localStorage) and that visit marks them "Novedad". The page also has a
   "Propuestas" tab (`modules/Admin/Mejoras/propuestas/`, API `/propuestas`): staff propose,
   and only the API's `MEJORAS_RESPONSABLES` emails see "Responder". The one-time welcome +
   guided tour live in `modules/Admin/Mejoras/recorrido/` (mounted in the admin layout; tour
