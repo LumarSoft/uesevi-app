@@ -114,6 +114,10 @@ export function SideNav({
           <Link
             key={item.title}
             href={item.href}
+            // Marca para el recorrido de presentación de Mejoras.
+            data-recorrido={
+              item.href === "/admin/mejoras" ? "nav-mejoras" : undefined
+            }
             onClick={() => {
               if (setOpen) setOpen(false);
             }}

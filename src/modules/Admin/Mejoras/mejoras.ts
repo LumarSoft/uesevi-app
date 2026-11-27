@@ -38,10 +38,11 @@ export const MEJORAS: Mejora[] = [
     fecha: "2026-11-27",
     titulo: "Nueva sección \"Mejoras\" en el panel",
     detalle:
-      "Esta misma página: reúne todo lo que vamos sumando y corrigiendo en el sistema, de lo más nuevo a lo más viejo.",
+      "Esta misma página: reúne todo lo que vamos sumando y corrigiendo en el sistema, de lo más nuevo a lo más viejo. La primera vez que se entra al panel, una presentación corta la muestra y explica cómo leerla.",
     dondeVerlo: [
       "Menú del panel → Mejoras (el cohete), la última opción.",
       "\"Filtrar\" deja ver un área o un tipo de cambio; los filtros aplicados quedan a la vista y se quitan de a uno.",
+      "Para repasar cómo se usa: \"Ver recorrido\", arriba a la derecha de la página.",
     ],
     area: "Panel admin",
     tipo: "Nuevo",

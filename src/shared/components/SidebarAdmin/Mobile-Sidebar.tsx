@@ -20,7 +20,10 @@ export const MobileSidebar = () => {
     <>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <div className="flex items-center justify-center gap-2">
+          <div
+            className="flex items-center justify-center gap-2"
+            data-recorrido="menu-movil"
+          >
             <MenuIcon />
           </div>
         </SheetTrigger>

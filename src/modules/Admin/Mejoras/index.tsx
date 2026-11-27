@@ -8,6 +8,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  Compass,
   ListFilter,
   Plus,
   ShieldCheck,
@@ -38,6 +39,7 @@ import {
   fechaCorta,
   mesYAnio,
 } from "./mejoras";
+import { useRecorridoMejoras } from "./recorrido/estado";
 
 const ESTILO_TIPO: Record<TipoMejora, { icono: LucideIcon; etiqueta: string }> = {
   Nuevo: {
@@ -108,18 +110,30 @@ export default function MejorasModule() {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 lg:py-12">
-      <header className="mb-6">
-        <h1 className="text-4xl font-medium tracking-tight sm:text-5xl">
-          Mejoras
-        </h1>
-        <p className="mt-3 text-lg text-muted-foreground">
-          Novedades y arreglos del sistema de UESEVI
-        </p>
-        {desde && (
-          <p className="mt-1 text-sm text-muted-foreground">
-            {MEJORAS.length} cambios desde {mesYAnio(desde)}
+      <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-4xl font-medium tracking-tight sm:text-5xl">
+            Mejoras
+          </h1>
+          <p className="mt-3 text-lg text-muted-foreground">
+            Novedades y arreglos del sistema de UESEVI
           </p>
-        )}
+          {desde && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {MEJORAS.length} cambios desde {mesYAnio(desde)}
+            </p>
+          )}
+        </div>
+        {/* Repite la presentación guiada (recorrido/RecorridoMejoras.tsx). */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2 self-start sm:self-auto"
+          onClick={() => useRecorridoMejoras.getState().empezar()}
+        >
+          <Compass className="h-4 w-4" aria-hidden />
+          Ver recorrido
+        </Button>
       </header>
 
       {/* Barra de filtros: queda fija arriba al bajar. El contenedor pegajoso
@@ -130,6 +144,7 @@ export default function MejorasModule() {
       <div ref={centinelaRef} aria-hidden className="h-px" />
       <div className="sticky top-0 z-10 mb-12 bg-background pt-4 before:absolute before:inset-0 before:-z-10 before:bg-secondary/10">
         <div
+          data-recorrido="mejoras-filtros"
           className={cn(
             "flex flex-wrap items-center gap-2 rounded-xl border border-foreground/[0.12] bg-background px-3 py-2.5 shadow-sm transition-shadow duration-200 dark:border-border",
             barraFija && "shadow-md shadow-black/[0.08] dark:shadow-black/40"
@@ -232,6 +247,7 @@ export default function MejorasModule() {
             key={`${mejora.fecha}-${mejora.titulo}`}
             mejora={mejora}
             esLoUltimo={mejora.fecha === ultimaFecha}
+            esLaPrimeraFila={i === 0}
             esLaUltimaFila={i === visibles.length - 1}
           />
         ))}
@@ -281,12 +297,16 @@ function FiltroAplicado({
 function Entrada({
   mejora,
   esLoUltimo,
+  esLaPrimeraFila,
   esLaUltimaFila,
 }: {
   mejora: Mejora;
   esLoUltimo: boolean;
+  esLaPrimeraFila: boolean;
   esLaUltimaFila: boolean;
 }) {
+  // La primera fila es la que muestra el recorrido de presentación.
+  const marca = (nombre: string) => (esLaPrimeraFila ? nombre : undefined);
   const { icono: Icono, etiqueta } = ESTILO_TIPO[mejora.tipo];
 
   return (
@@ -316,7 +336,9 @@ function Entrada({
       </span>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,8fr)] lg:gap-16">
-        <div className="space-y-3">
+        {/* self-start: que no se estire al alto de la fila (el recorrido
+            ilumina esta columna y quedaba un recuadro vacío). */}
+        <div className="space-y-3 self-start" data-recorrido={marca("mejora-resumen")}>
           <h2 className="text-lg font-medium leading-snug">{mejora.titulo}</h2>
           <p className="font-mono text-sm text-muted-foreground">
             <time dateTime={mejora.fecha}>{fechaCorta(mejora.fecha)}</time>
@@ -334,7 +356,7 @@ function Entrada({
           </div>
         </div>
 
-        <div className="space-y-10">
+        <div className="space-y-10" data-recorrido={marca("mejora-detalle")}>
           <section className="space-y-4">
             <h3 className="text-2xl font-normal tracking-tight">Qué cambia</h3>
             <p className="text-base leading-7 text-foreground/75">{mejora.detalle}</p>

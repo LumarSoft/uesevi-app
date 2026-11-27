@@ -1,6 +1,7 @@
 "use client";
 import Header from "@/shared/components/Header/Header";
 import Sidebar from "@/shared/components/SidebarAdmin/Sidebar";
+import RecorridoMejoras from "@/modules/Admin/Mejoras/recorrido/RecorridoMejoras";
 import { ThemeProvider } from "next-themes";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -44,6 +45,8 @@ export default function SidebarLayout({
           {children}
         </main>
       </div>
+      {/* Presentación de la sección Mejoras: sólo en el panel, una vez. */}
+      <RecorridoMejoras />
     </ThemeProvider>
   );
 }
