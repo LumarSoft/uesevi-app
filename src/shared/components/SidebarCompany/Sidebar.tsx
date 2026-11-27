@@ -21,8 +21,9 @@ export default function Sidebar({ className }: SidebarProps) {
   };
   return (
     // Mismo armado que el del panel (SidebarAdmin/Sidebar.tsx): pt-16 = alto
-    // del header, y el botón de ocultar abajo. El portal tenía la función de
-    // colapsar pero ningún botón: si quedaba colapsado no había cómo abrirlo.
+    // del header y el botón de ocultar arriba, sobre el borde. El portal tenía
+    // la función de colapsar pero ningún botón: si quedaba colapsado no había
+    // cómo abrirlo.
     <nav
       className={cn(
         `relative hidden h-screen flex-col border-r pt-16 md:flex`,
@@ -31,6 +32,7 @@ export default function Sidebar({ className }: SidebarProps) {
         className
       )}
     >
+      <BotonOcultarMenu abierto={isOpen} onClick={handleToggle} />
       <div className="min-h-0 flex-1">
         <div className="space-y-1 px-3 py-3">
           <SideNav
@@ -39,7 +41,6 @@ export default function Sidebar({ className }: SidebarProps) {
           />
         </div>
       </div>
-      <BotonOcultarMenu abierto={isOpen} onClick={handleToggle} />
     </nav>
   );
 }

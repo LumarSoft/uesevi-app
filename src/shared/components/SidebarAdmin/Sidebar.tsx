@@ -45,11 +45,12 @@ export default function Sidebar({ className }: SidebarProps) {
         className
       )}
     >
+      <BotonOcultarMenu abierto={isOpen} onClick={handleToggle} />
       {/* El nav mide lo que la pantalla y el layout corta lo que sobra
           (overflow-hidden): sin un contenedor con scroll propio, al abrir un
           desplegable los últimos ítems quedaban afuera y no había forma de
-          llegar a ellos. El botón de ocultar queda fuera de este contenedor,
-          fijo abajo.
+          llegar a ellos. El botón de ocultar queda fuera de este contenedor
+          para que el scroll no lo recorte.
           Colapsado no scrollea: las etiquetas que aparecen al pasar el mouse
           se dibujan por fuera del ancho del nav, y un contenedor con scroll
           vertical también recorta en horizontal. */}
@@ -67,7 +68,6 @@ export default function Sidebar({ className }: SidebarProps) {
           />
         </div>
       </div>
-      <BotonOcultarMenu abierto={isOpen} onClick={handleToggle} />
     </nav>
   );
 }

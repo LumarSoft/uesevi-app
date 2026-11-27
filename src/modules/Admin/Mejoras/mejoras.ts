@@ -48,10 +48,10 @@ export const MEJORAS: Mejora[] = [
   },
   {
     fecha: "2026-11-27",
-    titulo: "Un botón claro para ocultar el menú",
+    titulo: "Un botón más claro para ocultar el menú",
     detalle:
-      "La flecha sobre el borde del menú se confundía con \"volver atrás\". Ahora el botón está al pie del menú, con el ícono de panel y el texto \"Ocultar menú\". También se quitó el espacio vacío que había arriba de la primera opción, y el portal de empresas suma el mismo botón.",
-    dondeVerlo: ["En la computadora, al pie del menú lateral."],
+      "La flecha sobre el borde del menú se confundía con \"volver atrás\". El botón sigue en el mismo lugar, pero ahora tiene el ícono de panel lateral y, al pasar el mouse, dice \"Ocultar menú\" o \"Mostrar menú\". También se quitó el espacio vacío que había arriba de la primera opción, y el portal de empresas suma el mismo botón.",
+    dondeVerlo: ["En la computadora, arriba, sobre el borde derecho del menú lateral."],
     area: "Todo el sistema",
     tipo: "Mejora",
   },

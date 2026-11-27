@@ -2,9 +2,11 @@
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 /**
- * Ocultar / mostrar el menú. Antes era una flecha "←" sobre el borde, que se
- * confundía con "volver atrás"; ahora es el ícono de panel lateral, abajo de
- * todo y con su texto cuando el menú está abierto.
+ * Ocultar / mostrar el menú lateral. Va en el mismo lugar de siempre (arriba,
+ * sobre el borde derecho del menú: la gente ya lo busca ahí), pero con el
+ * ícono de panel lateral en lugar de la flecha "←", que se confundía con
+ * "volver atrás". Se dibuja por fuera del contenedor con scroll del menú para
+ * que no lo recorte.
  */
 export function BotonOcultarMenu({
   abierto,
@@ -16,18 +18,15 @@ export function BotonOcultarMenu({
   const texto = abierto ? "Ocultar menú" : "Mostrar menú";
   const Icono = abierto ? PanelLeftClose : PanelLeftOpen;
   return (
-    <div className="border-t px-3 py-3">
-      <button
-        type="button"
-        onClick={onClick}
-        title={texto}
-        aria-label={texto}
-        aria-expanded={abierto}
-        className="flex h-11 w-full items-center gap-3 overflow-hidden whitespace-nowrap rounded-md px-4 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <Icono className="h-5 w-5 shrink-0" aria-hidden />
-        {abierto && <span>{texto}</span>}
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      title={texto}
+      aria-label={texto}
+      aria-expanded={abierto}
+      className="absolute -right-3.5 top-20 z-20 flex h-7 w-7 items-center justify-center rounded-full border bg-background text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <Icono className="h-4 w-4" aria-hidden />
+    </button>
   );
 }
