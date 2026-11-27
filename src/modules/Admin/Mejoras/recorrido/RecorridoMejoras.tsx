@@ -2,8 +2,9 @@
 
 // Presentación de la sección Mejoras, sólo en el panel admin (la monta
 // app/admin/(sidebar)/layout.tsx). Tres momentos:
-//   1. Bienvenida: una ventana con la novedad y los últimos cambios reales.
-//      "Saltear" o "Mostrame cómo"; cualquiera de los dos la da por vista.
+//   1. Bienvenida: una tarjeta corta que cuenta la novedad y que trabajamos
+//      todos los días para acompañarlos. "Mostrame cómo" o "Entendido"
+//      (o la cruz); cualquiera la da por vista.
 //   2. Recorrido: oscurece la pantalla e ilumina, paso a paso, el ítem del
 //      menú, cómo se lee un cambio y los filtros (PASOS en ./recorrido.ts).
 //   3. Cierre: un despegue y a explorar.
@@ -14,21 +15,9 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { motion, useReducedMotion } from "framer-motion";
-import {
-  ArrowRight,
-  CalendarClock,
-  MapPin,
-  MessageSquareText,
-  Plus,
-  Rocket,
-  ShieldCheck,
-  TrendingUp,
-  Wrench,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight, Play, Rocket, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { userStore } from "@/shared/stores/userStore";
-import { MEJORAS, TipoMejora, fechaCorta, mesYAnio } from "../mejoras";
 import { useRecorridoMejoras } from "./estado";
 import {
   PASOS,
@@ -38,13 +27,6 @@ import {
   type PasoRecorrido,
   type Rect,
 } from "./recorrido";
-
-const ICONO_TIPO: Record<TipoMejora, LucideIcon> = {
-  Nuevo: Plus,
-  Mejora: TrendingUp,
-  Corrección: Wrench,
-  Seguridad: ShieldCheck,
-};
 
 const almacen = () => {
   try {
@@ -109,14 +91,84 @@ export default function RecorridoMejoras() {
 }
 
 /* ------------------------------------------------------------------------ */
-/* 1. Bienvenida                                                              */
+/* Tarjeta de anuncio: la base de la bienvenida y del cierre                  */
 /* ------------------------------------------------------------------------ */
 
-const PUNTOS = [
-  { icono: CalendarClock, texto: "Qué cambió y cuándo" },
-  { icono: MessageSquareText, texto: "Explicado en palabras simples" },
-  { icono: MapPin, texto: "Dónde encontrarlo, paso a paso" },
-];
+// Fondo: un resplandor azul suave arriba que se funde con el fondo de la
+// tarjeta (más presente en modo oscuro, donde el azul tenue no se ve).
+const FONDO_TARJETA =
+  "[background:radial-gradient(120%_75%_at_50%_0%,hsl(var(--primary)/0.16),transparent_70%),hsl(var(--background))] dark:[background:radial-gradient(120%_75%_at_50%_0%,hsl(var(--primary)/0.24),transparent_70%),hsl(var(--background))]";
+
+function TarjetaAnuncio({
+  abierta,
+  onCerrar,
+  children,
+}: {
+  abierta: boolean;
+  onCerrar: () => void;
+  children: React.ReactNode;
+}) {
+  const reducir = useReducedMotion();
+  return (
+    <DialogPrimitive.Root
+      open={abierta}
+      onOpenChange={(abrir) => {
+        if (!abrir) onCerrar(); // Esc o la cruz
+      }}
+    >
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[100] bg-slate-950/50 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Content
+          // Un clic afuera por accidente no la descarta.
+          onPointerDownOutside={(e) => e.preventDefault()}
+          className="fixed left-1/2 top-1/2 z-[101] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 outline-none"
+        >
+          <motion.div
+            initial={reducir ? false : { opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 26 }}
+            className={`relative max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl border px-6 pb-6 pt-10 text-center shadow-2xl sm:px-10 sm:pb-8 ${FONDO_TARJETA}`}
+          >
+            <DialogPrimitive.Close
+              aria-label="Cerrar"
+              className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <X className="h-5 w-5" aria-hidden />
+            </DialogPrimitive.Close>
+            {children}
+          </motion.div>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  );
+}
+
+/** El cohete de Mejoras en un recuadro azul, flotando apenas. */
+function IconoCohete({ grande = false }: { grande?: boolean }) {
+  const reducir = useReducedMotion();
+  return (
+    <motion.div
+      aria-hidden
+      className={`mx-auto flex items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30 ${
+        grande ? "h-20 w-20 rounded-3xl" : "h-16 w-16"
+      }`}
+      initial={reducir ? false : { scale: 0.6, rotate: -12, opacity: 0 }}
+      animate={{ scale: 1, rotate: 0, opacity: 1 }}
+      transition={{ type: "spring", stiffness: 260, damping: 15, delay: 0.1 }}
+    >
+      <motion.span
+        animate={reducir ? undefined : { y: [0, -3, 0] }}
+        transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <Rocket className={grande ? "h-9 w-9" : "h-8 w-8"} />
+      </motion.span>
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 1. Bienvenida                                                              */
+/* ------------------------------------------------------------------------ */
 
 function Bienvenida({
   abierta,
@@ -127,136 +179,36 @@ function Bienvenida({
   onEmpezar: () => void;
   onSaltear: () => void;
 }) {
-  const reducir = useReducedMotion();
-  const ultimas = MEJORAS.slice(0, 3);
-  const desde = MEJORAS[MEJORAS.length - 1]?.fecha;
-
   return (
-    <DialogPrimitive.Root
-      open={abierta}
-      onOpenChange={(abrir) => {
-        if (!abrir) onSaltear(); // Esc
-      }}
-    >
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0" />
-        <DialogPrimitive.Content
-          // Un clic afuera por accidente no la descarta para siempre.
-          onPointerDownOutside={(e) => e.preventDefault()}
-          className="fixed left-1/2 top-1/2 z-[101] w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-2xl outline-none"
+    <TarjetaAnuncio abierta={abierta} onCerrar={onSaltear}>
+      <IconoCohete />
+      <p className="mt-6 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+        Novedad en el panel
+      </p>
+      <DialogPrimitive.Title className="mt-3 text-2xl font-semibold leading-tight tracking-tight [text-wrap:balance]">
+        Seguimos mejorando, cerca de ustedes
+      </DialogPrimitive.Title>
+      <DialogPrimitive.Description className="mt-3 text-[15px] leading-relaxed text-muted-foreground [text-wrap:pretty]">
+        Queremos darles la mejor experiencia posible, y día a día trabajamos
+        para lograrlo. Por eso sumamos <strong className="font-semibold text-foreground">Mejoras</strong> al
+        menú: ahí les contamos cada cambio que hacemos en el sistema, para qué
+        sirve y dónde verlo.
+      </DialogPrimitive.Description>
+      <div className="mt-8 space-y-2">
+        <Button
+          onClick={onEmpezar}
+          className="h-12 w-full gap-2 rounded-xl text-base"
+          autoFocus
         >
-          {/* El scroll (pantallas bajas) va acá y no en Content: si no, el
-              desplazamiento de la animación de entrada lo hacía aparecer. */}
-          <motion.div
-            initial={reducir ? false : { opacity: 0, y: 28, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 240, damping: 26 }}
-            className="max-h-[calc(100dvh-2rem)] overflow-y-auto overflow-x-hidden rounded-2xl border bg-background shadow-2xl"
-          >
-            {/* Ilustración: los últimos cambios de verdad, sobre los colores
-                de UESEVI. */}
-            <div className="relative h-52 overflow-hidden bg-gradient-to-br from-[#1f294c] via-[#2a3972] to-[#3e5298] sm:h-56">
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-[0.14] [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:18px_18px]"
-              />
-              <div
-                aria-hidden
-                className="absolute -right-12 -top-20 h-64 w-64 rounded-full bg-sky-400/25 blur-3xl"
-              />
-              <motion.div
-                aria-hidden
-                className="absolute right-5 top-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 sm:right-7 sm:top-7"
-                animate={reducir ? undefined : { y: [0, -6, 0], rotate: [0, -4, 0] }}
-                transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <Rocket className="h-7 w-7 text-white" />
-              </motion.div>
-              <ol aria-hidden className="absolute left-5 right-24 top-6 space-y-2.5 sm:left-7 sm:right-28">
-                {ultimas.map((mejora, i) => {
-                  const Icono = ICONO_TIPO[mejora.tipo];
-                  return (
-                    <motion.li
-                      key={`${mejora.fecha}-${mejora.titulo}`}
-                      initial={reducir ? false : { opacity: 0, x: -18 }}
-                      animate={{ opacity: 1 - i * 0.18, x: 0 }}
-                      transition={{ delay: 0.25 + i * 0.12, duration: 0.45, ease: "easeOut" }}
-                      className="flex items-center gap-3 rounded-xl bg-white/10 px-3 py-2 ring-1 ring-white/15"
-                    >
-                      <span
-                        className={
-                          i === 0
-                            ? "flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white text-[#1f294c]"
-                            : "flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/15 text-white"
-                        }
-                      >
-                        <Icono className="h-3.5 w-3.5" />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-medium text-white">
-                          {mejora.titulo}
-                        </span>
-                        <span className="block text-xs text-white/60">
-                          {fechaCorta(mejora.fecha)} · {mejora.tipo}
-                        </span>
-                      </span>
-                    </motion.li>
-                  );
-                })}
-              </ol>
-            </div>
-
-            <div className="space-y-6 p-6 sm:p-8">
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
-                  Novedad en el panel
-                </p>
-                <DialogPrimitive.Title className="text-2xl font-semibold tracking-tight">
-                  Te presentamos Mejoras
-                </DialogPrimitive.Title>
-                <DialogPrimitive.Description className="leading-relaxed text-muted-foreground">
-                  Una sección nueva para que veas todo lo que vamos mejorando en
-                  el sistema. Lo trabajamos todos los días para que les resulte
-                  más simple, y queremos que se note.
-                </DialogPrimitive.Description>
-              </div>
-
-              <ul className="grid gap-2 sm:grid-cols-3 sm:gap-3">
-                {PUNTOS.map(({ icono: Icono, texto }, i) => (
-                  <motion.li
-                    key={texto}
-                    initial={reducir ? false : { opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.45 + i * 0.08 }}
-                    className="flex items-center gap-3 rounded-xl border bg-muted/40 px-3 py-2.5 text-sm sm:flex-col sm:items-start sm:gap-2 sm:py-3"
-                  >
-                    <Icono className="h-4 w-4 shrink-0 text-primary" aria-hidden />
-                    {texto}
-                  </motion.li>
-                ))}
-              </ul>
-
-              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-                {desde && (
-                  <p className="text-center text-sm text-muted-foreground sm:text-left">
-                    {MEJORAS.length} mejoras desde {mesYAnio(desde)}.
-                  </p>
-                )}
-                <div className="flex flex-col-reverse gap-2 sm:flex-row">
-                  <Button variant="ghost" onClick={onSaltear}>
-                    Saltear
-                  </Button>
-                  <Button onClick={onEmpezar} className="gap-2" autoFocus>
-                    Mostrame cómo
-                    <ArrowRight className="h-4 w-4" aria-hidden />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
+          <Play className="h-4 w-4 fill-current" aria-hidden />
+          Mostrame cómo
+          <span className="font-normal opacity-75">· {PASOS.length} pasos</span>
+        </Button>
+        <Button variant="ghost" onClick={onSaltear} className="h-11 w-full rounded-xl">
+          Entendido
+        </Button>
+      </div>
+    </TarjetaAnuncio>
   );
 }
 
@@ -462,66 +414,42 @@ const CHISPAS = Array.from({ length: 12 }, (_, i) => {
 function Final({ abierta, onCerrar }: { abierta: boolean; onCerrar: () => void }) {
   const reducir = useReducedMotion();
   return (
-    <DialogPrimitive.Root
-      open={abierta}
-      onOpenChange={(abrir) => {
-        if (!abrir) onCerrar();
-      }}
-    >
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm" />
-        <DialogPrimitive.Content className="fixed left-1/2 top-1/2 z-[101] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 outline-none">
-          <motion.div
-            initial={reducir ? false : { opacity: 0, y: 24, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 240, damping: 24 }}
-            className="rounded-2xl border bg-background p-8 text-center shadow-2xl"
-          >
-            <div className="relative mx-auto mb-6 h-24 w-24">
-              {!reducir &&
-                CHISPAS.map((chispa, i) => (
-                  <motion.span
-                    key={i}
-                    aria-hidden
-                    className={`absolute left-1/2 top-1/2 h-2 w-2 rounded-full ${chispa.color}`}
-                    initial={{ x: -4, y: -4, opacity: 0, scale: 0.4 }}
-                    animate={{
-                      x: chispa.x - 4,
-                      y: chispa.y - 4,
-                      opacity: [0, 1, 0],
-                      scale: [0.4, 1, 0.6],
-                    }}
-                    transition={{ duration: 1.1, delay: 0.25, ease: "easeOut" }}
-                  />
-                ))}
-              <motion.div
-                className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-[#1f294c] to-[#3e5298] shadow-lg shadow-[#3e5298]/30"
-                initial={reducir ? false : { y: 16, scale: 0.85 }}
-                animate={{ y: 0, scale: 1 }}
-                transition={{ type: "spring", stiffness: 220, damping: 14 }}
-              >
-                <motion.span
-                  animate={reducir ? undefined : { y: [0, -5, 0] }}
-                  transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <Rocket className="h-10 w-10 text-white" aria-hidden />
-                </motion.span>
-              </motion.div>
-            </div>
-            <DialogPrimitive.Title className="text-2xl font-semibold tracking-tight">
-              ¡Listo! Ya sabés usar Mejoras
-            </DialogPrimitive.Title>
-            <DialogPrimitive.Description className="mt-2 leading-relaxed text-muted-foreground">
-              Cada vez que mejoremos algo lo vas a encontrar acá, con lo último
-              primero. Gracias por usar el sistema todos los días: lo seguimos
-              mejorando pensando en ustedes.
-            </DialogPrimitive.Description>
-            <Button onClick={onCerrar} className="mt-6 w-full sm:w-auto" autoFocus>
-              Empezar a explorar
-            </Button>
-          </motion.div>
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
+    <TarjetaAnuncio abierta={abierta} onCerrar={onCerrar}>
+      <div className="relative mx-auto h-20 w-20">
+        {!reducir &&
+          CHISPAS.map((chispa, i) => (
+            <motion.span
+              key={i}
+              aria-hidden
+              className={`absolute left-1/2 top-1/2 h-2 w-2 rounded-full ${chispa.color}`}
+              initial={{ x: -4, y: -4, opacity: 0, scale: 0.4 }}
+              animate={{
+                x: chispa.x - 4,
+                y: chispa.y - 4,
+                opacity: [0, 1, 0],
+                scale: [0.4, 1, 0.6],
+              }}
+              transition={{ duration: 1.1, delay: 0.3, ease: "easeOut" }}
+            />
+          ))}
+        <IconoCohete grande />
+      </div>
+      <DialogPrimitive.Title className="mt-7 text-2xl font-semibold leading-tight tracking-tight [text-wrap:balance]">
+        ¡Listo! Ya saben dónde encontrarnos
+      </DialogPrimitive.Title>
+      <DialogPrimitive.Description className="mt-3 text-[15px] leading-relaxed text-muted-foreground [text-wrap:pretty]">
+        Cada vez que mejoremos algo, va a estar en Mejoras, con lo último
+        primero. Gracias por acompañarnos todos los días: seguimos trabajando
+        para ustedes.
+      </DialogPrimitive.Description>
+      <Button
+        onClick={onCerrar}
+        className="mt-8 h-12 w-full gap-2 rounded-xl text-base"
+        autoFocus
+      >
+        Empezar a explorar
+        <ArrowRight className="h-4 w-4" aria-hidden />
+      </Button>
+    </TarjetaAnuncio>
   );
 }
