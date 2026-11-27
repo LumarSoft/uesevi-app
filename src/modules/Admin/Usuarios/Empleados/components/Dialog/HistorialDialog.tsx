@@ -27,8 +27,6 @@ export const HistorialDialog: React.FC<HistorialDialogProps> = ({ empleado }) =>
   const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
 
   const fetchHistorial = async () => {
-    console.log("🔍 Datos del empleado:", empleado);
-    console.log("🎯 empleado_id:", empleado.empleado_id);
     
     if (!empleado.empleado_id) {
       console.error("❌ No hay empleado_id disponible");

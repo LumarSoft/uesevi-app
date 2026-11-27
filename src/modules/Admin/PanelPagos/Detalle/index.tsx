@@ -40,9 +40,11 @@ import { fetchData, postData } from "@/services/mysql/functions";
 import { CompanyDetailResponse } from "@/shared/types/PaymentsPanel";
 import { ChevronLeft } from "lucide-react";
 import {
+  estaAlDia,
   formatCurrency,
   formatFecha,
   mesLargo,
+  textoSinDdjj,
   AÑOS_DISPONIBLES,
 } from "../helpers";
 import ConfirmarPago from "./ConfirmarPago";
@@ -177,11 +179,25 @@ export default function PanelPagosDetalle({ idEmpresa }: { idEmpresa: string }) 
             <p className="text-xs font-semibold uppercase text-muted-foreground">
               Meses pendientes
             </p>
-            <p className="mt-1 text-xl font-bold">
-              {header && header.meses_pendientes === 0
-                ? "Al día"
-                : `+${header?.meses_pendientes ?? 0}`}
-            </p>
+            {/* "Al día" sólo sin impagas y sin meses vencidos sin presentar. */}
+            {!header ? (
+              <p className="mt-1 text-xl font-bold">—</p>
+            ) : estaAlDia(header) ? (
+              <p className="mt-1 text-xl font-bold">Al día</p>
+            ) : (
+              <>
+                {header.meses_pendientes > 0 && (
+                  <p className="mt-1 text-xl font-bold">
+                    +{header.meses_pendientes}
+                  </p>
+                )}
+                {(header.meses_sin_ddjj ?? 0) > 0 && (
+                  <p className="mt-1 text-xl font-bold text-amber-600">
+                    {textoSinDdjj(header.meses_sin_ddjj ?? 0)}
+                  </p>
+                )}
+              </>
+            )}
           </CardContent>
         </Card>
       </div>

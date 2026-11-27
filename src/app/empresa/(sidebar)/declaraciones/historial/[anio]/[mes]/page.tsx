@@ -23,7 +23,6 @@ export default function HistorialDeclaracionesEmpresa({
         const statementsResult = await fetchData(
           `statements/history/${companyId}/${anio}/${mes}`
         );
-        console.log(statementsResult);
 
         if (statementsResult.ok) {
           setStatements(statementsResult.data);

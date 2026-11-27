@@ -27,7 +27,6 @@ export default function ContactCard() {
 
     try {
       const result = await postData("inquiries", formData);
-      console.log(result);
       if (!result) {
         return toast.error("Error al enviar el mensaje");
       } else if (result.message === "Consulta agregada con éxito") {

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
 import { calcularAporteSolidarioPorPeriodo } from "@/shared/utils/aportes";
+import { diasDeAtrasoParaIntereses } from "@/shared/utils/vencimientoDeclaracion";
 
 const FAS_PERCENTAGE = 0.01; // 1%
 const SINDICATO_PERCENTAGE = 0.03; // 3%
@@ -21,7 +22,6 @@ export function Total({
   rate: any;
   basicSalary: any;
 }) {
-  const fechaPago = statement.fecha_pago;
   let totalIntereses = 0;
   const employeeData = statement.empleados;
 
@@ -76,20 +76,9 @@ export function Total({
     }
   );
 
-  const vencimiento = new Date(statement.vencimiento);
-  let diffDays;
-
-  if (fechaPago) {
-    const pagoDate = new Date(fechaPago);
-    diffDays = Math.floor(
-      (pagoDate.getTime() - vencimiento.getTime()) / (1000 * 60 * 60 * 24)
-    );
-  } else {
-    const hoyDate = new Date();
-    diffDays = Math.floor(
-      (hoyDate.getTime() - vencimiento.getTime()) / (1000 * 60 * 60 * 24)
-    );
-  }
+  // Días de atraso (pago o hoy − vencimiento); una DDJJ aprobada sin fecha de
+  // pago da 0 en vez de seguir sumando. La fórmula del interés es la de abajo.
+  const diffDays = diasDeAtrasoParaIntereses(statement);
 
   // --- Desglose por concepto ---
   // Se prefiere el snapshot CONGELADO (statement.desglose, tabla auxiliar): es

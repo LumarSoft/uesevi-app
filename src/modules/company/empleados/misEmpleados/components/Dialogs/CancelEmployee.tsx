@@ -24,7 +24,6 @@ export const CancelEmployee = ({
   const handleCancel = async () => {
     try {
       const result = await deleteData("employees/:id", employee.id);
-      console.log(result);
       if (result.ok) {
         cancelEmployee(employee);
         return toast.success("Empleado dado de baja");

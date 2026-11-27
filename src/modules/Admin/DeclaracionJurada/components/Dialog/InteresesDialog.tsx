@@ -37,8 +37,6 @@ const InteresesDialog = ({ declaracion }: { declaracion: IDeclaracion }) => {
         toast.error("Fecha de pago actualizada");
       }
 
-      console.log(result);
-
       toast.success("Fecha de pago actualizada");
     } catch (error) {
       console.log(error);

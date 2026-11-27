@@ -56,7 +56,6 @@ export default function DeudorasSection() {
     const fetchDebtorCompanies = async () => {
       try {
         const result = await fetchData("statements/deudoras-company");
-        console.log("Result from fetchData:", result);
 
         if (!result.ok) {
           throw new Error(result.message || "Error fetching debtor companies");

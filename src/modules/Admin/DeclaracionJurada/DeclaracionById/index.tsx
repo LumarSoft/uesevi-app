@@ -16,7 +16,6 @@ export const DeclaracionModule = ({
   statement: IInfoDeclaracion;
   rate: any;
 }) => {
-  console.log(statement);
 
   const router = useRouter();
   const sueldoBasico = statement.sueldo_basico;

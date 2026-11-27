@@ -1,5 +1,17 @@
 // Helpers del Panel de Pagos.
 
+/**
+ * "Al día" = sin DDJJ impagas Y sin meses vencidos sin presentar. Antes sólo
+ * miraba las impagas, y una empresa que no presentaba quedaba en verde.
+ */
+export const estaAlDia = (fila: {
+  meses_pendientes: number;
+  meses_sin_ddjj?: number;
+}): boolean => fila.meses_pendientes === 0 && (fila.meses_sin_ddjj ?? 0) === 0;
+
+export const textoSinDdjj = (cantidad: number): string =>
+  `${cantidad} sin DDJJ`;
+
 export const formatCurrency = (amount: number | null | undefined): string =>
   new Intl.NumberFormat("es-AR", {
     style: "currency",

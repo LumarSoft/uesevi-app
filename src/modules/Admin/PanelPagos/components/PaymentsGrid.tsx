@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { GridRow, PanelMode } from "@/shared/types/PaymentsPanel";
-import { formatCurrency, mesCorto } from "../helpers";
+import { estaAlDia, formatCurrency, mesCorto, textoSinDdjj } from "../helpers";
 import MonthCell from "./MonthCell";
 import { SearchX } from "lucide-react";
 
@@ -107,12 +107,26 @@ export default function PaymentsGrid({ rows, from, to, mode = "periodo", loading
                   {formatCurrency(row.total_anio)}
                 </TableCell>
                 <TableCell className="text-center">
-                  {row.meses_pendientes === 0 ? (
+                  {estaAlDia(row) ? (
                     <Badge className="bg-emerald-500 hover:bg-emerald-600 whitespace-nowrap">
                       Al día
                     </Badge>
                   ) : (
-                    <Badge variant="destructive" className="whitespace-nowrap">+{row.meses_pendientes}</Badge>
+                    <div className="flex flex-col items-center gap-1">
+                      {row.meses_pendientes > 0 && (
+                        <Badge variant="destructive" className="whitespace-nowrap">
+                          +{row.meses_pendientes}
+                        </Badge>
+                      )}
+                      {(row.meses_sin_ddjj ?? 0) > 0 && (
+                        <Badge
+                          className="bg-amber-500 hover:bg-amber-600 whitespace-nowrap"
+                          title="Meses vencidos sin declaración jurada presentada"
+                        >
+                          {textoSinDdjj(row.meses_sin_ddjj ?? 0)}
+                        </Badge>
+                      )}
+                    </div>
                   )}
                 </TableCell>
               </TableRow>

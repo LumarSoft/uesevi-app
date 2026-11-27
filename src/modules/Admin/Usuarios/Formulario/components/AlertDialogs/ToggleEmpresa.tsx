@@ -34,7 +34,6 @@ export const ToggleEmpresa = ({
     formData.append("company", newCompany);
 
     const result = await updateData("forms/:id/company", data.id, formData);
-    console.log(result);
 
     if (!result.ok) {
       console.error("Failed to update company");

@@ -40,8 +40,6 @@ export const EditAdminDialog = ({
       // Llamamos a la función que realiza la actualización en el backend
       const result = await updateData("administrators/:id", data.id, formData);
 
-      console.log("result", result);
-
       if (result.ok) {
         const updatedAdmin: IAdmin = {
           ...data,

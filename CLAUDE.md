@@ -70,7 +70,12 @@ Every request goes through the five functions in `src/services/mysql/functions.t
 - send **`FormData`** for POST/PUT (never JSON — do not set `Content-Type` yourself),
 - normalize failures into `{ ok: false, status, statusCode, message, errors, data: null }`
   instead of throwing, so callers must check `result.ok`,
-- on HTTP 401 log out and hard-redirect to `/admin/login` or `/loginempresa`.
+- on HTTP 401 log out and hard-redirect to `/admin/login` or `/loginempresa`, leaving a
+  "sesión vencida" notice the login screen shows once (`shared/utils/sesionVencida.ts`).
+  **Except login requests** (`login`, `login/...`): there a 401 means wrong password, so
+  nothing is logged out or redirected and the form shows the API `message`.
+- never `console.log` request bodies or responses: they carried passwords, the JWT and
+  whole DDJJ with CUILs to the browser console. Log errors only.
 
 `errors` carries the backend's row-by-row Excel validation detail; it is rendered by
 `src/shared/components/StatementErrorsPanel.tsx`.
@@ -119,6 +124,14 @@ always by period. Month selects are labeled "mes (mes vencido)" via `mesConVenci
 
 ## Conventions
 
+- **Mejoras log**: the admin panel's "Mejoras" page reads
+  `src/modules/Admin/Mejoras/mejoras.ts`. Every user-visible change adds an entry at the
+  TOP of that list in the same PR, dated the day it reaches production, written for
+  UESEVI staff (what changes for them, no file or table names). `test/mejoras.test.mjs`
+  checks format and order.
+- DDJJ due-date badge and interest days come from `shared/utils/vencimientoDeclaracion.ts`
+  (admin and company views, screen and PDF). An approved DDJJ without `fecha_pago` accrues
+  no interest; the interest formula itself lives in each Total/PDF and must not change.
 - Commit messages: Conventional Commits with Spanish (occasionally English) subjects; feature
   branches merged to `main` via PRs from `LumarSoft/<slug>`.
 - Currency/date formatting is `es-AR` / ARS (`formatCurrency` in module `helpers.ts`).

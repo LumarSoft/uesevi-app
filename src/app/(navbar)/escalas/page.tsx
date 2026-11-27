@@ -14,10 +14,6 @@ export default function EscalasPage() {
     async function loadScales() {
       try {
         const scalesResponse = await fetchData("scales/clients");
-
-        // Simulación de retraso
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
         setScales(scalesResponse.data);
       } catch (err: unknown) {
         console.error("Error al obtener las escalas:", err);

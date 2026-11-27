@@ -17,11 +17,13 @@ export default function DeclaracionesPage() {
   useEffect(() => {
     const fetchStatements = async () => {
       const result = await fetchOneRow("statements/company/:id", idCompany);
-      setStatements(result.data);
+      // Si la API falla (o la sesión venció) data viene null: sin el `?? []`
+      // la página se rompía mientras redirigía al login.
+      setStatements(result.data ?? []);
     };
     const fetchRates = async () => {
       const result = await fetchData("rates");
-      setRates(result.data[0].porcentaje);
+      setRates(result.data?.[0]?.porcentaje ?? "");
     };
 
     if (idCompany) {

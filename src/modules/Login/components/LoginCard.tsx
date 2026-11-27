@@ -1,10 +1,15 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
+import {
+  MENSAJE_SESION_VENCIDA,
+  mensajeDeErrorDeLogin,
+  tomarAvisoSesionVencida,
+} from "@/shared/utils/sesionVencida";
 
 import LoadingSpinner from "./LoadingSpinner";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -16,12 +21,18 @@ export const LoginCard = () => {
   const [hasInput, setHasInput] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aviso, setAviso] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    if (tomarAvisoSesionVencida()) setAviso(MENSAJE_SESION_VENCIDA);
+  }, []);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setAviso("");
 
     try {
       const formData = new FormData();
@@ -29,8 +40,8 @@ export const LoginCard = () => {
       formData.append("password", password);
       formData.append("rol", "admin");
 
+      // Sin console.log de la respuesta: traía el token de sesión.
       const response = await postData("login", formData);
-      console.log(response);
 
       if (response.ok && response.data) {
         const { token, user } = response.data;
@@ -47,12 +58,13 @@ export const LoginCard = () => {
 
         router.replace("/admin/dashboard");
       } else {
-        setError("Error al iniciar sesión. Por favor, intente de nuevo.");
+        // "Contraseña incorrecta", "El correo electrónico no existe" o
+        // "Demasiados intentos…", tal como lo dice la API.
+        setError(mensajeDeErrorDeLogin(response));
         setLoading(false);
       }
-    } catch (error: any) {
-      console.error("Error en login:", error);
-      setError("Error al iniciar sesión. Por favor, intente de nuevo.");
+    } catch {
+      setError(mensajeDeErrorDeLogin({}));
       setLoading(false);
     }
   };
@@ -71,18 +83,24 @@ export const LoginCard = () => {
           <Input
             type="email"
             placeholder="Correo electrónico"
+            autoComplete="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setError("");
+            }}
             required
           />
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}
               placeholder="Contraseña"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
                 setHasInput(e.target.value.length > 0);
+                setError("");
               }}
               required
             />
@@ -97,8 +115,19 @@ export const LoginCard = () => {
             )}
           </div>
         </div>
+        {aviso && !error && (
+          <p
+            role="status"
+            className="text-amber-700 text-base text-center font-semibold"
+          >
+            {aviso}
+          </p>
+        )}
         {error && (
-          <p className="text-red-500 text-base text-center font-semibold">
+          <p
+            role="alert"
+            className="text-red-500 text-base text-center font-semibold"
+          >
             {error}
           </p>
         )}

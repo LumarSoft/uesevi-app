@@ -24,7 +24,6 @@ export const DeleteDialog = ({
   deleteStatement: (id: number) => void;
 }) => {
   const handleDelete = async () => {
-    console.log(statement.id);
     try {
       const result = await deleteData("statements/:id", statement.id);
       if (result.ok) {

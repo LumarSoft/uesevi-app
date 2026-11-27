@@ -69,7 +69,6 @@ export const EditEmployee = ({
 
     try {
       const result = await updateData("employees/:id", employee.id, formData);
-      console.log(result);
       if (result.ok) {
         updateEmployee({
           ...employee,

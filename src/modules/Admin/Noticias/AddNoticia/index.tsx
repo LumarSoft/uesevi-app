@@ -336,16 +336,6 @@ export default function AddNoticiaModule() {
         formData.append("images", image);
       });
 
-      console.log("Enviando FormData con:", {
-        headline,
-        epigraph,
-        body,
-        secondBody,
-        addressee,
-        imagesCount: validImages.length,
-        pdfSize: pdf ? pdf.size : 0,
-      });
-
       const response = await postData("news", formData);
 
       if (response.ok === true) {

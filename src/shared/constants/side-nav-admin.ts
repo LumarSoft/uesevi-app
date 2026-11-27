@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   Wallet,
   PieChart,
+  Sparkles,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 
@@ -159,5 +160,12 @@ export const NavItemsAdmin: NavItem[] = [
     icon: Wallet,
     href: "/admin/panel-pagos",
     color: "text-emerald-500",
+  },
+  {
+    // Registro de lo que se fue cambiando: modules/Admin/Mejoras/mejoras.ts.
+    title: "Mejoras",
+    icon: Sparkles,
+    href: "/admin/mejoras",
+    color: "text-amber-500",
   },
 ];

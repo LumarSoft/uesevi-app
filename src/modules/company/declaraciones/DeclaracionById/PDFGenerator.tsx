@@ -13,6 +13,7 @@ import {
 } from "@/shared/types/Querys/IInfoDeclaracion";
 import { Button } from "@/components/ui/button";
 import { calcularAporteSolidarioPorPeriodo } from "@/shared/utils/aportes";
+import { diasDeAtrasoParaIntereses } from "@/shared/utils/vencimientoDeclaracion";
 
 interface PDFGeneratorProps {
   data: IInfoDeclaracion;
@@ -263,19 +264,9 @@ const MyDocument: React.FC<{
     totalFazAjustado + totalAporteSolidarioAjustado + totalSindicatoAjustado;
 
   // Cálculo de intereses
-  const vencimiento = new Date(data.vencimiento);
-  let diffDays;
-  if (data.fecha_pago) {
-    const pagoDate = new Date(data.fecha_pago);
-    diffDays = Math.floor(
-      (pagoDate.getTime() - vencimiento.getTime()) / (1000 * 60 * 60 * 24)
-    );
-  } else {
-    const hoyDate = new Date();
-    diffDays = Math.floor(
-      (hoyDate.getTime() - vencimiento.getTime()) / (1000 * 60 * 60 * 24)
-    );
-  }
+  // Días de atraso (pago o hoy − vencimiento); una DDJJ aprobada sin fecha de
+  // pago da 0 en vez de seguir sumando. La fórmula del interés es la de abajo.
+  const diffDays = diasDeAtrasoParaIntereses(data);
 
   // Calcular intereses solo si la declaración está vencida
   let totalIntereses = 0;

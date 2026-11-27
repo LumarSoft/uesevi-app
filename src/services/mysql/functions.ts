@@ -1,4 +1,8 @@
 import { userStore } from "@/shared/stores/userStore";
+import {
+  esPedidoDeLogin,
+  marcarSesionVencida,
+} from "@/shared/utils/sesionVencida";
 
 // Revalidate para Next.js
 export const revalidate = 1;
@@ -14,11 +18,16 @@ function authHeaders(extra: Record<string, string> = {}) {
   };
 }
 
-// Función para manejar la respuesta de la API
-const handleResponse = async (response: Response) => {
-  if (response.status === 401) {
+// Función para manejar la respuesta de la API.
+// `esLogin`: el pedido es un intento de ingreso. Ahí un 401 es "contraseña
+// incorrecta": no se cierra ninguna sesión ni se redirige (antes la página de
+// login se recargaba, se borraba el email y el aviso no llegaba a verse).
+const handleResponse = async (response: Response, esLogin = false) => {
+  if (response.status === 401 && !esLogin) {
+    const habiaSesion = Boolean(userStore.getState().token);
     userStore.getState().logout();
     if (typeof window !== "undefined") {
+      if (habiaSesion) marcarSesionVencida();
       const isAdminArea = window.location.pathname.startsWith("/admin");
       window.location.href = isAdminArea ? "/admin/login" : "/loginempresa";
     }
@@ -118,29 +127,18 @@ export const fetchOneRow = async (endpoint: string, id: number) => {
 };
 
 // Función para enviar datos (POST)
+// Sin console.log del FormData ni de la respuesta: imprimían en la consola del
+// navegador contraseñas (login, alta, cambio de clave), el token de sesión y
+// DDJJ completas con CUIL. No volver a agregarlos.
 export const postData = async (endpoint: string, postData: FormData) => {
   try {
-    console.log(`Enviando POST a: ${BASE_API_URL}/${endpoint}`);
-    
-    // Log FormData contents (excluding files for readability)
-    const formDataEntries = Array.from(postData.entries());
-    const logData = formDataEntries.map(([key, value]) => {
-      if (value instanceof File) {
-        return [key, `File: ${value.name} (${value.size} bytes, ${value.type})`];
-      }
-      return [key, value];
-    });
-    console.log("FormData contents:", Object.fromEntries(logData));
-
     const response = await fetch(`${BASE_API_URL}/${endpoint}`, {
       method: "POST",
       headers: authHeaders(), // No agregues el header 'Content-Type'
       body: postData,
     });
 
-    const result = await handleResponse(response);
-    console.log("POST response:", result);
-    return result;
+    return await handleResponse(response, esPedidoDeLogin(endpoint));
   } catch (error: any) {
     console.error("Error al enviar datos:", error);
 
@@ -164,27 +162,14 @@ export const updateData = async (
 ) => {
   try {
     const url = endpoint.replace(":id", id.toString());
-    console.log(`Enviando PUT a: ${BASE_API_URL}/${url}`);
-    
-    // Log FormData contents (excluding files for readability)
-    const formDataEntries = Array.from(updateData.entries());
-    const logData = formDataEntries.map(([key, value]) => {
-      if (value instanceof File) {
-        return [key, `File: ${value.name} (${value.size} bytes, ${value.type})`];
-      }
-      return [key, value];
-    });
-    console.log("FormData contents:", Object.fromEntries(logData));
-
+    // Sin logs del FormData ni de la respuesta (ver postData).
     const response = await fetch(`${BASE_API_URL}/${url}`, {
       method: "PUT",
       headers: authHeaders(), // No agregues el header 'Content-Type'
       body: updateData,
     });
 
-    const result = await handleResponse(response);
-    console.log("PUT response:", result);
-    return result;
+    return await handleResponse(response);
   } catch (error: any) {
     console.error("Error al actualizar datos:", error);
     return {

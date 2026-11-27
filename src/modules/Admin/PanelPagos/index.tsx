@@ -15,7 +15,7 @@ import SummaryCards from "./components/SummaryCards";
 import Filters, { EstadoFiltro } from "./components/Filters";
 import PaymentsGrid from "./components/PaymentsGrid";
 import GestionEmpresasModal from "./components/GestionEmpresasModal";
-import { mesConVencido } from "./helpers";
+import { estaAlDia, mesConVencido } from "./helpers";
 
 const now = new Date();
 // Rango por defecto: 6 meses hacia atrás desde el mes actual (dentro del año).
@@ -108,9 +108,11 @@ export default function PanelPagosSection() {
     }
 
     if (estado === "aldia") {
-      list = list.filter((r) => r.meses_pendientes === 0);
+      list = list.filter(estaAlDia);
     } else if (estado === "pendientes") {
       list = list.filter((r) => r.meses_pendientes > 0);
+    } else if (estado === "sinddjj") {
+      list = list.filter((r) => (r.meses_sin_ddjj ?? 0) > 0);
     }
 
     list.sort((a, b) => {
