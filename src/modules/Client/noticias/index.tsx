@@ -102,12 +102,18 @@ const NoticiasPageModule = ({
           </Card>
         </div>
       )}
-      {filteredNews.length > 10 && (
+      {/* Depende de las páginas, no de cuántas noticias hay en ésta: la última
+          página o un filtro por tipo dejan menos y la paginación desaparecía. */}
+      {totalPages > 1 && (
         <Pagination className="mt-10">
           <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href={`/noticias/page/${currentPage - 1}`} />
-            </PaginationItem>
+            {/* Sin "Anterior" en la primera: apuntaba a la página 0 y la API
+                respondía con error. Lo mismo con "Siguiente" en la última. */}
+            {currentPage > 1 && (
+              <PaginationItem>
+                <PaginationPrevious href={`/noticias/page/${currentPage - 1}`} />
+              </PaginationItem>
+            )}
 
             {Array.from({ length: totalPages }, (_, i) => {
               const page = i + 1;
@@ -123,9 +129,11 @@ const NoticiasPageModule = ({
               );
             })}
 
-            <PaginationItem>
-              <PaginationNext href={`/noticias/page/${currentPage + 1}`} />
-            </PaginationItem>
+            {currentPage < totalPages && (
+              <PaginationItem>
+                <PaginationNext href={`/noticias/page/${currentPage + 1}`} />
+              </PaginationItem>
+            )}
           </PaginationContent>
         </Pagination>
       )}
