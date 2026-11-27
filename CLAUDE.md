@@ -125,8 +125,10 @@ always by period. Month selects are labeled "mes (mes vencido)" via `mesConVenci
 ## Conventions
 
 - **Mejoras log (changelog)**: the admin panel's "Mejoras" page reads
-  `src/modules/Admin/Mejoras/mejoras.ts`. Every user-visible change adds an entry at the
-  TOP of that list in the same PR, dated the day it reaches production, written for
+  `src/modules/Admin/Mejoras/mejoras.ts`. Every user-visible change that matters to the
+  people using the system (a feature, a fix they suffered, something faster) adds an entry
+  at the TOP of that list in the same PR — not minor cosmetic tweaks (an icon, a color,
+  a spacing) — dated the day it reaches production, written for
   UESEVI staff (what changes for them, no file or table names): `detalle` is shown under
   "Qué cambia" and the optional `dondeVerlo` bullets under "Dónde verlo" (only steps you
   are sure of). `test/mejoras.test.mjs` checks format and order.

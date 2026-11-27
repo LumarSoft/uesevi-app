@@ -35,11 +35,11 @@ export default function Sidebar({ className }: SidebarProps) {
   }, []);
 
   return (
-    // pt-16 = alto del header fijo, y nada más: antes había ~50 px vacíos
-    // arriba de Dashboard.
+    // El layout ya deja el alto del header (pt-16): el nav ocupa el resto.
+    // Antes había ~50 px vacíos arriba de Dashboard.
     <nav
       className={cn(
-        `relative hidden h-screen flex-col border-r pt-16 md:flex`,
+        `relative hidden h-full flex-col border-r md:flex`,
         status && "duration-500",
         isOpen ? "w-72" : "w-[78px]",
         className

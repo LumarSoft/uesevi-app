@@ -48,24 +48,6 @@ export const MEJORAS: Mejora[] = [
   },
   {
     fecha: "2026-11-27",
-    titulo: "Un botón más claro para ocultar el menú",
-    detalle:
-      "La flecha sobre el borde del menú se confundía con \"volver atrás\". El botón sigue en el mismo lugar, pero ahora tiene el ícono de panel lateral y, al pasar el mouse, dice \"Ocultar menú\" o \"Mostrar menú\". También se quitó el espacio vacío que había arriba de la primera opción, y el portal de empresas suma el mismo botón.",
-    dondeVerlo: ["En la computadora, arriba, sobre el borde derecho del menú lateral."],
-    area: "Todo el sistema",
-    tipo: "Mejora",
-  },
-  {
-    fecha: "2026-11-27",
-    titulo: "Botones legibles en modo oscuro",
-    detalle:
-      "En modo oscuro, el texto y los íconos de los botones y etiquetas azules se veían casi negros sobre el azul. Ahora son blancos, igual que en el modo claro.",
-    dondeVerlo: ["Botón del sol y la luna, arriba a la derecha → modo oscuro."],
-    area: "Todo el sistema",
-    tipo: "Corrección",
-  },
-  {
-    fecha: "2026-11-27",
     titulo: "Panel de Pagos: \"Al día\" sólo si la empresa presentó y pagó",
     detalle:
       "Una empresa que dejó de presentar la declaración jurada aparecía \"Al día\". Ahora se muestran aparte los meses vencidos sin DDJJ (por ejemplo, \"2 sin DDJJ\" en amarillo), y el filtro suma la opción \"Sin DDJJ\". Se cuentan desde el primer mes que la empresa declaró.",

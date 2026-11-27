@@ -20,13 +20,13 @@ export default function Sidebar({ className }: SidebarProps) {
     setTimeout(() => setStatus(false), 500);
   };
   return (
-    // Mismo armado que el del panel (SidebarAdmin/Sidebar.tsx): pt-16 = alto
-    // del header y el botón de ocultar arriba, sobre el borde. El portal tenía
+    // Mismo armado que el del panel (SidebarAdmin/Sidebar.tsx): ocupa el alto
+    // que deja el header y el botón de ocultar va arriba, sobre el borde. El portal tenía
     // la función de colapsar pero ningún botón: si quedaba colapsado no había
     // cómo abrirlo.
     <nav
       className={cn(
-        `relative hidden h-screen flex-col border-r pt-16 md:flex`,
+        `relative hidden h-full flex-col border-r md:flex`,
         status && "duration-500",
         isOpen ? "w-72" : "w-[78px]",
         className

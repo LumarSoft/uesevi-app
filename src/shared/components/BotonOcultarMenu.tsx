@@ -24,7 +24,7 @@ export function BotonOcultarMenu({
       title={texto}
       aria-label={texto}
       aria-expanded={abierto}
-      className="absolute -right-3.5 top-20 z-20 flex h-7 w-7 items-center justify-center rounded-full border bg-background text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="absolute -right-3.5 top-4 z-20 flex h-7 w-7 items-center justify-center rounded-full border bg-background text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <Icono className="h-4 w-4" aria-hidden />
     </button>

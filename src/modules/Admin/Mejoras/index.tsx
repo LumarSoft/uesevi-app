@@ -3,13 +3,10 @@
 // Página "Mejoras" del panel: un changelog. Cada cambio es una fila con dos
 // columnas — a la izquierda título, fecha y tipo sobre una línea de tiempo; a
 // la derecha "Qué cambia" y, si hay, "Dónde verlo". Los datos viven en
-// ./mejoras.ts.
-//
-// Efecto vidrio en dos lugares: el encabezado (sobre unas luces de color
-// difuminadas, que es lo que hace que el vidrio se note) y la barra de
-// filtros, que flota fija arriba mientras la línea de tiempo pasa por debajo.
+// ./mejoras.ts. Estética sobria, a lo changelog de Supabase: sin tarjetas ni
+// fondos, sólo tipografía, la línea de tiempo y divisores.
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ListFilter,
   Plus,
@@ -64,11 +61,6 @@ const ESTILO_TIPO: Record<TipoMejora, { icono: LucideIcon; etiqueta: string }> =
   },
 };
 
-// Superficie de vidrio: translúcida, desenfoca lo de atrás y tiene un borde
-// claro apenas visible. Compartida por el encabezado, la barra y el menú.
-const VIDRIO =
-  "border border-white/70 bg-white/40 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]";
-
 type FiltroArea = "todas" | AreaMejora;
 type FiltroTipo = "todos" | TipoMejora;
 
@@ -94,41 +86,53 @@ export default function MejorasModule() {
     setTipo("todos");
   };
 
+  // ¿La barra de filtros quedó pegada arriba? Un centinela justo antes de
+  // ella deja de verse cuando la barra se fija, y ahí le sumamos sombra.
+  const centinelaRef = useRef<HTMLDivElement>(null);
+  const [barraFija, setBarraFija] = useState(false);
+  useEffect(() => {
+    const centinela = centinelaRef.current;
+    if (!centinela || typeof IntersectionObserver === "undefined") return;
+    const observador = new IntersectionObserver(
+      ([entrada]) =>
+        setBarraFija(
+          !entrada.isIntersecting &&
+            entrada.boundingClientRect.top < (entrada.rootBounds?.top ?? 0) + 20
+        ),
+      // El que scrollea es el <main> del layout; el contenedor se pega en top-0.
+      { root: centinela.closest("main"), rootMargin: "-1px 0px 0px 0px" }
+    );
+    observador.observe(centinela);
+    return () => observador.disconnect();
+  }, []);
+
   return (
-    <div className="relative isolate">
-      {/* Luces de fondo: sin algo de color detrás, el vidrio no se nota. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[460px] overflow-hidden"
-      >
-        <div className="absolute -top-28 left-[6%] h-80 w-80 rounded-full bg-blue-400/40 blur-3xl dark:bg-blue-500/20" />
-        <div className="absolute -top-16 right-[8%] h-72 w-72 rounded-full bg-emerald-300/45 blur-3xl dark:bg-emerald-500/15" />
-        <div className="absolute left-[42%] top-28 h-64 w-64 rounded-full bg-violet-300/35 blur-3xl dark:bg-violet-500/15" />
-      </div>
-
-      <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 lg:py-12">
-        <header className={cn("rounded-2xl p-6 sm:p-10", VIDRIO)}>
-          <h1 className="text-4xl font-medium tracking-tight sm:text-5xl">
-            Mejoras
-          </h1>
-          <p className="mt-3 text-lg text-muted-foreground">
-            Novedades y arreglos del sistema de UESEVI
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 lg:py-12">
+      <header className="mb-6">
+        <h1 className="text-4xl font-medium tracking-tight sm:text-5xl">
+          Mejoras
+        </h1>
+        <p className="mt-3 text-lg text-muted-foreground">
+          Novedades y arreglos del sistema de UESEVI
+        </p>
+        {desde && (
+          <p className="mt-1 text-sm text-muted-foreground">
+            {MEJORAS.length} cambios desde {mesYAnio(desde)}
           </p>
-          {desde && (
-            <p className="mt-1 text-sm text-muted-foreground">
-              {MEJORAS.length} cambios desde {mesYAnio(desde)}
-            </p>
-          )}
-        </header>
+        )}
+      </header>
 
-        {/* Barra de filtros: flota debajo del header fijo del panel (top-20). */}
+      {/* Barra de filtros: queda fija arriba al bajar. El contenedor pegajoso
+          lleva el fondo de la página (el mismo de <main>: background + un 10 %
+          de secondary) para tapar la franja entre el header y la barra; si no,
+          el texto se veía pasar por ahí. La barra tiene borde y sombra suave
+          para no perderse sobre el fondo claro, y más sombra cuando está fija. */}
+      <div ref={centinelaRef} aria-hidden className="h-px" />
+      <div className="sticky top-0 z-10 mb-12 bg-background pt-4 before:absolute before:inset-0 before:-z-10 before:bg-secondary/10">
         <div
           className={cn(
-            "sticky top-20 z-10 mb-12 mt-6 flex flex-wrap items-center gap-2 rounded-xl px-3 py-2.5",
-            VIDRIO,
-            // Más opaca que el encabezado: por debajo pasa texto y, demasiado
-            // transparente, se mezclaba con el de la barra.
-            "bg-white/80 backdrop-blur-2xl backdrop-saturate-150 dark:bg-background/80"
+            "flex flex-wrap items-center gap-2 rounded-xl border border-foreground/[0.12] bg-background px-3 py-2.5 shadow-sm transition-shadow duration-200 dark:border-border",
+            barraFija && "shadow-md shadow-black/[0.08] dark:shadow-black/40"
           )}
         >
           <DropdownMenu>
@@ -144,7 +148,7 @@ export default function MejorasModule() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
-              className="w-56 bg-popover/80 backdrop-blur-xl"
+              className="w-56"
             >
               <DropdownMenuLabel>Área</DropdownMenuLabel>
               <DropdownMenuRadioGroup
@@ -220,31 +224,31 @@ export default function MejorasModule() {
             </span>
           </span>
         </div>
-
-        <ol>
-          {visibles.map((mejora, i) => (
-            <Entrada
-              key={`${mejora.fecha}-${mejora.titulo}`}
-              mejora={mejora}
-              esLoUltimo={mejora.fecha === ultimaFecha}
-              esLaUltimaFila={i === visibles.length - 1}
-            />
-          ))}
-        </ol>
-
-        {visibles.length === 0 && (
-          <p className="text-muted-foreground">
-            No hay cambios con estos filtros.{" "}
-            <button
-              type="button"
-              onClick={limpiarFiltros}
-              className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
-            >
-              Ver todos
-            </button>
-          </p>
-        )}
       </div>
+
+      <ol>
+        {visibles.map((mejora, i) => (
+          <Entrada
+            key={`${mejora.fecha}-${mejora.titulo}`}
+            mejora={mejora}
+            esLoUltimo={mejora.fecha === ultimaFecha}
+            esLaUltimaFila={i === visibles.length - 1}
+          />
+        ))}
+      </ol>
+
+      {visibles.length === 0 && (
+        <p className="text-muted-foreground">
+          No hay cambios con estos filtros.{" "}
+          <button
+            type="button"
+            onClick={limpiarFiltros}
+            className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
+          >
+            Ver todos
+          </button>
+        </p>
+      )}
     </div>
   );
 }
