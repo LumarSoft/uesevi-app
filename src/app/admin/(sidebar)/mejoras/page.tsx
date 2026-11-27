@@ -1,11 +1,11 @@
 "use client";
 
-import MejorasModule from "@/modules/Admin/Mejoras";
+import BoletinDeMejoras from "@/modules/Admin/Mejoras";
 
 export default function MejorasPage() {
   return (
-    <div className="container mx-auto p-6">
-      <MejorasModule />
+    <div className="mx-auto max-w-6xl p-3 sm:p-6">
+      <BoletinDeMejoras />
     </div>
   );
 }

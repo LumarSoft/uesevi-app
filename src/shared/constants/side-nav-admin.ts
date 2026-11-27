@@ -18,7 +18,7 @@ import {
   AlertTriangle,
   Wallet,
   PieChart,
-  Sparkles,
+  Sprout,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 
@@ -162,10 +162,12 @@ export const NavItemsAdmin: NavItem[] = [
     color: "text-emerald-500",
   },
   {
-    // Registro de lo que se fue cambiando: modules/Admin/Mejoras/mejoras.ts.
+    // Boletín de lo que se fue cambiando: modules/Admin/Mejoras/mejoras.ts.
+    // Un brote: el sistema que sigue creciendo. Side-Nav le suma un punto
+    // mientras haya una entrega sin ver.
     title: "Mejoras",
-    icon: Sparkles,
+    icon: Sprout,
     href: "/admin/mejoras",
-    color: "text-amber-500",
+    color: "text-emerald-600",
   },
 ];

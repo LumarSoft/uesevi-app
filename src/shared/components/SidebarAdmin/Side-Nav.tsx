@@ -14,6 +14,10 @@ import { NavItem } from "@/shared/constants/side-nav-admin";
 import { useSidebar } from "@/shared/hooks/useSidebar";
 import { ChevronDownIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useHayNovedades } from "@/modules/Admin/Mejoras/useNovedades";
+
+// Ítem del boletín de mejoras: lleva un punto mientras haya algo sin ver.
+const RUTA_MEJORAS = "/admin/mejoras";
 
 interface SideNavProps {
   items: NavItem[];
@@ -32,6 +36,7 @@ export function SideNav({
   const { isOpen } = useSidebar();
   const [openItem, setOpenItem] = useState("");
   const [lastOpenItem, setLastOpenItem] = useState("");
+  const hayNovedades = useHayNovedades();
 
   useEffect(() => {
     if (isOpen) {
@@ -123,7 +128,16 @@ export function SideNav({
               path === item.href && "bg-muted font-bold hover:bg-muted"
             )}
           >
-            <item.icon className={cn("h-5 w-5", item.color)} />
+            <span className="relative">
+              <item.icon className={cn("h-5 w-5", item.color)} />
+              {item.href === RUTA_MEJORAS && hayNovedades && (
+                // En el ícono y no en el texto: se ve también con el menú cerrado.
+                <span className="absolute -right-1 -top-1 flex h-2.5 w-2.5" aria-hidden>
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#c9431c] opacity-60" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#c9431c] ring-2 ring-background" />
+                </span>
+              )}
+            </span>
             <span
               className={cn(
                 "absolute left-12 text-base duration-200",
@@ -131,6 +145,9 @@ export function SideNav({
               )}
             >
               {item.title}
+              {item.href === RUTA_MEJORAS && hayNovedades && (
+                <span className="sr-only"> (hay novedades sin ver)</span>
+              )}
             </span>
           </Link>
         )

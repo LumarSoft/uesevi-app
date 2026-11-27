@@ -124,11 +124,14 @@ always by period. Month selects are labeled "mes (mes vencido)" via `mesConVenci
 
 ## Conventions
 
-- **Mejoras log**: the admin panel's "Mejoras" page reads
+- **Mejoras (boletín / changelog)**: the admin panel's "Mejoras" page reads
   `src/modules/Admin/Mejoras/mejoras.ts`. Every user-visible change adds an entry at the
   TOP of that list in the same PR, dated the day it reaches production, written for
-  UESEVI staff (what changes for them, no file or table names). `test/mejoras.test.mjs`
-  checks format and order.
+  UESEVI staff: `antes` (what the person suffered; omit it for something new or when
+  unsure, never invent it) and `ahora` (what happens now), no file or table names.
+  Entries sharing a date form one "entrega" (an issue N.º of the bulletin). The sidebar
+  shows a dot until each viewer opens the page (localStorage, `useNovedades.ts`).
+  `test/mejoras.test.mjs` checks format and order.
 - DDJJ due-date badge and interest days come from `shared/utils/vencimientoDeclaracion.ts`
   (admin and company views, screen and PDF). An approved DDJJ without `fecha_pago` accrues
   no interest; the interest formula itself lives in each Total/PDF and must not change.
