@@ -3,7 +3,9 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Boxes } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
-import { MobileSidebar } from "../SidebarAdmin/Mobile-Sidebar";
+// El del portal: importaba el del admin, y en el celular la empresa veía el
+// menú del panel y al tocar cualquier opción la mandaba al login.
+import { MobileSidebar } from "../SidebarCompany/Mobile-Sidebar";
 import { userStore } from "@/shared/stores/userStore";
 import { LogoutDialogCompany } from "./LogoutDialogCompany";
 

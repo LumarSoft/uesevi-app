@@ -98,7 +98,6 @@ const ImageModal = ({
 };
 
 export default function NoticiaModule({ newData }: { newData: INoticias }) {
-  console.log(newData);
   const BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
   
   // Estados para el modal

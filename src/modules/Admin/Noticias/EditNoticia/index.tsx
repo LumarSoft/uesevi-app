@@ -357,18 +357,6 @@ export default function EditNoticiaModule({ data }: { data: INoticias }) {
         }
       }
 
-      console.log("Enviando FormData con:", {
-        headline,
-        epigraph,
-        body,
-        secondBody,
-        addressee,
-        newImagesCount: newImages.length,
-        existingImagesCount: existingImages.length,
-        pdfType: typeof pdf,
-        pdfSize: isFileObject(pdf) ? pdf.size : "existing",
-      });
-
       const result = await updateData("news/:id", data.id, formData);
 
       if (result.ok) {

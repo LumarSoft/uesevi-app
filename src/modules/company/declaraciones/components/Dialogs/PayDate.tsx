@@ -37,7 +37,6 @@ export const PayDate = ({
         formData
       );
 
-      console.log(result);
       if (result.ok) {
         toast.success("Fecha de pago actualizada");
       }

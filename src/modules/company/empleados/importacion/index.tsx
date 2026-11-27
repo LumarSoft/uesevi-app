@@ -31,19 +31,12 @@ export default function ImportacionEmpleadosModule({
     // Solo en el primer renderizado, inicializa la ref sin resetear valores
     if (prevStatusRef.current === undefined && statementsData?.status) {
       prevStatusRef.current = statementsData.status;
-      console.log("Primera inicialización, status:", statementsData.status);
       return; // No resetear nada en la primera carga
     }
 
     // Para cambios posteriores
     const currentStatus = statementsData?.status;
     if (currentStatus && prevStatusRef.current !== currentStatus) {
-      console.log(
-        "Status cambiado de",
-        prevStatusRef.current,
-        "a",
-        currentStatus
-      );
       setSelectedMonth(null);
       setSelectedYear(null);
       prevStatusRef.current = currentStatus;
@@ -54,7 +47,6 @@ export default function ImportacionEmpleadosModule({
     if (typeof month === "number" && typeof year === "number") {
       setSelectedMonth(() => month);
       setSelectedYear(() => year);
-      console.log("Mes seleccionado:", month, year);
     } else {
       console.error("Valores inválidos recibidos:", month, year);
     }

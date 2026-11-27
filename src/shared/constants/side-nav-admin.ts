@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   Wallet,
   PieChart,
+  Rocket,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 
@@ -159,5 +160,13 @@ export const NavItemsAdmin: NavItem[] = [
     icon: Wallet,
     href: "/admin/panel-pagos",
     color: "text-emerald-500",
+  },
+  {
+    // Registro de lo que se fue cambiando: modules/Admin/Mejoras/mejoras.ts.
+    // Un cohete (lanzamientos): los destellos parecían el ícono de una IA.
+    title: "Mejoras",
+    icon: Rocket,
+    href: "/admin/mejoras",
+    color: "text-amber-500",
   },
 ];

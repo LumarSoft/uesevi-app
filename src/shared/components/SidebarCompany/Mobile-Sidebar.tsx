@@ -24,7 +24,7 @@ export const MobileSidebar = () => {
             <MenuIcon />
           </div>
         </SheetTrigger>
-        <SheetContent side="left" className="w-72">
+        <SheetContent side="left" className="w-72 overflow-y-auto">
           <div className="px-1 py-6 pt-16">
             <SideNav items={NavItemsCompany} setOpen={setOpen} />
           </div>

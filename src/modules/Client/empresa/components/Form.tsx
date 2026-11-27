@@ -52,7 +52,6 @@ export const Form = () => {
 
     try {
       const result = await postData("companies", formDataToSend);
-      console.log(result);
 
       if (result.ok) {
         toast.success("Usuario registrado correctamente");

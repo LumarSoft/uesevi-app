@@ -25,8 +25,6 @@ export const Delete = ({
   const handleDelete = async () => {
     const result = await deleteData("news/:id", data.id);
 
-    console.log(result);
-
     if (!result.ok) {
       console.error("Failed to delete news");
       return;

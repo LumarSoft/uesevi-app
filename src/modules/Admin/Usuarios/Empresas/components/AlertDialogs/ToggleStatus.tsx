@@ -39,8 +39,6 @@ export const ToggleStatus = ({
 
     const result = await updateData("companies/:id/state", data.id, formData);
 
-    console.log(result);
-
     if (result.ok) {
       onDataUpdate({
         ...data,

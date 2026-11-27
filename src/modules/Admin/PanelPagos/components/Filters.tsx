@@ -12,7 +12,7 @@ import { ArrowUpDown, Building2 } from "lucide-react";
 import { AÑOS_DISPONIBLES, mesLargo } from "../helpers";
 import EmpresaCombobox, { EmpresaOption } from "./EmpresaCombobox";
 
-export type EstadoFiltro = "todos" | "aldia" | "pendientes";
+export type EstadoFiltro = "todos" | "aldia" | "pendientes" | "sinddjj";
 
 interface Props {
   year: number;
@@ -136,6 +136,7 @@ export default function Filters(props: Props) {
             <SelectItem value="todos">Todos</SelectItem>
             <SelectItem value="aldia">Al día</SelectItem>
             <SelectItem value="pendientes">Pendientes</SelectItem>
+            <SelectItem value="sinddjj">Sin DDJJ</SelectItem>
           </SelectContent>
         </Select>
       </div>

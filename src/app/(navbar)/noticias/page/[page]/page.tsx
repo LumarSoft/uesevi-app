@@ -31,10 +31,6 @@ async function AsyncNewsContent({ page }: { page: number }) {
       return { noticias: [], totalPages: 0 };
     }
 
-    // Simulación de retraso
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-
     return newsResponse.data;
   }
 

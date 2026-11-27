@@ -10,6 +10,10 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { IInfoDeclaracion } from "@/shared/types/Querys/IInfoDeclaracion";
+import {
+  situacionVencimiento,
+  textoVencimiento,
+} from "@/shared/utils/vencimientoDeclaracion";
 
 export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
   const formatDate = (dateString: string | null) => {
@@ -22,49 +26,8 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
     });
   };
 
-  const calculateDaysOverdue = () => {
-    const vencimientoDate = new Date(statement.vencimiento);
-    const hoyDate = new Date();
-    const fechaPago = statement.fecha_pago;
-
-    // If statement is approved (estado === 1), use payment date for calculation
-    if (statement.estado === 1) {
-      if (fechaPago) {
-        // If payment date is after due date
-        if (new Date(fechaPago) > vencimientoDate) {
-          return Math.floor(
-            (new Date(fechaPago).getTime() - vencimientoDate.getTime()) /
-              (1000 * 60 * 60 * 24)
-          );
-        }
-        return 0; // Paid before or on due date
-      }
-      return 0;
-    }
-
-    // For other states, use current date for overdue calculation
-    if (fechaPago) {
-      // If there's a payment date and it's after the due date
-      if (new Date(fechaPago) > vencimientoDate) {
-        return Math.floor(
-          (new Date(fechaPago).getTime() - vencimientoDate.getTime()) /
-            (1000 * 60 * 60 * 24)
-        );
-      }
-      return 0; // Paid before the due date
-    } else if (hoyDate > vencimientoDate) {
-      // If no payment and current date is past due date
-      return Math.floor(
-        (hoyDate.getTime() - vencimientoDate.getTime()) / (1000 * 60 * 60 * 24)
-      );
-    }
-    return 0;
-  };
-
-  const isPaid =
-    statement.fecha_pago &&
-    new Date(statement.fecha_pago) <= new Date(statement.vencimiento);
-  const daysOverdue = calculateDaysOverdue();
+  const situacion = situacionVencimiento(statement);
+  const textoSituacion = textoVencimiento(situacion);
 
   const calculateAfiliados = () => {
     let afiliados = 0;
@@ -119,18 +82,23 @@ export const Info = ({ statement }: { statement: IInfoDeclaracion }) => {
               <span className="font-medium">Vencimiento:</span>
               <span className="flex">
                 {formatDate(statement.vencimiento)}
-                {statement.estado === 1 ? (
+                {situacion.tipo === "aprobada" ? (
                   <span className="ml-2 text-green-500 font-medium">
                     ✓ Aprobado
                   </span>
-                ) : isPaid ? (
+                ) : situacion.tipo === "pagada_a_tiempo" ? (
                   <span className="ml-2 text-green-500 font-medium">
                     ✓ Pagada a tiempo
                   </span>
-                ) : (
+                ) : situacion.tipo === "vencida" ? (
                   <span className="ml-2 text-red-500 font-medium flex items-center gap-1">
                     <AlertCircle className="h-4 w-4" />
-                    Vencida: {daysOverdue} días
+                    {textoSituacion}
+                  </span>
+                ) : (
+                  // Todavía no venció: antes salía "Vencida: 0 días" en rojo.
+                  <span className="ml-2 text-sky-600 font-medium">
+                    {textoSituacion}
                   </span>
                 )}
               </span>

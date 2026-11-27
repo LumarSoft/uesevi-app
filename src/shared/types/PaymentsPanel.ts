@@ -48,7 +48,11 @@ export interface GridRow {
   estado_empresa: "Activo" | "Inactivo" | "Pendiente";
   meses: MesCelda[];
   total_anio: number;
-  meses_pendientes: number; // 0 => "Al día"; N => "+N"
+  meses_pendientes: number; // DDJJ presentadas sin pagar: N => "+N"
+  // Períodos vencidos sin ninguna DDJJ (desde que la empresa empezó a
+  // declarar). "Al día" sólo si este y meses_pendientes son 0. Opcional: una
+  // API anterior no lo manda y se toma como 0.
+  meses_sin_ddjj?: number;
 }
 
 /** GET /payments-panel/summary — tarjetas de resumen (doble total). */
@@ -87,6 +91,7 @@ export interface CompanyDetailResponse {
     total_pagado_anio: number;
     totales: { fas: number; solidario: number; sindical: number; intereses: number };
     meses_pendientes: number;
+    meses_sin_ddjj?: number;
   };
   historial: HistorialRow[];
 }

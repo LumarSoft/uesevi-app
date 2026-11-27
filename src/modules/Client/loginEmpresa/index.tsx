@@ -12,10 +12,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 import { postData } from "@/services/mysql/functions";
 import { userStore } from "@/shared/stores/userStore";
+import {
+  MENSAJE_SESION_VENCIDA,
+  mensajeDeErrorDeLogin,
+  tomarAvisoSesionVencida,
+} from "@/shared/utils/sesionVencida";
 
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/modules/Login/components/LoadingSpinner";
@@ -25,7 +29,15 @@ export function LoginEmpresaModule() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); // Nueva variable de estado para mostrar/ocultar contraseña
   const [loading, setLoading] = useState(false);
+  // El error queda escrito debajo del formulario (el toast se iba solo) y se
+  // borra apenas la persona corrige el email o la contraseña.
+  const [error, setError] = useState("");
+  const [aviso, setAviso] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    if (tomarAvisoSesionVencida()) setAviso(MENSAJE_SESION_VENCIDA);
+  }, []);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Expresión regular para validar formato de email
@@ -35,10 +47,12 @@ export function LoginEmpresaModule() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Evita el comportamiento por defecto del formulario
     setLoading(true);
+    setError("");
+    setAviso("");
 
     // Validar formato del email
     if (!validateEmail(email)) {
-      toast.error("Por favor, ingrese un correo electrónico válido.");
+      setError("Por favor, ingrese un correo electrónico válido.");
       setLoading(false);
       return;
     }
@@ -51,7 +65,7 @@ export function LoginEmpresaModule() {
       const result = await postData("login/company", formData);
 
       if (!result.ok) {
-        toast.error(result.message || "Ocurrió un error al iniciar sesión.");
+        setError(mensajeDeErrorDeLogin(result));
         setLoading(false);
         return;
       }
@@ -62,24 +76,9 @@ export function LoginEmpresaModule() {
       userStore.getState().setAuth(token, user);
 
       router.replace("/empresa/empleados/importacion");
-    } catch (error: any) {
-      console.error("Error en la solicitud:", error);
-
-      // Manejo de errores específicos de Axios
-      if (error.response) {
-        const { statusCode, message } = error.response.data;
-
-        if (statusCode === 401) {
-          toast.error(
-            "Las credenciales son incorrectas. Verifique su correo y contraseña."
-          );
-        } else {
-          toast.error(message || "Ocurrió un error al iniciar sesión.");
-        }
-      } else {
-        toast.error("Ocurrió un error en la solicitud.");
-      }
-
+    } catch {
+      // postData no lanza (devuelve { ok: false }); esto es por las dudas.
+      setError(mensajeDeErrorDeLogin({}));
       setLoading(false);
     }
   };
@@ -103,22 +102,31 @@ export function LoginEmpresaModule() {
             <div className="space-y-2">
               <Label htmlFor="email">Correo electrónico</Label>
               <Input
+                id="email"
+                autoComplete="email"
                 placeholder="nombre@empresa.com"
                 required
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setError("");
+                }}
               />
             </div>
             <div className="space-y-2 relative">
               <Label htmlFor="password">Contraseña</Label>
               <Input
                 id="password"
+                autoComplete="current-password"
                 required
                 type={showPassword ? "text" : "password"} // Muestra/oculta la contraseña
                 placeholder="********"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError("");
+                }}
               />
               <button
                 type="button"
@@ -129,7 +137,9 @@ export function LoginEmpresaModule() {
               </button>
             </div>
             <div className="text-right">
+              {/* type="button": sin esto el link enviaba el formulario de login. */}
               <Button
+                type="button"
                 variant="link"
                 className="p-0 h-auto text-sm text-blue-600 hover:text-blue-800"
                 onClick={() => router.push("/cambiarcontrasenia")}
@@ -137,6 +147,22 @@ export function LoginEmpresaModule() {
                 ¿Olvidaste tu contraseña?
               </Button>
             </div>
+            {aviso && !error && (
+              <p
+                role="status"
+                className="rounded-md bg-amber-50 px-3 py-2 text-sm font-medium text-amber-800"
+              >
+                {aviso}
+              </p>
+            )}
+            {error && (
+              <p
+                role="alert"
+                className="rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
+              >
+                {error}
+              </p>
+            )}
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={loading}>

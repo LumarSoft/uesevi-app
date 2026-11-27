@@ -121,9 +121,6 @@ export function DataTable<TData, TValue>({
         });
         setIsSearchMode(true);
 
-        console.log(
-          `✅ Búsqueda completada: ${result.data.pagination.total} resultados para "${term}"`
-        );
       } else {
         console.error("❌ Error en la respuesta de búsqueda:", result.message);
         setSearchResults([]);

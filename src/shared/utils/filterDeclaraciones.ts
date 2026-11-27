@@ -43,7 +43,5 @@ export const filterDeclaraciones = (
     );
   }
 
-  console.log(declaracionesFiltradas);
-
   return declaracionesFiltradas;
 };

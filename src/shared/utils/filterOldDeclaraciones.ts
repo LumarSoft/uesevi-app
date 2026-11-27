@@ -8,7 +8,6 @@ export const filterOldDeclaraciones = (
   contratos: IOldContratos[],
   declaraciones: IOldDeclaracion[]
 ) => {
-  console.log(fecha, empresa, empleado);
 
   let declaracionesFiltradas: IOldDeclaracion[] = [...declaraciones];
 
@@ -20,22 +19,18 @@ export const filterOldDeclaraciones = (
     });
   }
 
-  console.log(declaracionesFiltradas);
-
   // Filtrar por empresa si se ha proporcionado
   if (empresa !== null) {
     declaracionesFiltradas = declaracionesFiltradas.filter(
       (declaracion) => declaracion.old_empresa_id === empresa
     );
   }
-  console.log(declaracionesFiltradas);
 
   // Filtrar por empleado si se ha proporcionado
   if (empleado !== null) {
     const contrato = contratos.find(
       (contrato) => contrato.empleado_id === empleado
     );
-    console.log(contrato);
     if (contrato) {
       declaracionesFiltradas = declaracionesFiltradas.filter(
         (declaracion) => declaracion.old_empresa_id === contrato.empresa_id
@@ -44,8 +39,6 @@ export const filterOldDeclaraciones = (
       declaracionesFiltradas = []; // Si no hay contrato, el empleado no tiene declaraciones
     }
   }
-
-  console.log(declaracionesFiltradas);
 
   return declaracionesFiltradas;
 };

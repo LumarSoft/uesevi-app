@@ -14,6 +14,11 @@ import { NavItem } from "@/shared/constants/side-nav-admin";
 import { useSidebar } from "@/shared/hooks/useSidebar";
 import { ChevronDownIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useCantidadNovedades } from "@/modules/Admin/Mejoras/useNovedades";
+
+// Junto a "Mejoras": cuántos cambios nuevos hay sin ver
+// (modules/Admin/Mejoras/novedades.ts).
+const RUTA_MEJORAS = "/admin/mejoras";
 
 interface SideNavProps {
   items: NavItem[];
@@ -32,6 +37,7 @@ export function SideNav({
   const { isOpen } = useSidebar();
   const [openItem, setOpenItem] = useState("");
   const [lastOpenItem, setLastOpenItem] = useState("");
+  const novedades = useCantidadNovedades();
 
   useEffect(() => {
     if (isOpen) {
@@ -114,6 +120,10 @@ export function SideNav({
           <Link
             key={item.title}
             href={item.href}
+            // Marca para el recorrido de presentación de Mejoras.
+            data-recorrido={
+              item.href === "/admin/mejoras" ? "nav-mejoras" : undefined
+            }
             onClick={() => {
               if (setOpen) setOpen(false);
             }}
@@ -131,7 +141,28 @@ export function SideNav({
               )}
             >
               {item.title}
+              {item.href === RUTA_MEJORAS && novedades > 0 && (
+                <span className="sr-only">
+                  {` (${novedades} ${novedades === 1 ? "novedad" : "novedades"} sin ver)`}
+                </span>
+              )}
             </span>
+            {item.href === RUTA_MEJORAS &&
+              novedades > 0 &&
+              (isOpen ? (
+                <span
+                  aria-hidden
+                  className="absolute right-3 min-w-[1.5rem] rounded-full bg-primary px-1.5 py-0.5 text-center text-xs font-semibold tabular-nums text-primary-foreground"
+                >
+                  {novedades > 9 ? "9+" : novedades}
+                </span>
+              ) : (
+                // Menú achicado: un punto sobre el ícono.
+                <span
+                  aria-hidden
+                  className="absolute left-8 top-2.5 h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-background"
+                />
+              ))}
           </Link>
         )
       )}
