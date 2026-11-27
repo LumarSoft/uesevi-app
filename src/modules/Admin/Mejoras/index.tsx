@@ -1,474 +1,329 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, LayoutGroup, MotionConfig, motion, useReducedMotion } from "framer-motion";
-import { Search, X } from "lucide-react";
+// Página "Mejoras" del panel: un changelog. Cada cambio es una fila con dos
+// columnas — a la izquierda título, fecha y tipo sobre una línea de tiempo; a
+// la derecha "Qué cambia" y, si hay, "Dónde verlo". Los datos viven en
+// ./mejoras.ts.
+
+import { useMemo, useState } from "react";
+import {
+  ChevronDown,
+  Copy,
+  ListFilter,
+  ShieldCheck,
+  Sparkles,
+  TrendingUp,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
+import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import {
   AREAS,
   AreaMejora,
-  Entrega,
-  FECHAS_DE_ENTREGA,
   MEJORAS,
-  ULTIMA_ENTREGA,
-  agruparPorFecha,
-  coincide,
-  fechaDeCorte,
-  fechaLarga,
-  haceCuanto,
-  nombreDelMes,
+  Mejora,
+  TIPOS,
+  TipoMejora,
+  fechaCorta,
+  mesYAnio,
+  textoParaCompartir,
 } from "./mejoras";
-import { useMarcarNovedadesVistas } from "./useNovedades";
-import { mono, serif } from "./fuentes";
-import { Pulso } from "./Pulso";
-import { Tarjeta, Vista } from "./Tarjeta";
-import {
-  ETIQUETA,
-  FOCO,
-  FONDO_ROJO,
-  FONDO_TINTA,
-  LINEA,
-  LINEA_FUERTE,
-  PAPEL,
-  ROJO,
-  SERIF,
-  SOBRE_TINTA,
-  TARJETA,
-  TENUE,
-  TINTA,
-} from "./estilos";
 
-type Filtro = "Todas" | AreaMejora;
+const ESTILO_TIPO: Record<TipoMejora, { icono: LucideIcon; etiqueta: string }> = {
+  Nuevo: {
+    icono: Sparkles,
+    etiqueta:
+      "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  },
+  Mejora: {
+    icono: TrendingUp,
+    etiqueta: "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-400",
+  },
+  Corrección: {
+    icono: Wrench,
+    etiqueta:
+      "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  },
+  Seguridad: {
+    icono: ShieldCheck,
+    etiqueta:
+      "border-violet-500/40 bg-violet-500/10 text-violet-700 dark:text-violet-400",
+  },
+};
 
-const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`;
+type FiltroArea = "todas" | AreaMejora;
+type FiltroTipo = "todos" | TipoMejora;
 
-export default function BoletinDeMejoras() {
-  const reducirMovimiento = useReducedMotion();
-  const vistaPrevia = useMarcarNovedadesVistas();
-  // Mientras se lee lo que la persona ya vio, no se marca nada como nuevo.
-  const corte = vistaPrevia === undefined ? null : fechaDeCorte(vistaPrevia);
-
-  const [busqueda, setBusqueda] = useState("");
-  const [area, setArea] = useState<Filtro>("Todas");
-  const [vista, setVista] = useState<Vista>("ahora");
-  const [cambioDeVista, setCambioDeVista] = useState(0);
-  const [resaltada, setResaltada] = useState<string | null>(null);
-  const temporizador = useRef<number>();
-  const inicioDeLaLista = useRef<HTMLDivElement>(null);
-  const primerRender = useRef(true);
-
-  // Al buscar o filtrar desde más abajo, la lista se achica y los resultados
-  // quedaban arriba, fuera de la vista: se vuelve al comienzo de la lista.
-  useEffect(() => {
-    if (primerRender.current) {
-      primerRender.current = false;
-      return;
+/** Copia al portapapeles; si el navegador no deja, prueba el método viejo. */
+const copiarAlPortapapeles = async (texto: string): Promise<boolean> => {
+  try {
+    await navigator.clipboard.writeText(texto);
+    return true;
+  } catch {
+    try {
+      const area = document.createElement("textarea");
+      area.value = texto;
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand("copy");
+      area.remove();
+      return ok;
+    } catch {
+      return false;
     }
-    const ancla = inicioDeLaLista.current;
-    if (ancla && ancla.getBoundingClientRect().top < 64) {
-      ancla.scrollIntoView({ block: "start" });
-    }
-  }, [busqueda, area]);
+  }
+};
+
+export default function MejorasModule() {
+  const [area, setArea] = useState<FiltroArea>("todas");
+  const [tipo, setTipo] = useState<FiltroTipo>("todos");
 
   const visibles = useMemo(
     () =>
       MEJORAS.filter(
-        (m) => (area === "Todas" || m.area === area) && coincide(m, busqueda)
+        (m) =>
+          (area === "todas" || m.area === area) &&
+          (tipo === "todos" || m.tipo === tipo)
       ),
-    [area, busqueda]
+    [area, tipo]
   );
-  const entregas = useMemo(() => agruparPorFecha(visibles), [visibles]);
-  const nuevas = corte === null ? 0 : MEJORAS.filter((m) => m.fecha > corte).length;
-  const buscando = busqueda.trim().length > 0;
 
-  const elegirVista = (v: Vista) => {
-    setVista(v);
-    setCambioDeVista((n) => n + 1);
+  const ultimaFecha = MEJORAS[0]?.fecha;
+  const desde = MEJORAS[MEJORAS.length - 1]?.fecha;
+  const filtrosActivos = (area !== "todas" ? 1 : 0) + (tipo !== "todos" ? 1 : 0);
+  const limpiarFiltros = () => {
+    setArea("todas");
+    setTipo("todos");
   };
 
-  const limpiar = () => {
-    setBusqueda("");
-    setArea("Todas");
-  };
-
-  // Desde el pulso: muestra todo, baja hasta la entrega y la destaca un momento.
-  const irAEntrega = (fecha: string) => {
-    limpiar();
-    // Un instante para que React vuelva a dibujar la lista completa. Con
-    // setTimeout y no requestAnimationFrame: éste no corre con la pestaña en
-    // segundo plano.
-    window.setTimeout(() => {
-      document.getElementById(`entrega-${fecha}`)?.scrollIntoView({
-        behavior: reducirMovimiento ? "auto" : "smooth",
-        block: "start",
-      });
-      setResaltada(fecha);
-      window.clearTimeout(temporizador.current);
-      temporizador.current = window.setTimeout(() => setResaltada(null), 1800);
-    }, 60);
+  const copiar = async (lista: Mejora[]) => {
+    const ok = await copiarAlPortapapeles(textoParaCompartir(lista));
+    if (ok) toast.success("Copiado: ya lo podés pegar en WhatsApp o en un mail.");
+    else toast.error("No se pudo copiar. Probá de nuevo.");
   };
 
   return (
-    <MotionConfig reducedMotion="user">
-      <div
-        className={cn(
-          serif.variable,
-          mono.variable,
-          PAPEL,
-          TINTA,
-          "rounded-3xl border shadow-sm",
-          LINEA
-        )}
-      >
-        {/* ---------- Cabecera ---------- */}
-        <header className="px-5 pb-8 pt-7 sm:px-10 sm:pt-10">
-          <div className={cn("flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1", ETIQUETA, TENUE)}>
-            <span>UESEVI · Sistema de gestión</span>
-            {ULTIMA_ENTREGA && (
-              <span>
-                N.º {FECHAS_DE_ENTREGA.length} · {fechaLarga(ULTIMA_ENTREGA)}
-              </span>
-            )}
-          </div>
-          <div className={cn("mt-3 border-t-2", LINEA_FUERTE)} />
-          <div className={cn("mt-[3px] border-t", LINEA_FUERTE)} />
-
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className={cn(
-              SERIF,
-              "mt-7 text-[2.9rem] font-semibold leading-[0.92] tracking-[-0.02em] [font-variation-settings:'SOFT'_60,'opsz'_144] sm:text-7xl"
-            )}
-          >
-            Boletín de <em className={cn("font-normal italic", ROJO)}>mejoras</em>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-            className={cn(SERIF, TENUE, "mt-4 max-w-2xl text-lg italic leading-snug sm:text-xl")}
-          >
-            Lo que fuimos cambiando en el sistema, entrega por entrega: qué pasaba
-            antes y qué pasa ahora.
-          </motion.p>
-
-          <motion.dl
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="mt-7 flex flex-wrap gap-x-10 gap-y-4"
-          >
-            <Dato valor={String(MEJORAS.length)} etiqueta="cambios" />
-            <Dato valor={String(FECHAS_DE_ENTREGA.length)} etiqueta="entregas" />
-            {ULTIMA_ENTREGA && (
-              <Dato valor={haceCuanto(ULTIMA_ENTREGA)} etiqueta="la última" cursiva />
-            )}
-          </motion.dl>
-
-          <AnimatePresence>
-            {nuevas > 0 && (
-              <motion.p
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className={cn(
-                  "mt-7 inline-flex items-center gap-2.5 rounded-full border border-[#c9431c]/30 bg-[#c9431c]/[0.07] px-3.5 py-1.5 text-sm font-medium dark:border-[#ff8a63]/30 dark:bg-[#ff8a63]/10",
-                  ROJO
-                )}
-              >
-                <span className="relative flex h-2 w-2" aria-hidden>
-                  <span className={cn("absolute inline-flex h-full w-full animate-ping rounded-full opacity-60", FONDO_ROJO)} />
-                  <span className={cn("relative inline-flex h-2 w-2 rounded-full", FONDO_ROJO)} />
-                </span>
-                {plural(nuevas, "cambio nuevo", "cambios nuevos")} desde tu última visita
-              </motion.p>
-            )}
-          </AnimatePresence>
-
-          <div className="mt-10">
-            <Pulso onElegir={irAEntrega} />
-          </div>
-        </header>
-
-        {/* ---------- Búsqueda y filtros ---------- */}
-        <div ref={inicioDeLaLista} className="scroll-mt-16" aria-hidden />
-        <div
-          className={cn(
-            "z-10 flex flex-wrap items-center gap-x-4 gap-y-3 border-y px-5 py-3 backdrop-blur md:sticky md:top-16 sm:px-10",
-            LINEA,
-            "bg-[#f6f2e9]/90 dark:bg-[#11131a]/90"
-          )}
-        >
-          <label className="relative block min-w-[220px] flex-1">
-            <span className="sr-only">Buscar un cambio</span>
-            <Search className={cn("pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2", TENUE)} aria-hidden />
-            <input
-              type="search"
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              onKeyDown={(e) => e.key === "Escape" && setBusqueda("")}
-              placeholder="Buscar: intereses, login, WhatsApp…"
-              className={cn(
-                "w-full rounded-full border py-2 pl-9 pr-9 text-sm placeholder:opacity-60 [&::-webkit-search-cancel-button]:hidden",
-                TARJETA,
-                LINEA,
-                FOCO
-              )}
-            />
-            {buscando && (
-              <button
-                type="button"
-                onClick={() => setBusqueda("")}
-                aria-label="Borrar la búsqueda"
-                className={cn("absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 hover:opacity-70", FOCO)}
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </label>
-
-          <LayoutGroup id="areas">
-            <div
-              role="group"
-              aria-label="Filtrar por área"
-              className="order-last -mx-1 flex basis-full gap-1 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none]"
-            >
-              {(["Todas", ...AREAS] as Filtro[]).map((opcion) => {
-                const activa = area === opcion;
-                const cantidad = MEJORAS.filter(
-                  (m) => (opcion === "Todas" || m.area === opcion) && coincide(m, busqueda)
-                ).length;
-                return (
-                  <button
-                    key={opcion}
-                    type="button"
-                    onClick={() => setArea(opcion)}
-                    aria-pressed={activa}
-                    className={cn(
-                      "relative z-10 shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-colors",
-                      FOCO,
-                      activa ? SOBRE_TINTA : "hover:bg-[#1b1e2b]/[0.06] dark:hover:bg-[#ece6da]/[0.08]"
-                    )}
-                  >
-                    {activa && (
-                      <motion.span
-                        layoutId="area-activa"
-                        className={cn("absolute inset-0 -z-10 rounded-full", FONDO_TINTA)}
-                        transition={{ type: "spring", stiffness: 480, damping: 38 }}
-                      />
-                    )}
-                    {opcion}
-                    <span className={cn("ml-1.5 tabular-nums", activa ? "opacity-70" : TENUE)}>
-                      {cantidad}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </LayoutGroup>
-
-          <div className={cn("flex items-center gap-2", ETIQUETA)}>
-            <span className={TENUE}>Ver</span>
-            <LayoutGroup id="vista">
-              <div className={cn("inline-flex rounded-full border p-0.5", LINEA)} role="group" aria-label="Ver todo como era o como es">
-                {(["antes", "ahora"] as Vista[]).map((opcion) => {
-                  const activa = vista === opcion;
-                  return (
-                    <button
-                      key={opcion}
-                      type="button"
-                      onClick={() => elegirVista(opcion)}
-                      aria-pressed={activa}
-                      className={cn(
-                        "relative z-10 rounded-full px-3 py-1 transition-colors",
-                        FOCO,
-                        activa ? SOBRE_TINTA : TENUE
-                      )}
-                    >
-                      {activa && (
-                        <motion.span
-                          layoutId="vista-general"
-                          className={cn("absolute inset-0 -z-10 rounded-full", FONDO_TINTA)}
-                          transition={{ type: "spring", stiffness: 520, damping: 36 }}
-                        />
-                      )}
-                      {opcion === "antes" ? "Antes" : "Ahora"}
-                    </button>
-                  );
-                })}
-              </div>
-            </LayoutGroup>
-          </div>
-        </div>
-
-        {/* ---------- Entregas ---------- */}
-        <div className="px-5 pb-6 sm:px-10">
-          {buscando && (
-            <p className={cn("pt-6", ETIQUETA, TENUE)} aria-live="polite">
-              {plural(visibles.length, "resultado", "resultados")} para “{busqueda.trim()}”
+    <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-8 lg:py-14">
+      <header className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-4xl font-medium tracking-tight sm:text-5xl">
+            Mejoras
+          </h1>
+          <p className="mt-3 text-lg text-muted-foreground">
+            Novedades y arreglos del sistema de UESEVI
+          </p>
+          {desde && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {MEJORAS.length} cambios desde {mesYAnio(desde)}
             </p>
           )}
-
-          <AnimatePresence initial={false} mode="popLayout">
-            {entregas.map((entrega) => (
-              <EntregaDelBoletin
-                key={entrega.fecha}
-                entrega={entrega}
-                corte={corte}
-                busqueda={busqueda}
-                vista={vista}
-                cambioDeVista={cambioDeVista}
-                resaltada={resaltada === entrega.fecha}
-              />
-            ))}
-          </AnimatePresence>
-
-          {entregas.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="py-20 text-center"
-            >
-              <p className={cn(SERIF, "text-4xl italic")}>Nada por acá.</p>
-              <p className={cn("mt-3", TENUE)}>
-                No hay cambios que coincidan
-                {buscando ? <> con “{busqueda.trim()}”</> : null}
-                {area !== "Todas" ? <> en {area}</> : null}.
-              </p>
-              <button
-                type="button"
-                onClick={limpiar}
-                className={cn("mt-5 underline decoration-2 underline-offset-4", ROJO, FOCO)}
-              >
-                Ver todos los cambios
-              </button>
-            </motion.div>
-          )}
         </div>
 
-        <footer
-          className={cn(
-            "flex flex-wrap justify-between gap-2 border-t px-5 py-5 sm:px-10",
-            LINEA,
-            ETIQUETA,
-            TENUE
-          )}
-        >
-          <span>Fin del boletín</span>
-          <span>Se actualiza con cada entrega</span>
-        </footer>
-      </div>
-    </MotionConfig>
-  );
-}
+        <div className="flex flex-wrap items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <ListFilter className="h-4 w-4" aria-hidden />
+                Filtrar
+                {filtrosActivos > 0 && (
+                  <span className="rounded-full bg-primary px-1.5 text-xs font-semibold text-primary-foreground">
+                    {filtrosActivos}
+                  </span>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Área</DropdownMenuLabel>
+              <DropdownMenuRadioGroup
+                value={area}
+                onValueChange={(v) => setArea(v as FiltroArea)}
+              >
+                <DropdownMenuRadioItem value="todas">Todas</DropdownMenuRadioItem>
+                {AREAS.map((a) => (
+                  <DropdownMenuRadioItem key={a} value={a}>
+                    {a}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>Tipo de cambio</DropdownMenuLabel>
+              <DropdownMenuRadioGroup
+                value={tipo}
+                onValueChange={(v) => setTipo(v as FiltroTipo)}
+              >
+                <DropdownMenuRadioItem value="todos">Todos</DropdownMenuRadioItem>
+                {TIPOS.map((t) => (
+                  <DropdownMenuRadioItem key={t} value={t}>
+                    {t}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+              {filtrosActivos > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={limpiarFiltros}>
+                    Limpiar filtros
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-function Dato({ valor, etiqueta, cursiva }: { valor: string; etiqueta: string; cursiva?: boolean }) {
-  return (
-    <div>
-      <dt className={cn(ETIQUETA, TENUE)}>{etiqueta}</dt>
-      <dd
-        className={cn(
-          SERIF,
-          "mt-1 text-4xl leading-none tabular-nums [font-variation-settings:'opsz'_144]",
-          cursiva && "italic"
-        )}
-      >
-        {valor}
-      </dd>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Copy className="h-4 w-4" aria-hidden />
+                Copiar como texto
+                <ChevronDown className="h-4 w-4 opacity-60" aria-hidden />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-60">
+              {ultimaFecha && (
+                <DropdownMenuItem
+                  onSelect={() =>
+                    copiar(MEJORAS.filter((m) => m.fecha === ultimaFecha))
+                  }
+                >
+                  Lo último ({fechaCorta(ultimaFecha)})
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem
+                disabled={visibles.length === 0}
+                onSelect={() => copiar(visibles)}
+              >
+                Todo lo que se ve ({visibles.length})
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </header>
+
+      {filtrosActivos > 0 && (
+        <p className="mb-10 text-sm text-muted-foreground">
+          {visibles.length} de {MEJORAS.length} cambios ·{" "}
+          <button
+            type="button"
+            onClick={limpiarFiltros}
+            className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
+          >
+            Limpiar filtros
+          </button>
+        </p>
+      )}
+
+      <ol>
+        {visibles.map((mejora, i) => (
+          <Entrada
+            key={`${mejora.fecha}-${mejora.titulo}`}
+            mejora={mejora}
+            esLoUltimo={mejora.fecha === ultimaFecha}
+            esLaUltimaFila={i === visibles.length - 1}
+          />
+        ))}
+      </ol>
+
+      {visibles.length === 0 && (
+        <p className="text-muted-foreground">
+          No hay cambios con estos filtros.{" "}
+          <button
+            type="button"
+            onClick={limpiarFiltros}
+            className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
+          >
+            Ver todos
+          </button>
+        </p>
+      )}
     </div>
   );
 }
 
-function EntregaDelBoletin({
-  entrega,
-  corte,
-  busqueda,
-  vista,
-  cambioDeVista,
-  resaltada,
+function Entrada({
+  mejora,
+  esLoUltimo,
+  esLaUltimaFila,
 }: {
-  entrega: Entrega;
-  corte: string | null;
-  busqueda: string;
-  vista: Vista;
-  cambioDeVista: number;
-  resaltada: boolean;
+  mejora: Mejora;
+  esLoUltimo: boolean;
+  esLaUltimaFila: boolean;
 }) {
-  const esLaUltima = entrega.fecha === ULTIMA_ENTREGA;
-  const [anio, , dia] = entrega.fecha.split("-");
+  const { icono: Icono, etiqueta } = ESTILO_TIPO[mejora.tipo];
 
   return (
-    <motion.article
-      layout="position"
-      id={`entrega-${entrega.fecha}`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className={cn(
-        "relative grid scroll-mt-40 gap-5 border-t py-9 transition-colors duration-700 first:border-t-0 md:grid-cols-[170px_1fr] md:gap-10",
-        LINEA
+    <li className={cn("relative pl-12 sm:pl-14", !esLaUltimaFila && "pb-16 sm:pb-20")}>
+      {/* Línea de tiempo: baja desde el nodo hasta la fila siguiente. */}
+      {!esLaUltimaFila && (
+        <span aria-hidden className="absolute bottom-0 left-[13px] top-9 w-px bg-border" />
       )}
-    >
-      {/* Destello al llegar desde el pulso */}
-      <motion.div
+      {/* Nodo: relleno sólo en la última entrega, el resto apagado. */}
+      <span
         aria-hidden
-        initial={false}
-        animate={{ opacity: resaltada ? 1 : 0 }}
-        transition={{ duration: resaltada ? 0.2 : 1.2 }}
-        className="pointer-events-none absolute -inset-x-3 inset-y-3 rounded-2xl bg-[#c9431c]/[0.06] ring-1 ring-[#c9431c]/25 dark:bg-[#ff8a63]/[0.07] dark:ring-[#ff8a63]/25 sm:-inset-x-5"
-      />
-
-      <div className="relative self-start md:sticky md:top-40">
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 md:block">
-          <p className={cn(ETIQUETA, TENUE)}>N.º {entrega.numero}</p>
-          <p
-            className={cn(
-              SERIF,
-              "text-6xl font-semibold leading-none tabular-nums [font-variation-settings:'opsz'_144] md:mt-2 md:text-7xl"
-            )}
-          >
-            {Number(dia)}
-          </p>
-          <p className={cn(SERIF, "text-xl italic md:mt-1")}>{nombreDelMes(entrega.fecha)}</p>
-          <p className={cn(ETIQUETA, TENUE, "md:mt-2")}>
-            {anio} · {haceCuanto(entrega.fecha)}
-          </p>
-        </div>
-        <p className={cn(ETIQUETA, TENUE, "mt-2 normal-case tracking-normal")}>
-          {plural(entrega.mejoras.length, "cambio", "cambios")}
-        </p>
-        {esLaUltima && (
-          <motion.span
-            initial={{ opacity: 0, scale: 1.4, rotate: -12 }}
-            animate={{ opacity: 1, scale: 1, rotate: -4 }}
-            transition={{ delay: 0.35, type: "spring", stiffness: 300, damping: 14 }}
-            className={cn(
-              "mt-4 inline-block rounded-md border-2 border-current px-2 py-1 text-[10px] font-bold",
-              ETIQUETA,
-              ROJO
-            )}
-          >
-            Última entrega
-          </motion.span>
+        className={cn(
+          "absolute left-0 top-0.5 flex h-7 w-7 items-center justify-center rounded-md border",
+          esLoUltimo
+            ? "border-primary bg-primary text-primary-foreground shadow-sm"
+            : "bg-background text-muted-foreground"
         )}
-      </div>
+      >
+        <Icono className="h-3.5 w-3.5" />
+      </span>
 
-      <ul className="relative space-y-4">
-        <AnimatePresence initial={false} mode="popLayout">
-          {entrega.mejoras.map((mejora) => (
-            <Tarjeta
-              key={`${mejora.fecha}-${mejora.titulo}`}
-              mejora={mejora}
-              nueva={corte !== null && mejora.fecha > corte}
-              busqueda={busqueda}
-              vistaGeneral={vista}
-              cambioDeVista={cambioDeVista}
-            />
-          ))}
-        </AnimatePresence>
-      </ul>
-    </motion.article>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,8fr)] lg:gap-16">
+        <div className="space-y-3 lg:sticky lg:top-24 lg:self-start">
+          <h2 className="text-lg font-medium leading-snug">{mejora.titulo}</h2>
+          <p className="font-mono text-sm text-muted-foreground">
+            <time dateTime={mejora.fecha}>{fechaCorta(mejora.fecha)}</time>
+          </p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span
+              className={cn(
+                "rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider",
+                etiqueta
+              )}
+            >
+              {mejora.tipo}
+            </span>
+            <span className="text-sm text-muted-foreground">{mejora.area}</span>
+          </div>
+        </div>
+
+        <div className="space-y-10">
+          <section className="space-y-4">
+            <h3 className="text-2xl font-normal tracking-tight">Qué cambia</h3>
+            <p className="text-base leading-7 text-foreground/75">{mejora.detalle}</p>
+          </section>
+
+          {mejora.dondeVerlo && (
+            <section className="space-y-4">
+              <h3 className="text-2xl font-normal tracking-tight">Dónde verlo</h3>
+              <ul className="space-y-3">
+                {mejora.dondeVerlo.map((paso) => (
+                  <li key={paso} className="flex gap-4 leading-7 text-foreground/75">
+                    <span aria-hidden className="text-muted-foreground">
+                      –
+                    </span>
+                    <span>{paso}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </div>
+      </div>
+    </li>
   );
 }
