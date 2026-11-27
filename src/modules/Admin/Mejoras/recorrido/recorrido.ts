@@ -87,6 +87,14 @@ export const PASOS: PasoRecorrido[] = [
     titulo: "Filtrá lo que te interesa",
     texto:
       "Con “Filtrar” elegís un área o un tipo de cambio. Los filtros aplicados quedan a la vista y se quitan con la cruz.",
+  },
+  {
+    id: "propuestas",
+    selector: '[data-recorrido="mejoras-propuestas"]',
+    ruta: RUTA_MEJORAS,
+    titulo: "Tu idea también cuenta",
+    texto:
+      "En “Propuestas” podés sugerir una mejora para el sistema. La leemos y te respondemos ahí mismo: vas a ver si está en curso o si ya está hecha.",
     boton: "Terminar",
   },
 ];

@@ -191,8 +191,8 @@ function Bienvenida({
       <DialogPrimitive.Description className="mt-3 text-[15px] leading-relaxed text-muted-foreground [text-wrap:pretty]">
         Queremos darles la mejor experiencia posible, y día a día trabajamos
         para lograrlo. Por eso sumamos <strong className="font-semibold text-foreground">Mejoras</strong> al
-        menú: ahí les contamos cada cambio que hacemos en el sistema, para qué
-        sirve y dónde verlo.
+        menú: ahí les contamos cada cambio que hacemos en el sistema y, si se
+        les ocurre algo, pueden proponérnoslo. Lo leemos y les respondemos.
       </DialogPrimitive.Description>
       <div className="mt-8 space-y-2">
         <Button
@@ -438,9 +438,9 @@ function Final({ abierta, onCerrar }: { abierta: boolean; onCerrar: () => void }
         ¡Listo! Ya saben dónde encontrarnos
       </DialogPrimitive.Title>
       <DialogPrimitive.Description className="mt-3 text-[15px] leading-relaxed text-muted-foreground [text-wrap:pretty]">
-        Cada vez que mejoremos algo, va a estar en Mejoras, con lo último
-        primero. Gracias por acompañarnos todos los días: seguimos trabajando
-        para ustedes.
+        Cada vez que mejoremos algo, va a estar en Mejoras. Y cuando se les
+        ocurra algo, propónganlo ahí: lo leemos y les respondemos. Gracias por
+        acompañarnos todos los días.
       </DialogPrimitive.Description>
       <Button
         onClick={onCerrar}

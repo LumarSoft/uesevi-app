@@ -49,6 +49,18 @@ export const MEJORAS: Mejora[] = [
   },
   {
     fecha: "2026-11-27",
+    titulo: "Propuestas: contanos qué te gustaría mejorar",
+    detalle:
+      "En Mejoras, la pestaña \"Propuestas\" permite sugerir cambios para el sistema. Todas quedan a la vista del equipo, con su estado (Recibida, En curso, Hecha) y la respuesta del equipo de desarrollo.",
+    dondeVerlo: [
+      "Mejoras → pestaña Propuestas: escribí un título y contanos tu idea.",
+      "Debajo están todas las propuestas, con su estado y nuestra respuesta.",
+    ],
+    area: "Panel admin",
+    tipo: "Nuevo",
+  },
+  {
+    fecha: "2026-11-27",
     titulo: "Panel de Pagos: \"Al día\" sólo si la empresa presentó y pagó",
     detalle:
       "Una empresa que dejó de presentar la declaración jurada aparecía \"Al día\". Ahora se muestran aparte los meses vencidos sin DDJJ (por ejemplo, \"2 sin DDJJ\" en amarillo), y el filtro suma la opción \"Sin DDJJ\". Se cuentan desde el primer mes que la empresa declaró.",

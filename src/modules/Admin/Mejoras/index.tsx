@@ -5,6 +5,9 @@
 // la derecha "Qué cambia" y, si hay, "Dónde verlo". Los datos viven en
 // ./mejoras.ts. Estética sobria, a lo changelog de Supabase: sin tarjetas ni
 // fondos, sólo tipografía, la línea de tiempo y divisores.
+//
+// Segunda pestaña, "Propuestas": el personal propone mejoras y el equipo de
+// desarrollo responde (./propuestas/, API /proposals).
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -29,6 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { fetchData } from "@/services/mysql/functions";
 import {
   AREAS,
   AreaMejora,
@@ -40,6 +44,8 @@ import {
   mesYAnio,
 } from "./mejoras";
 import { useRecorridoMejoras } from "./recorrido/estado";
+import { Propuesta } from "./propuestas/propuestas";
+import SeccionPropuestas from "./propuestas/SeccionPropuestas";
 
 const ESTILO_TIPO: Record<TipoMejora, { icono: LucideIcon; etiqueta: string }> = {
   Nuevo: {
@@ -65,8 +71,10 @@ const ESTILO_TIPO: Record<TipoMejora, { icono: LucideIcon; etiqueta: string }> =
 
 type FiltroArea = "todas" | AreaMejora;
 type FiltroTipo = "todos" | TipoMejora;
+type Vista = "cambios" | "propuestas";
 
 export default function MejorasModule() {
+  const [vista, setVista] = useState<Vista>("cambios");
   const [area, setArea] = useState<FiltroArea>("todas");
   const [tipo, setTipo] = useState<FiltroTipo>("todos");
 
@@ -88,6 +96,35 @@ export default function MejorasModule() {
     setTipo("todos");
   };
 
+  // Propuestas: se traen al entrar para mostrar cuántas hay en la pestaña.
+  const [propuestas, setPropuestas] = useState<Propuesta[]>([]);
+  const [puedeResponder, setPuedeResponder] = useState(false);
+  const [cargandoPropuestas, setCargandoPropuestas] = useState(true);
+  const [errorPropuestas, setErrorPropuestas] = useState<string | null>(null);
+  useEffect(() => {
+    let vigente = true;
+    (async () => {
+      const resultado = await fetchData("proposals");
+      if (!vigente) return;
+      if (resultado?.ok && resultado.data) {
+        setPropuestas(resultado.data.propuestas ?? []);
+        setPuedeResponder(Boolean(resultado.data.puedeResponder));
+      } else {
+        setErrorPropuestas("probá de nuevo en un rato.");
+      }
+      setCargandoPropuestas(false);
+    })();
+    return () => {
+      vigente = false;
+    };
+  }, []);
+  const alCambiarPropuesta = (propuesta: Propuesta) =>
+    setPropuestas((lista) =>
+      lista.some((p) => p.id === propuesta.id)
+        ? lista.map((p) => (p.id === propuesta.id ? propuesta : p))
+        : [propuesta, ...lista]
+    );
+
   // ¿La barra de filtros quedó pegada arriba? Un centinela justo antes de
   // ella deja de verse cuando la barra se fija, y ahí le sumamos sombra.
   const centinelaRef = useRef<HTMLDivElement>(null);
@@ -106,7 +143,8 @@ export default function MejorasModule() {
     );
     observador.observe(centinela);
     return () => observador.disconnect();
-  }, []);
+    // La barra sólo existe en la pestaña Cambios: al volver, se observa de nuevo.
+  }, [vista]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 lg:py-12">
@@ -136,136 +174,217 @@ export default function MejorasModule() {
         </Button>
       </header>
 
-      {/* Barra de filtros: queda fija arriba al bajar. El contenedor pegajoso
-          lleva el fondo de la página (el mismo de <main>: background + un 10 %
-          de secondary) para tapar la franja entre el header y la barra; si no,
-          el texto se veía pasar por ahí. La barra tiene borde y sombra suave
-          para no perderse sobre el fondo claro, y más sombra cuando está fija. */}
-      <div ref={centinelaRef} aria-hidden className="h-px" />
-      <div className="sticky top-0 z-10 mb-12 bg-background pt-4 before:absolute before:inset-0 before:-z-10 before:bg-secondary/10">
-        <div
-          data-recorrido="mejoras-filtros"
-          className={cn(
-            "flex flex-wrap items-center gap-2 rounded-xl border border-foreground/[0.12] bg-background px-3 py-2.5 shadow-sm transition-shadow duration-200 dark:border-border",
-            barraFija && "shadow-md shadow-black/[0.08] dark:shadow-black/40"
-          )}
+      <div role="tablist" aria-label="Secciones de Mejoras" className="flex gap-6 border-b">
+        <Pestania
+          id="cambios"
+          activa={vista === "cambios"}
+          onClick={() => setVista("cambios")}
+          cantidad={MEJORAS.length}
         >
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="gap-2 hover:bg-foreground/5"
-              >
-                <ListFilter className="h-4 w-4" aria-hidden />
-                Filtrar
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="start"
-              className="w-56"
-            >
-              <DropdownMenuLabel>Área</DropdownMenuLabel>
-              <DropdownMenuRadioGroup
-                value={area}
-                onValueChange={(v) => setArea(v as FiltroArea)}
-              >
-                <DropdownMenuRadioItem value="todas">Todas</DropdownMenuRadioItem>
-                {AREAS.map((a) => (
-                  <DropdownMenuRadioItem key={a} value={a}>
-                    {a}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel>Tipo de cambio</DropdownMenuLabel>
-              <DropdownMenuRadioGroup
-                value={tipo}
-                onValueChange={(v) => setTipo(v as FiltroTipo)}
-              >
-                <DropdownMenuRadioItem value="todos">Todos</DropdownMenuRadioItem>
-                {TIPOS.map((t) => (
-                  <DropdownMenuRadioItem key={t} value={t}>
-                    {t}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-              {filtrosActivos > 0 && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onSelect={limpiarFiltros}>
-                    Limpiar filtros
-                  </DropdownMenuItem>
-                </>
+          Cambios
+        </Pestania>
+        <Pestania
+          id="propuestas"
+          activa={vista === "propuestas"}
+          onClick={() => setVista("propuestas")}
+          cantidad={cargandoPropuestas || errorPropuestas ? null : propuestas.length}
+          recorrido="mejoras-propuestas"
+        >
+          Propuestas
+        </Pestania>
+      </div>
+
+      {vista === "propuestas" ? (
+        <div role="tabpanel" id="panel-propuestas" aria-labelledby="pestania-propuestas" className="mt-10">
+          <SeccionPropuestas
+            propuestas={propuestas}
+            puedeResponder={puedeResponder}
+            cargando={cargandoPropuestas}
+            error={errorPropuestas}
+            onCambio={alCambiarPropuesta}
+          />
+        </div>
+      ) : (
+        <div role="tabpanel" id="panel-cambios" aria-labelledby="pestania-cambios">
+          {/* Barra de filtros: queda fija arriba al bajar. El contenedor pegajoso
+              lleva el fondo de la página (el mismo de <main>: background + un 10 %
+              de secondary) para tapar la franja entre el header y la barra; si no,
+              el texto se veía pasar por ahí. La barra tiene borde y sombra suave
+              para no perderse sobre el fondo claro, y más sombra cuando está fija. */}
+          <div ref={centinelaRef} aria-hidden className="h-px" />
+          <div className="sticky top-0 z-10 mb-12 bg-background pt-4 before:absolute before:inset-0 before:-z-10 before:bg-secondary/10">
+            <div
+              data-recorrido="mejoras-filtros"
+              className={cn(
+                "flex flex-wrap items-center gap-2 rounded-xl border border-foreground/[0.12] bg-background px-3 py-2.5 shadow-sm transition-shadow duration-200 dark:border-border",
+                barraFija && "shadow-md shadow-black/[0.08] dark:shadow-black/40"
               )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            >
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-2 hover:bg-foreground/5"
+                  >
+                    <ListFilter className="h-4 w-4" aria-hidden />
+                    Filtrar
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  className="w-56"
+                >
+                  <DropdownMenuLabel>Área</DropdownMenuLabel>
+                  <DropdownMenuRadioGroup
+                    value={area}
+                    onValueChange={(v) => setArea(v as FiltroArea)}
+                  >
+                    <DropdownMenuRadioItem value="todas">Todas</DropdownMenuRadioItem>
+                    {AREAS.map((a) => (
+                      <DropdownMenuRadioItem key={a} value={a}>
+                        {a}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Tipo de cambio</DropdownMenuLabel>
+                  <DropdownMenuRadioGroup
+                    value={tipo}
+                    onValueChange={(v) => setTipo(v as FiltroTipo)}
+                  >
+                    <DropdownMenuRadioItem value="todos">Todos</DropdownMenuRadioItem>
+                    {TIPOS.map((t) => (
+                      <DropdownMenuRadioItem key={t} value={t}>
+                        {t}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                  {filtrosActivos > 0 && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onSelect={limpiarFiltros}>
+                        Limpiar filtros
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-          {/* Filtros aplicados, a la vista y con su cruz para quitarlos. */}
-          {area !== "todas" && (
-            <FiltroAplicado
-              nombre="Área"
-              valor={area}
-              onQuitar={() => setArea("todas")}
-            />
-          )}
-          {tipo !== "todos" && (
-            <FiltroAplicado
-              nombre="Tipo"
-              valor={tipo}
-              onQuitar={() => setTipo("todos")}
-            />
-          )}
-          {filtrosActivos === 0 && (
-            <span className="hidden text-sm text-muted-foreground sm:inline">
-              Todas las áreas y tipos
-            </span>
-          )}
+              {/* Filtros aplicados, a la vista y con su cruz para quitarlos. */}
+              {area !== "todas" && (
+                <FiltroAplicado
+                  nombre="Área"
+                  valor={area}
+                  onQuitar={() => setArea("todas")}
+                />
+              )}
+              {tipo !== "todos" && (
+                <FiltroAplicado
+                  nombre="Tipo"
+                  valor={tipo}
+                  onQuitar={() => setTipo("todos")}
+                />
+              )}
+              {filtrosActivos === 0 && (
+                <span className="hidden text-sm text-muted-foreground sm:inline">
+                  Todas las áreas y tipos
+                </span>
+              )}
 
-          <span className="ml-auto flex items-center gap-3 text-sm text-muted-foreground">
-            {filtrosActivos > 1 && (
+              <span className="ml-auto flex items-center gap-3 text-sm text-muted-foreground">
+                {filtrosActivos > 1 && (
+                  <button
+                    type="button"
+                    onClick={limpiarFiltros}
+                    className="font-medium text-foreground underline-offset-4 hover:underline"
+                  >
+                    Limpiar
+                  </button>
+                )}
+                <span className="tabular-nums">
+                  {filtrosActivos > 0
+                    ? `${visibles.length} de ${MEJORAS.length}`
+                    : `${MEJORAS.length} cambios`}
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <ol>
+            {visibles.map((mejora, i) => (
+              <Entrada
+                key={`${mejora.fecha}-${mejora.titulo}`}
+                mejora={mejora}
+                esLoUltimo={mejora.fecha === ultimaFecha}
+                esLaPrimeraFila={i === 0}
+                esLaUltimaFila={i === visibles.length - 1}
+              />
+            ))}
+          </ol>
+
+          {visibles.length === 0 && (
+            <p className="text-muted-foreground">
+              No hay cambios con estos filtros.{" "}
               <button
                 type="button"
                 onClick={limpiarFiltros}
-                className="font-medium text-foreground underline-offset-4 hover:underline"
+                className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
               >
-                Limpiar
+                Ver todos
               </button>
-            )}
-            <span className="tabular-nums">
-              {filtrosActivos > 0
-                ? `${visibles.length} de ${MEJORAS.length}`
-                : `${MEJORAS.length} cambios`}
-            </span>
-          </span>
+            </p>
+          )}
         </div>
-      </div>
-
-      <ol>
-        {visibles.map((mejora, i) => (
-          <Entrada
-            key={`${mejora.fecha}-${mejora.titulo}`}
-            mejora={mejora}
-            esLoUltimo={mejora.fecha === ultimaFecha}
-            esLaPrimeraFila={i === 0}
-            esLaUltimaFila={i === visibles.length - 1}
-          />
-        ))}
-      </ol>
-
-      {visibles.length === 0 && (
-        <p className="text-muted-foreground">
-          No hay cambios con estos filtros.{" "}
-          <button
-            type="button"
-            onClick={limpiarFiltros}
-            className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
-          >
-            Ver todos
-          </button>
-        </p>
       )}
     </div>
+  );
+}
+
+/** Pestaña con subrayado, a lo Supabase. */
+function Pestania({
+  id,
+  activa,
+  onClick,
+  cantidad,
+  recorrido,
+  children,
+}: {
+  id: string;
+  activa: boolean;
+  onClick: () => void;
+  cantidad: number | null;
+  recorrido?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      id={`pestania-${id}`}
+      aria-selected={activa}
+      aria-controls={`panel-${id}`}
+      onClick={onClick}
+      data-recorrido={recorrido}
+      className={cn(
+        "-mb-px flex items-center gap-2 border-b-2 px-1 pb-3 pt-1 text-sm font-medium transition-colors",
+        activa
+          ? "border-primary text-foreground"
+          : "border-transparent text-muted-foreground hover:text-foreground"
+      )}
+    >
+      {children}
+      {cantidad !== null && (
+        <span
+          className={cn(
+            "rounded-full px-1.5 text-xs tabular-nums",
+            activa ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+          )}
+        >
+          {cantidad}
+        </span>
+      )}
+    </button>
   );
 }
 

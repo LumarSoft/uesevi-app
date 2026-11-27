@@ -131,7 +131,11 @@ always by period. Month selects are labeled "mes (mes vencido)" via `mesConVenci
   a spacing) — dated the day it reaches production, written for
   UESEVI staff (what changes for them, no file or table names): `detalle` is shown under
   "Qué cambia" and the optional `dondeVerlo` bullets under "Dónde verlo" (only steps you
-  are sure of). `test/mejoras.test.mjs` checks format and order.
+  are sure of). `test/mejoras.test.mjs` checks format and order. The page also has a
+  "Propuestas" tab (`modules/Admin/Mejoras/propuestas/`, API `/proposals`): staff propose,
+  and only the API's `MEJORAS_RESPONSABLES` emails see "Responder". The one-time welcome +
+  guided tour live in `modules/Admin/Mejoras/recorrido/` (mounted in the admin layout; tour
+  targets are `data-recorrido="..."` attributes — keep them when editing those elements).
 - DDJJ due-date badge and interest days come from `shared/utils/vencimientoDeclaracion.ts`
   (admin and company views, screen and PDF). An approved DDJJ without `fecha_pago` accrues
   no interest; the interest formula itself lives in each Total/PDF and must not change.
